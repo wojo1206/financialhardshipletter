@@ -1,0 +1,53 @@
+{
+  "api": {
+    "hardshipletter": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "function": {
+    "hardshipletteraskai": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_hardshipletteraskai_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hardshipletteraskai"
+        }
+      ]
+    },
+    "AMPLIFY_function_hardshipletteraskai_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hardshipletteraskai"
+        }
+      ]
+    },
+    "AMPLIFY_function_hardshipletteraskai_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hardshipletteraskai"
+        }
+      ]
+    }
+  }
+}

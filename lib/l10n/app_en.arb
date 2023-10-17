@@ -1,0 +1,9 @@
+{
+  "next": "Next",
+  "help": "Help",
+  "letterTypeMedical": "Medical",
+  "letterTypeMortgage": "Mortgage",
+  "letterTypeCreditCard": "Credit Card",
+  "writerBase": "What causes your hardship?",
+  "writerHint": "Include some relevant details."
+}

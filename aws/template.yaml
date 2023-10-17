@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: AWS API Gateway with a Lambda Integration
+
+Parameters:
+  Prefix:
+    Type: String
+    NoEcho: False,
+    Description: Unique identifiers for all resources created by this stack.
+
+  ChatGPTKey:
+    Type: String
+    NoEcho: True,
+    Description: ChatGPT API key
+
+Resources:
+  ChatGptUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Join ["-", [!Ref Prefix, "chatgpt-key"]]
+      Description: ChatGPT API key
+      Tier: Standard
+      Type: String
+      Value: !Ref ChatGPTKey
+
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      ApiKeySourceType: HEADER
+      Description: An API Gateway with a Lambda Integration
+      EndpointConfiguration:
+        Types:
+          - EDGE
+      Name: !Join ["-", [!Ref Prefix, "rest-api"]]
+
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: "lambda"
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"
+      OperationName: "lambda"
+      ResourceId: !Ref ApiGatewayResource
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: "application/json"
+      RestApiId: !Ref ApiGatewayRestApi
+      Schema: {}
+
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref ApiGatewayDeployment
+      Description: Lambda API Stage v0
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: "v1"
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: ApiGatewayMethod
+    Properties:
+      Description: Lambda API Deployment
+      RestApiId: !Ref ApiGatewayRestApi
+
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ""
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "lambda:*"
+                Resource: !GetAtt LambdaFunction.Arn
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import openai 
+
+          ssm = boto3.client('ssm')
+          openai.api_key = client.get_parameter(Name='oblazowa4-chatgpt-key', WithDecryption=False)
+
+          def handler(event, context):
+            completion = openai.ChatCompletion.create(
+              model="gpt-3.5-turbo",
+              messages=[
+                {"role": "system", "content": "Hello"}
+              ]
+            )
+
+            response = {
+              'isBase64Encoded': False,
+              'statusCode': 200,
+              'headers': {},
+              'multiValueHeaders': {},
+              'body': completion.choices[0].message.content
+            }
+            return response
+      Description: AWS Lambda function
+      FunctionName: !Join ["-", [!Ref Prefix, "lambda-function"]]
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaIamRole.Arn
+      Runtime: python3.7
+      Timeout: 30
+
+  # LambdaFunctionLayer:
+  #   Type: Custom::PipLayer
+  #   Properties:
+  #     ServiceToken: !GetAtt LambdaFunction.Arn
+  #     Region: !Ref AWS::Region
+  #     LayerName: !Join ["-", [!Ref Prefix, "for-lambda-function"]]
+  #     Packages:
+  #       - numpy==1.20
+  #       - openai==0.28.1
+
+  LambdaIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
