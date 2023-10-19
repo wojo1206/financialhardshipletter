@@ -1,6 +1,6 @@
-# simpleiawriter
+# Hardship Letter Writer
 
-A new Flutter project.
+Hardship letter generator with intuitive UI,
 
 ## Getting Started
 
@@ -14,3 +14,13 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Amplify
+
+This project requires AWS cloud resources provided by Amplify.
+
+### Developer Notes
+
+```
+amplify delete // Don't because this deletes both cloud resources and all local amplify files!
+```

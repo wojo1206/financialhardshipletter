@@ -23,5 +23,30 @@
         }
       }
     }
+  },
+  "test": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hardshipletter-test-92817-authRole",
+      "UnauthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-test-92817-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-test-92817-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-hardshipletter-test-92817-deployment",
+      "UnauthRoleName": "amplify-hardshipletter-test-92817-unauthRole",
+      "StackName": "amplify-hardshipletter-test-92817",
+      "StackId": "arn:aws:cloudformation:us-east-2:331975689111:stack/amplify-hardshipletter-test-92817/94fe4980-6dc2-11ee-987c-06e0f6e32cd1",
+      "AmplifyAppId": "d35nmn688a6cyy"
+    },
+    "categories": {
+      "function": {
+        "hardshipletteraskai": {
+          "secretsPathAmplifyAppId": "d35nmn688a6cyy",
+          "deploymentBucketName": "amplify-hardshipletter-test-92817-deployment",
+          "s3Key": "amplify-builds/hardshipletteraskai-642f646a765a6e6c6c7a-build.zip"
+        }
+      },
+      "api": {
+        "hardshipletter": {}
+      }
+    }
   }
 }

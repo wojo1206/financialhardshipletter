@@ -23,12 +23,12 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the History type in your schema. */
-class History extends amplify_core.Model {
-  static const classType = const _HistoryModelType();
+/** This is an auto generated class representing the Settings type in your schema. */
+class Settings extends amplify_core.Model {
+  static const classType = const _SettingsModelType();
   final String id;
-  final String? _email;
   final int? _tokens;
+  final User? _user;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -39,27 +39,18 @@ class History extends amplify_core.Model {
   @override
   String getId() => id;
   
-  HistoryModelIdentifier get modelIdentifier {
-      return HistoryModelIdentifier(
+  SettingsModelIdentifier get modelIdentifier {
+      return SettingsModelIdentifier(
         id: id
       );
   }
   
-  String get email {
-    try {
-      return _email!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
   int? get tokens {
     return _tokens;
+  }
+  
+  User? get user {
+    return _user;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -70,13 +61,13 @@ class History extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const History._internal({required this.id, required email, tokens, createdAt, updatedAt}): _email = email, _tokens = tokens, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Settings._internal({required this.id, tokens, user, createdAt, updatedAt}): _tokens = tokens, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory History({String? id, required String email, int? tokens}) {
-    return History._internal(
+  factory Settings({String? id, int? tokens, User? user}) {
+    return Settings._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      email: email,
-      tokens: tokens);
+      tokens: tokens,
+      user: user);
   }
   
   bool equals(Object other) {
@@ -86,10 +77,10 @@ class History extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is History &&
+    return other is Settings &&
       id == other.id &&
-      _email == other._email &&
-      _tokens == other._tokens;
+      _tokens == other._tokens &&
+      _user == other._user;
   }
   
   @override
@@ -99,10 +90,10 @@ class History extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("History {");
+    buffer.write("Settings {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("email=" + "$_email" + ", ");
     buffer.write("tokens=" + (_tokens != null ? _tokens!.toString() : "null") + ", ");
+    buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -110,63 +101,68 @@ class History extends amplify_core.Model {
     return buffer.toString();
   }
   
-  History copyWith({String? email, int? tokens}) {
-    return History._internal(
+  Settings copyWith({int? tokens, User? user}) {
+    return Settings._internal(
       id: id,
-      email: email ?? this.email,
-      tokens: tokens ?? this.tokens);
+      tokens: tokens ?? this.tokens,
+      user: user ?? this.user);
   }
   
-  History copyWithModelFieldValues({
-    ModelFieldValue<String>? email,
-    ModelFieldValue<int?>? tokens
+  Settings copyWithModelFieldValues({
+    ModelFieldValue<int?>? tokens,
+    ModelFieldValue<User?>? user
   }) {
-    return History._internal(
+    return Settings._internal(
       id: id,
-      email: email == null ? this.email : email.value,
-      tokens: tokens == null ? this.tokens : tokens.value
+      tokens: tokens == null ? this.tokens : tokens.value,
+      user: user == null ? this.user : user.value
     );
   }
   
-  History.fromJson(Map<String, dynamic> json)  
+  Settings.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _email = json['email'],
       _tokens = (json['tokens'] as num?)?.toInt(),
+      _user = json['user']?['serializedData'] != null
+        ? User.fromJson(new Map<String, dynamic>.from(json['user']['serializedData']))
+        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'email': _email, 'tokens': _tokens, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'tokens': _tokens, 'user': _user?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'email': _email,
     'tokens': _tokens,
+    'user': _user,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<HistoryModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<HistoryModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<SettingsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SettingsModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final TOKENS = amplify_core.QueryField(fieldName: "tokens");
+  static final USER = amplify_core.QueryField(
+    fieldName: "user",
+    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "History";
-    modelSchemaDefinition.pluralName = "Histories";
+    modelSchemaDefinition.name = "Settings";
+    modelSchemaDefinition.pluralName = "Settings";
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: History.EMAIL,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: History.TOKENS,
+      key: Settings.TOKENS,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
+      key: Settings.USER,
+      isRequired: false,
+      targetNames: ['settingsUserId'],
+      ofModelName: 'User'
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -185,29 +181,29 @@ class History extends amplify_core.Model {
   });
 }
 
-class _HistoryModelType extends amplify_core.ModelType<History> {
-  const _HistoryModelType();
+class _SettingsModelType extends amplify_core.ModelType<Settings> {
+  const _SettingsModelType();
   
   @override
-  History fromJson(Map<String, dynamic> jsonData) {
-    return History.fromJson(jsonData);
+  Settings fromJson(Map<String, dynamic> jsonData) {
+    return Settings.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'History';
+    return 'Settings';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [History] in your schema.
+ * of [Settings] in your schema.
  */
-class HistoryModelIdentifier implements amplify_core.ModelIdentifier<History> {
+class SettingsModelIdentifier implements amplify_core.ModelIdentifier<Settings> {
   final String id;
 
-  /** Create an instance of HistoryModelIdentifier using [id] the primary key. */
-  const HistoryModelIdentifier({
+  /** Create an instance of SettingsModelIdentifier using [id] the primary key. */
+  const SettingsModelIdentifier({
     required this.id});
   
   @override
@@ -225,7 +221,7 @@ class HistoryModelIdentifier implements amplify_core.ModelIdentifier<History> {
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'HistoryModelIdentifier(id: $id)';
+  String toString() => 'SettingsModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -233,7 +229,7 @@ class HistoryModelIdentifier implements amplify_core.ModelIdentifier<History> {
       return true;
     }
     
-    return other is HistoryModelIdentifier &&
+    return other is SettingsModelIdentifier &&
       id == other.id;
   }
   

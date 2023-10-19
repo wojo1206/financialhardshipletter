@@ -1,9 +1,12 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simpleiawriter/bloc/app-cubit.dart';
+import 'package:simpleiawriter/bloc/app-repository.dart';
 
 import 'package:simpleiawriter/widgets/intro-screen.dart';
 import 'package:simpleiawriter/widgets/writer-screen.dart';
@@ -11,35 +14,56 @@ import 'package:simpleiawriter/widgets/writer-screen.dart';
 import 'amplifyconfiguration.dart';
 import 'models/ModelProvider.dart';
 
-void main() {
+void main() async {
   // Avoid errors caused by flutter upgrade.
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const App());
+  final api = AmplifyAPI(modelProvider: ModelProvider.instance);
+  await Amplify.addPlugin(api);
+
+  try {
+    await Amplify.configure(amplifyconfig);
+  } on Exception catch (e) {
+    safePrint('An error occurred configuring Amplify: $e');
+  }
+
+  runApp(App(
+    appRepository: HttpAppRepository(api: api),
+  ));
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({Key? key, required HttpAppRepository appRepository})
+      : _appRepository = appRepository,
+        super(key: key);
+
+  final AppRepository _appRepository;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: MAIN_THEME,
-      home: const HomeScreen(title: 'Flutter Demo Home Page'),
-      routes: {
-        '/intro': (context) => const IntroScreen(),
-      },
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en'),
-      ],
+    return RepositoryProvider.value(
+      value: _appRepository,
+      child: BlocProvider(
+        create: (_) => AppCubit(),
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: MAIN_THEME,
+          home: const HomeScreen(title: 'Flutter Demo Home Page'),
+          routes: {
+            '/intro': (context) => const IntroScreen(),
+          },
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -59,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _configureAmplify();
   }
 
   @override
@@ -94,17 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
         body: const Column(
           children: [],
         ));
-  }
-
-  Future<void> _configureAmplify() async {
-    final api = AmplifyAPI(modelProvider: ModelProvider.instance);
-    await Amplify.addPlugin(api);
-
-    try {
-      await Amplify.configure(amplifyconfig);
-    } on Exception catch (e) {
-      safePrint('An error occurred configuring Amplify: $e');
-    }
   }
 
   Route _createRoute() {

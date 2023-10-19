@@ -3,22 +3,38 @@
 input AMPLIFY {
   globalAuthRule: AuthRule = { allow: public }
 } # FOR TESTING ONLY!
-type Users @model {
+type User @model {
   id: ID!
   email: String! @index
+  gptSessions: [GptSession] @hasMany
+  settings: Settings @hasOne
+}
+
+type GptMessage @model {
+  id: ID!
+  role: String!
+  content: String
+  gptSession: GptSession @belongsTo
+}
+
+type GptSession @model {
+  id: ID!
+  user: User @belongsTo
+  subject: String
+  original: String
+  modified: String
+  messages: [GptMessage] @hasMany
+}
+
+type Settings @model {
+  id: ID!
   tokens: Int
-}
-type History @model {
-  id: ID!
-  email: String! @index
-  ref: String!
-}
-type WriterPrompt {
-  msg: String @function(name: "hardshipletteraskai-dev")
+  user: User @belongsTo
 }
 
 type Query {
-  getHardshipLetter: WriterPrompt
+  initHardshipLetter(userUuid: String!): ID!
+    @function(name: "hardshipletteraskai-${env}")
 }
 
 schema {

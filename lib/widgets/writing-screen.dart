@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
+import 'package:simpleiawriter/graphql/queries.graphql.dart';
 import 'package:simpleiawriter/helpers/view-helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/widgets/writer-screen.dart';
@@ -26,23 +28,11 @@ class _WritingScreenState extends State<WritingScreen> {
 
   var _isGenerating = false;
 
-  Timer? timer1;
   Timer? timer2;
 
   @override
   void initState() {
     super.initState();
-
-    var cnt1 = 0;
-    timer1 = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      cnt1++;
-      aiTextController.text += " [WORD${cnt1}]";
-
-      if (cnt1 > 100) {
-        _stop(context);
-        _scrollDown(context);
-      }
-    });
 
     timer2 = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       _scrollDown(context);
@@ -51,12 +41,14 @@ class _WritingScreenState extends State<WritingScreen> {
     setState(() {
       _isGenerating = true;
     });
+
+    initLlm();
   }
 
   @override
   void dispose() {
     // Dispose timers first.
-    _stop(context);
+    if (timer2!.isActive) timer2?.cancel();
 
     aiTextController.dispose();
     aiScrollController.dispose();
@@ -108,37 +100,38 @@ class _WritingScreenState extends State<WritingScreen> {
     );
   }
 
-  Future<void> createTodo() async {
+  Future<void> initLlm() async {
     try {
-      final todo = Users(email: 'wszczurek@tbrelectronics.com', tokens: 5000);
-      final request = ModelMutations.create(todo);
-      final response = await Amplify.API.mutate(request: request).response;
+      String email = 'wszczurek@tbrelectronics.com';
 
-      final createdTodo = response.data;
-      if (createdTodo == null) {
-        safePrint('errors: ${response.errors}');
-        return;
-      }
-      safePrint('Mutation result: ${createdTodo.email}');
+      final user = User(email: email, settings: Settings(tokens: 10000));
+      final session = GptSession(user: user);
+
+      final req1 = ModelMutations.create(session);
+      final res1 = await Amplify.API.mutate(request: req1).response;
+
+      safePrint(res1);
     } on ApiException catch (e) {
-      safePrint('Mutation failed: $e');
+      safePrint('ERROR: $e');
     }
   }
 
-  Future<WriterPrompt?> writerPrompt() async {
-    try {
-      final prompt = WriterPrompt(msg: "ECHO");
-      final request = ModelQueries.get(todo);
-      final response = await Amplify.API.query(request: request).response;
-      final todo = response.data;
-      if (todo == null) {
-        safePrint('errors: ${response.errors}');
-      }
-      return todo;
-    } on ApiException catch (e) {
-      safePrint('Query failed: $e');
-      return null;
-    }
+  Stream<GraphQLResponse<GptMessage>> subscribe(String uuid) {
+    final subscriptionRequest = ModelSubscriptions.onCreate(
+      GptMessage.classType,
+      where: GptMessage.ID.eq(uuid),
+    );
+    final Stream<GraphQLResponse<GptMessage>> operation = Amplify.API
+        .subscribe(
+      subscriptionRequest,
+      onEstablished: () => safePrint('Subscription established'),
+    )
+        .handleError(
+      (Object error) {
+        safePrint('Error in subscription stream: $error');
+      },
+    );
+    return operation;
   }
 
   _scrollDown(BuildContext context) {
@@ -147,14 +140,11 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   _stop(BuildContext context) async {
-    timer1?.cancel();
-    timer2?.cancel();
+    if (timer2!.isActive) timer2?.cancel();
 
     setState(() {
       _isGenerating = false;
     });
-
-    await createTodo();
   }
 
   _fillTheBlanks(BuildContext context) {

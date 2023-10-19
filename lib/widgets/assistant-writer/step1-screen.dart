@@ -47,7 +47,7 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
                 TextButton.icon(
                   icon: const Icon(Icons.help),
                   label: Text(AppLocalizations.of(context)!.help),
-                  onPressed: () => _showHelp(context),
+                  onPressed: () => {},
                 ),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.chevron_right),
