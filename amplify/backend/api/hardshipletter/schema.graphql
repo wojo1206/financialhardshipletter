@@ -7,7 +7,7 @@ type User @model {
   id: ID!
   email: String! @index
   gptSessions: [GptSession] @hasMany
-  settings: Settings @hasOne
+  settings: Setting @hasOne
 }
 
 type GptMessage @model {
@@ -23,17 +23,17 @@ type GptSession @model {
   subject: String
   original: String
   modified: String
-  messages: [GptMessage] @hasMany
+  gptMessages: [GptMessage] @hasMany
 }
 
-type Settings @model {
+type Setting @model {
   id: ID!
   tokens: Int
   user: User @belongsTo
 }
 
 type Query {
-  initHardshipLetter(userUuid: String!): ID!
+  initGptQuery(prompt: String!, gptSessionId: ID!): ID!
     @function(name: "hardshipletteraskai-${env}")
 }
 

@@ -5,6 +5,11 @@ import 'package:simpleiawriter/graphql/queries.graphql.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
 abstract class AppRepository {
+  Future<GraphQLResponse<User>> createUser({required String email});
+
+  Future<GraphQLResponse<String>> initGptQuery(
+      {required String prompt, required String gptSessionId});
+
   Future<GraphQLResponse<PaginatedResult<User>>> usersByEmail(
       {required String email});
 
@@ -18,12 +23,35 @@ class HttpAppRepository implements AppRepository {
   final AmplifyAPI api;
 
   @override
+  Future<GraphQLResponse<User>> createUser({required String email}) {
+    final user = User(email: email);
+
+    final request = ModelMutations.create(user);
+    return api.mutate(request: request).response;
+  }
+
+  @override
+  Future<GraphQLResponse<String>> initGptQuery(
+      {required String prompt, required String gptSessionId}) async {
+    return await api
+        .query(
+          request: GraphQLRequest<String>(
+              document: INIT_GPT_QUERY(),
+              variables: <String, String>{
+                'prompt': prompt,
+                'gptSessionId': gptSessionId
+              }),
+        )
+        .response;
+  }
+
+  @override
   Future<GraphQLResponse<PaginatedResult<User>>> usersByEmail(
       {required String email}) async {
     return await api
         .query(
           request: GraphQLRequest<PaginatedResult<User>>(
-            document: usersByEmail(),
+            document: USERS_BY_EMAIL(),
             modelType: const PaginatedModelType(User.classType),
             variables: <String, String>{'email': email},
             decodePath: 'usersByEmail',

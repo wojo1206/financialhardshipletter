@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/bloc/app-repository.dart';
 
 import 'package:simpleiawriter/graphql/queries.graphql.dart';
 import 'package:simpleiawriter/helpers/view-helper.dart';
@@ -42,7 +44,7 @@ class _WritingScreenState extends State<WritingScreen> {
       _isGenerating = true;
     });
 
-    initLlm();
+    _test();
   }
 
   @override
@@ -100,17 +102,33 @@ class _WritingScreenState extends State<WritingScreen> {
     );
   }
 
-  Future<void> initLlm() async {
+  Future<void> _test() async {
     try {
       String email = 'wszczurek@tbrelectronics.com';
 
-      final user = User(email: email, settings: Settings(tokens: 10000));
-      final session = GptSession(user: user);
+      final appRep = RepositoryProvider.of<AppRepository>(context);
 
-      final req1 = ModelMutations.create(session);
-      final res1 = await Amplify.API.mutate(request: req1).response;
-
+      final res1 = await appRep.usersByEmail(email: email);
       safePrint(res1);
+
+      User? user;
+      if (res1.data!.items.isEmpty) {
+        final res2 = await appRep.createUser(email: email);
+        safePrint(res2);
+
+        user = res2.data;
+      } else {
+        user = res1.data!.items.first;
+      }
+
+      if (user != null) {
+        final res3 = await appRep.createGptSessionForUser(user: user);
+        safePrint(res3.data);
+
+        final res4 = await appRep.initGptQuery(
+            prompt: "TEST", gptSessionId: res3.data!.id);
+        safePrint(res4.data);
+      }
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
     }
