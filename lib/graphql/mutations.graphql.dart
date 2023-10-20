@@ -18,3 +18,9 @@ String CREATE_GPT_SESSION_FOR_USER_BY_EMAIL() {
     }
   }''';
 }
+
+String INIT_GPT_QUERY() {
+  return '''mutation InitGptQuery(\$prompt: String!, \$gptSessionId: String!) {
+      initGptQuery(prompt: \$prompt, gptSessionId: \$gptSessionId)
+    }''';
+}

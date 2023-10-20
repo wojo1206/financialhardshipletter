@@ -11,7 +11,7 @@ import 'package:simpleiawriter/bloc/app-repository.dart';
 import 'package:simpleiawriter/graphql/queries.graphql.dart';
 import 'package:simpleiawriter/helpers/view-helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
-import 'package:simpleiawriter/widgets/writer-screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step2-screen.dart';
 
 import 'form/textarea-form.dart';
 
@@ -123,11 +123,9 @@ class _WritingScreenState extends State<WritingScreen> {
 
       if (user != null) {
         final res3 = await appRep.createGptSessionForUser(user: user);
-        safePrint(res3.data);
+        safePrint(res3);
 
-        final res4 = await appRep.initGptQuery(
-            prompt: "TEST", gptSessionId: res3.data!.id);
-        safePrint(res4.data);
+        await appRep.initGptQuery(prompt: "TEST", gptSessionId: res3.data!.id);
       }
     } on ApiException catch (e) {
       safePrint('ERROR: $e');

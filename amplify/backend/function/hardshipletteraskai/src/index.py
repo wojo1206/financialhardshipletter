@@ -2,8 +2,10 @@ import boto3
 import json
 import openai
 import os
+import uuid
 
 ssm = boto3.client('ssm')
+dynamodb = boto3.resource('dynamodb')
 
 def handler(event, context):
   print(event)
@@ -16,13 +18,23 @@ def handler(event, context):
     model="gpt-4",
     messages=[
 	  {"role": "system", 
-        "content": "I want you to act as an hardship letter writer for a medical patient. The name of the patient is Joe Doe and he was born on 3/3/2023 and he has been treated for DifficultyB at HospitalA at Chicago. Please express gratitude to the hospital staff."}
+        "content": """I want you to act as an hardship letter writer for a medical patient. 
+        The name of the patient is Joe Doe and he was born on 3/3/2023 and he has been treated for DifficultyB at Chicago Christ Hospital at Chicago. 
+        Please express gratitude to the hospital staff."""}
     ],
     stream=True
   )
 
-  for chunk in result:
+  table = dynamodb.Table('GptMessage-w2k334vpefcdlnku7jnfmagsqq-dev')
+  for chunk in completion:
     print(chunk)
+
+    table.put_item(
+      Item={
+        'id': uuid.uuid4(),
+        'content': chunk['choices'][0]['delta']
+      }
+    )
   
   return {
       'statusCode': 200,

@@ -190,7 +190,7 @@ class GptMessage extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: GptMessage.GPTSESSION,
       isRequired: false,
-      targetNames: ['gptSessionMessagesId'],
+      targetNames: ['gptSessionGptMessagesId'],
       ofModelName: 'GptSession'
     ));
     

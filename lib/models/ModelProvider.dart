@@ -22,19 +22,19 @@
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 import 'GptMessage.dart';
 import 'GptSession.dart';
-import 'Settings.dart';
+import 'Setting.dart';
 import 'User.dart';
 
 export 'GptMessage.dart';
 export 'GptSession.dart';
-export 'Settings.dart';
+export 'Setting.dart';
 export 'User.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "98077642f1bef7436af8c2edb796be01";
+  String version = "8791062fd78444f320a69bde4990e248";
   @override
-  List<amplify_core.ModelSchema> modelSchemas = [GptMessage.schema, GptSession.schema, Settings.schema, User.schema];
+  List<amplify_core.ModelSchema> modelSchemas = [GptMessage.schema, GptSession.schema, Setting.schema, User.schema];
   @override
   List<amplify_core.ModelSchema> customTypeSchemas = [];
   static final ModelProvider _instance = ModelProvider();
@@ -47,8 +47,8 @@ class ModelProvider implements amplify_core.ModelProviderInterface {
         return GptMessage.classType;
       case "GptSession":
         return GptSession.classType;
-      case "Settings":
-        return Settings.classType;
+      case "Setting":
+        return Setting.classType;
       case "User":
         return User.classType;
       default:

@@ -32,7 +32,7 @@ class GptSession extends amplify_core.Model {
   final String? _subject;
   final String? _original;
   final String? _modified;
-  final List<GptMessage>? _messages;
+  final List<GptMessage>? _gptMessages;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -65,8 +65,8 @@ class GptSession extends amplify_core.Model {
     return _modified;
   }
   
-  List<GptMessage>? get messages {
-    return _messages;
+  List<GptMessage>? get gptMessages {
+    return _gptMessages;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -77,16 +77,16 @@ class GptSession extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const GptSession._internal({required this.id, user, subject, original, modified, messages, createdAt, updatedAt}): _user = user, _subject = subject, _original = original, _modified = modified, _messages = messages, _createdAt = createdAt, _updatedAt = updatedAt;
+  const GptSession._internal({required this.id, user, subject, original, modified, gptMessages, createdAt, updatedAt}): _user = user, _subject = subject, _original = original, _modified = modified, _gptMessages = gptMessages, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory GptSession({String? id, User? user, String? subject, String? original, String? modified, List<GptMessage>? messages}) {
+  factory GptSession({String? id, User? user, String? subject, String? original, String? modified, List<GptMessage>? gptMessages}) {
     return GptSession._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       user: user,
       subject: subject,
       original: original,
       modified: modified,
-      messages: messages != null ? List<GptMessage>.unmodifiable(messages) : messages);
+      gptMessages: gptMessages != null ? List<GptMessage>.unmodifiable(gptMessages) : gptMessages);
   }
   
   bool equals(Object other) {
@@ -102,7 +102,7 @@ class GptSession extends amplify_core.Model {
       _subject == other._subject &&
       _original == other._original &&
       _modified == other._modified &&
-      DeepCollectionEquality().equals(_messages, other._messages);
+      DeepCollectionEquality().equals(_gptMessages, other._gptMessages);
   }
   
   @override
@@ -125,14 +125,14 @@ class GptSession extends amplify_core.Model {
     return buffer.toString();
   }
   
-  GptSession copyWith({User? user, String? subject, String? original, String? modified, List<GptMessage>? messages}) {
+  GptSession copyWith({User? user, String? subject, String? original, String? modified, List<GptMessage>? gptMessages}) {
     return GptSession._internal(
       id: id,
       user: user ?? this.user,
       subject: subject ?? this.subject,
       original: original ?? this.original,
       modified: modified ?? this.modified,
-      messages: messages ?? this.messages);
+      gptMessages: gptMessages ?? this.gptMessages);
   }
   
   GptSession copyWithModelFieldValues({
@@ -140,7 +140,7 @@ class GptSession extends amplify_core.Model {
     ModelFieldValue<String?>? subject,
     ModelFieldValue<String?>? original,
     ModelFieldValue<String?>? modified,
-    ModelFieldValue<List<GptMessage>?>? messages
+    ModelFieldValue<List<GptMessage>?>? gptMessages
   }) {
     return GptSession._internal(
       id: id,
@@ -148,7 +148,7 @@ class GptSession extends amplify_core.Model {
       subject: subject == null ? this.subject : subject.value,
       original: original == null ? this.original : original.value,
       modified: modified == null ? this.modified : modified.value,
-      messages: messages == null ? this.messages : messages.value
+      gptMessages: gptMessages == null ? this.gptMessages : gptMessages.value
     );
   }
   
@@ -160,8 +160,8 @@ class GptSession extends amplify_core.Model {
       _subject = json['subject'],
       _original = json['original'],
       _modified = json['modified'],
-      _messages = json['messages'] is List
-        ? (json['messages'] as List)
+      _gptMessages = json['gptMessages'] is List
+        ? (json['gptMessages'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => GptMessage.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
@@ -170,7 +170,7 @@ class GptSession extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'user': _user?.toJson(), 'subject': _subject, 'original': _original, 'modified': _modified, 'messages': _messages?.map((GptMessage? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'user': _user?.toJson(), 'subject': _subject, 'original': _original, 'modified': _modified, 'gptMessages': _gptMessages?.map((GptMessage? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
@@ -179,7 +179,7 @@ class GptSession extends amplify_core.Model {
     'subject': _subject,
     'original': _original,
     'modified': _modified,
-    'messages': _messages,
+    'gptMessages': _gptMessages,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
@@ -192,8 +192,8 @@ class GptSession extends amplify_core.Model {
   static final SUBJECT = amplify_core.QueryField(fieldName: "subject");
   static final ORIGINAL = amplify_core.QueryField(fieldName: "original");
   static final MODIFIED = amplify_core.QueryField(fieldName: "modified");
-  static final MESSAGES = amplify_core.QueryField(
-    fieldName: "messages",
+  static final GPTMESSAGES = amplify_core.QueryField(
+    fieldName: "gptMessages",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'GptMessage'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "GptSession";
@@ -227,7 +227,7 @@ class GptSession extends amplify_core.Model {
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: GptSession.MESSAGES,
+      key: GptSession.GPTMESSAGES,
       isRequired: false,
       ofModelName: 'GptMessage',
       associatedKey: GptMessage.GPTSESSION

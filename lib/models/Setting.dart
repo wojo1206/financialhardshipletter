@@ -23,9 +23,9 @@ import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
 
 
-/** This is an auto generated class representing the Settings type in your schema. */
-class Settings extends amplify_core.Model {
-  static const classType = const _SettingsModelType();
+/** This is an auto generated class representing the Setting type in your schema. */
+class Setting extends amplify_core.Model {
+  static const classType = const _SettingModelType();
   final String id;
   final int? _tokens;
   final User? _user;
@@ -39,8 +39,8 @@ class Settings extends amplify_core.Model {
   @override
   String getId() => id;
   
-  SettingsModelIdentifier get modelIdentifier {
-      return SettingsModelIdentifier(
+  SettingModelIdentifier get modelIdentifier {
+      return SettingModelIdentifier(
         id: id
       );
   }
@@ -61,10 +61,10 @@ class Settings extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Settings._internal({required this.id, tokens, user, createdAt, updatedAt}): _tokens = tokens, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Setting._internal({required this.id, tokens, user, createdAt, updatedAt}): _tokens = tokens, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Settings({String? id, int? tokens, User? user}) {
-    return Settings._internal(
+  factory Setting({String? id, int? tokens, User? user}) {
+    return Setting._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       tokens: tokens,
       user: user);
@@ -77,7 +77,7 @@ class Settings extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Settings &&
+    return other is Setting &&
       id == other.id &&
       _tokens == other._tokens &&
       _user == other._user;
@@ -90,7 +90,7 @@ class Settings extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Settings {");
+    buffer.write("Setting {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("tokens=" + (_tokens != null ? _tokens!.toString() : "null") + ", ");
     buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
@@ -101,25 +101,25 @@ class Settings extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Settings copyWith({int? tokens, User? user}) {
-    return Settings._internal(
+  Setting copyWith({int? tokens, User? user}) {
+    return Setting._internal(
       id: id,
       tokens: tokens ?? this.tokens,
       user: user ?? this.user);
   }
   
-  Settings copyWithModelFieldValues({
+  Setting copyWithModelFieldValues({
     ModelFieldValue<int?>? tokens,
     ModelFieldValue<User?>? user
   }) {
-    return Settings._internal(
+    return Setting._internal(
       id: id,
       tokens: tokens == null ? this.tokens : tokens.value,
       user: user == null ? this.user : user.value
     );
   }
   
-  Settings.fromJson(Map<String, dynamic> json)  
+  Setting.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _tokens = (json['tokens'] as num?)?.toInt(),
       _user = json['user']?['serializedData'] != null
@@ -140,28 +140,28 @@ class Settings extends amplify_core.Model {
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<SettingsModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SettingsModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<SettingModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SettingModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final TOKENS = amplify_core.QueryField(fieldName: "tokens");
   static final USER = amplify_core.QueryField(
     fieldName: "user",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Settings";
+    modelSchemaDefinition.name = "Setting";
     modelSchemaDefinition.pluralName = "Settings";
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Settings.TOKENS,
+      key: Setting.TOKENS,
       isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: Settings.USER,
+      key: Setting.USER,
       isRequired: false,
-      targetNames: ['settingsUserId'],
+      targetNames: ['settingUserId'],
       ofModelName: 'User'
     ));
     
@@ -181,29 +181,29 @@ class Settings extends amplify_core.Model {
   });
 }
 
-class _SettingsModelType extends amplify_core.ModelType<Settings> {
-  const _SettingsModelType();
+class _SettingModelType extends amplify_core.ModelType<Setting> {
+  const _SettingModelType();
   
   @override
-  Settings fromJson(Map<String, dynamic> jsonData) {
-    return Settings.fromJson(jsonData);
+  Setting fromJson(Map<String, dynamic> jsonData) {
+    return Setting.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'Settings';
+    return 'Setting';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [Settings] in your schema.
+ * of [Setting] in your schema.
  */
-class SettingsModelIdentifier implements amplify_core.ModelIdentifier<Settings> {
+class SettingModelIdentifier implements amplify_core.ModelIdentifier<Setting> {
   final String id;
 
-  /** Create an instance of SettingsModelIdentifier using [id] the primary key. */
-  const SettingsModelIdentifier({
+  /** Create an instance of SettingModelIdentifier using [id] the primary key. */
+  const SettingModelIdentifier({
     required this.id});
   
   @override
@@ -221,7 +221,7 @@ class SettingsModelIdentifier implements amplify_core.ModelIdentifier<Settings> 
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'SettingsModelIdentifier(id: $id)';
+  String toString() => 'SettingModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -229,7 +229,7 @@ class SettingsModelIdentifier implements amplify_core.ModelIdentifier<Settings> 
       return true;
     }
     
-    return other is SettingsModelIdentifier &&
+    return other is SettingModelIdentifier &&
       id == other.id;
   }
   

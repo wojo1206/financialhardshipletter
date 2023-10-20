@@ -1,29 +1,4 @@
 {
-  "dev": {
-    "awscloudformation": {
-      "AuthRoleName": "amplify-hardshipletter-dev-123950-authRole",
-      "UnauthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-dev-123950-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-dev-123950-authRole",
-      "Region": "us-east-2",
-      "DeploymentBucketName": "amplify-hardshipletter-dev-123950-deployment",
-      "UnauthRoleName": "amplify-hardshipletter-dev-123950-unauthRole",
-      "StackName": "amplify-hardshipletter-dev-123950",
-      "StackId": "arn:aws:cloudformation:us-east-2:331975689111:stack/amplify-hardshipletter-dev-123950/03639930-6c4b-11ee-ba3e-0262a42932cb",
-      "AmplifyAppId": "d19y1v10ujnzog"
-    },
-    "categories": {
-      "api": {
-        "hardshipletter": {}
-      },
-      "function": {
-        "hardshipletteraskai": {
-          "deploymentBucketName": "amplify-hardshipletter-dev-123950-deployment",
-          "s3Key": "amplify-builds/hardshipletteraskai-386b7870374455684847-build.zip",
-          "secretsPathAmplifyAppId": "d19y1v10ujnzog"
-        }
-      }
-    }
-  },
   "test": {
     "awscloudformation": {
       "AuthRoleName": "amplify-hardshipletter-test-92817-authRole",
@@ -42,6 +17,31 @@
           "secretsPathAmplifyAppId": "d35nmn688a6cyy",
           "deploymentBucketName": "amplify-hardshipletter-test-92817-deployment",
           "s3Key": "amplify-builds/hardshipletteraskai-642f646a765a6e6c6c7a-build.zip"
+        }
+      },
+      "api": {
+        "hardshipletter": {}
+      }
+    }
+  },
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hardshipletter-dev-95726-authRole",
+      "UnauthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-dev-95726-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-dev-95726-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
+      "UnauthRoleName": "amplify-hardshipletter-dev-95726-unauthRole",
+      "StackName": "amplify-hardshipletter-dev-95726",
+      "StackId": "arn:aws:cloudformation:us-east-2:331975689111:stack/amplify-hardshipletter-dev-95726/fc703000-6f58-11ee-871c-02ae22fdc427",
+      "AmplifyAppId": "d35nmn688a6cyy"
+    },
+    "categories": {
+      "function": {
+        "hardshipletteraskai": {
+          "secretsPathAmplifyAppId": "d35nmn688a6cyy",
+          "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
+          "s3Key": "amplify-builds/hardshipletteraskai-672f37462b4f72736931-build.zip"
         }
       },
       "api": {
