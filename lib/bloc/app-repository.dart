@@ -8,7 +8,7 @@ import 'package:simpleiawriter/models/ModelProvider.dart';
 abstract class AppRepository {
   Future<GraphQLResponse<User>> createUser({required String email});
 
-  Future<void> initGptQuery(
+  Future<GraphQLResponse<String>> initGptQuery(
       {required String prompt, required String gptSessionId});
 
   Future<GraphQLResponse<PaginatedResult<User>>> usersByEmail(
@@ -35,17 +35,16 @@ class HttpAppRepository implements AppRepository {
   }
 
   @override
-  Future<void> initGptQuery(
+  Future<GraphQLResponse<String>> initGptQuery(
       {required String prompt, required String gptSessionId}) async {
-    await api
+    return await api
         .query(
-          request: GraphQLRequest<void>(
+          request: GraphQLRequest<String>(
             document: INIT_GPT_QUERY(),
             variables: <String, String>{
               'prompt': prompt,
               'gptSessionId': gptSessionId
             },
-            decodePath: 'String',
           ),
         )
         .response;

@@ -1,1 +1,1 @@
-enum HardshipLetterType { medical, mortgage, creditCard }
+enum HardshipLetterType { medical, mortgage, creditCard, unspecified }

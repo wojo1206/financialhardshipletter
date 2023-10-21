@@ -11,7 +11,9 @@ class FormHelper {
       HardshipLetterType.mortgage:
           AppLocalizations.of(context)!.letterTypeMortgage,
       HardshipLetterType.creditCard:
-          AppLocalizations.of(context)!.letterTypeCreditCard
+          AppLocalizations.of(context)!.letterTypeCreditCard,
+      HardshipLetterType.unspecified:
+          AppLocalizations.of(context)!.letterTypeUnspecified
     };
   }
 }

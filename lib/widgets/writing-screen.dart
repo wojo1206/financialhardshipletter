@@ -63,7 +63,8 @@ class _WritingScreenState extends State<WritingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Writing', style: Theme.of(context).textTheme.bodyMedium),
+        title: Text('New Letter - Writing',
+            style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -125,7 +126,17 @@ class _WritingScreenState extends State<WritingScreen> {
         final res3 = await appRep.createGptSessionForUser(user: user);
         safePrint(res3);
 
-        await appRep.initGptQuery(prompt: "TEST", gptSessionId: res3.data!.id);
+        subscribe("TEST").listen(
+          (event) {
+            safePrint('Subscription event data received: ${event.data}');
+          },
+          onError: (Object e) => safePrint('Error in subscription stream: $e'),
+        );
+
+        final res4 = await appRep.initGptQuery(
+            prompt: "TEST", gptSessionId: res3.data!.id);
+
+        safePrint(res4);
       }
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
@@ -135,9 +146,9 @@ class _WritingScreenState extends State<WritingScreen> {
   Stream<GraphQLResponse<GptMessage>> subscribe(String uuid) {
     final subscriptionRequest = ModelSubscriptions.onCreate(
       GptMessage.classType,
-      where: GptMessage.ID.eq(uuid),
+      where: GptMessage.ROLE.eq(uuid),
     );
-    final Stream<GraphQLResponse<GptMessage>> operation = Amplify.API
+    return Amplify.API
         .subscribe(
       subscriptionRequest,
       onEstablished: () => safePrint('Subscription established'),
@@ -147,7 +158,6 @@ class _WritingScreenState extends State<WritingScreen> {
         safePrint('Error in subscription stream: $error');
       },
     );
-    return operation;
   }
 
   _scrollDown(BuildContext context) {

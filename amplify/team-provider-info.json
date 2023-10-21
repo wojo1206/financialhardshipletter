@@ -41,7 +41,7 @@
         "hardshipletteraskai": {
           "secretsPathAmplifyAppId": "d35nmn688a6cyy",
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/hardshipletteraskai-672f37462b4f72736931-build.zip"
+          "s3Key": "amplify-builds/hardshipletteraskai-4339442b794a454e7846-build.zip"
         }
       },
       "api": {

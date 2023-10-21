@@ -32,11 +32,11 @@ type Setting @model {
   user: User @belongsTo
 }
 
-type Query {
-  initGptQuery(prompt: String!, gptSessionId: ID!): ID!
+type Mutation {
+  initGptQuery(prompt: String!, gptSessionId: ID!): String!
     @function(name: "hardshipletteraskai-${env}")
 }
 
 schema {
-  query: Query
+  mutation: Mutation
 }

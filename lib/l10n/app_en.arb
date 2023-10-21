@@ -4,6 +4,7 @@
   "letterTypeMedical": "Medical",
   "letterTypeMortgage": "Mortgage",
   "letterTypeCreditCard": "Credit Card",
+  "letterTypeUnspecified": "Unspecified",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."
 }

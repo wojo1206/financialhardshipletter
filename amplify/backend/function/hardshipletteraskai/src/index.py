@@ -27,12 +27,12 @@ def handler(event, context):
 
   table = dynamodb.Table('GptMessage-w2k334vpefcdlnku7jnfmagsqq-dev')
   for chunk in completion:
-    print(chunk)
-
     table.put_item(
       Item={
-        'id': uuid.uuid4(),
-        'content': chunk['choices'][0]['delta']
+        'id': str(uuid.uuid4()),
+        'content': chunk,
+        'role': "TEST",
+        'gptSessionGptMessagesId': "TEST"
       }
     )
   
@@ -43,5 +43,5 @@ def handler(event, context):
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
       },
-      'body': json.dumps('Hello from your new Amplify Python lambda!')
+      'body': ''
   }
