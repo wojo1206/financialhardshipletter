@@ -12,8 +12,7 @@ type User @model {
 
 type GptMessage @model {
   id: ID!
-  role: String!
-  content: String
+  chunk: String!
   gptSession: GptSession @belongsTo
 }
 
@@ -34,7 +33,7 @@ type Setting @model {
 
 type Mutation {
   initGptQuery(prompt: String!, gptSessionId: ID!): String!
-    @function(name: "hardshipletteraskai-${env}")
+    @function(name: "writerchatgpt-${env}")
 }
 
 schema {

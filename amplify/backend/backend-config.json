@@ -22,6 +22,11 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    },
+    "writerchatgpt": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
     }
   },
   "parameters": {
@@ -46,6 +51,30 @@
         {
           "category": "function",
           "resourceName": "hardshipletteraskai"
+        }
+      ]
+    },
+    "AMPLIFY_function_writerchatgpt_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "writerchatgpt"
+        }
+      ]
+    },
+    "AMPLIFY_function_writerchatgpt_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "writerchatgpt"
+        }
+      ]
+    },
+    "AMPLIFY_function_writerchatgpt_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "writerchatgpt"
         }
       ]
     }

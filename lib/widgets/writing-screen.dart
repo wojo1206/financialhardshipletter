@@ -29,15 +29,28 @@ class _WritingScreenState extends State<WritingScreen> {
   final aiScrollController = ScrollController();
 
   var _isGenerating = false;
+  var _cntToken = 0;
+  var _elapsTime = '';
 
+  final stopwatch = Stopwatch();
+
+  List<GptMessage> gptMessages = [];
+
+  Timer? timer1;
   Timer? timer2;
+  StreamSubscription<GraphQLResponse<GptMessage>>? stream1;
 
   @override
   void initState() {
     super.initState();
 
-    timer2 = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    timer2 = Timer.periodic(const Duration(milliseconds: 250), (timer) {
       _scrollDown(context);
+    });
+
+    stopwatch.start();
+    timer1 = Timer.periodic(const Duration(milliseconds: 250), (timer) {
+      _elapsTime = (stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(1);
     });
 
     setState(() {
@@ -49,8 +62,10 @@ class _WritingScreenState extends State<WritingScreen> {
 
   @override
   void dispose() {
-    // Dispose timers first.
+    if (timer1!.isActive) timer1?.cancel();
     if (timer2!.isActive) timer2?.cancel();
+
+    stopwatch.reset();
 
     aiTextController.dispose();
     aiScrollController.dispose();
@@ -82,6 +97,21 @@ class _WritingScreenState extends State<WritingScreen> {
                 ),
               ),
             ),
+            const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(
+                'This screen is read only.You will be able to adjust\nthe text or share in next screens.',
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(_cntToken.toString()),
+                  Text(_elapsTime.toString()),
+                ]),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,28 +156,48 @@ class _WritingScreenState extends State<WritingScreen> {
         final res3 = await appRep.createGptSessionForUser(user: user);
         safePrint(res3);
 
-        subscribe("TEST").listen(
+        stream1 = subscribe("TEST").listen(
           (event) {
-            safePrint('Subscription event data received: ${event.data}');
+            setState(() {
+              GptMessage? msg = event.data;
+              if (msg is GptMessage) {
+                aiTextController.text += msg.chunk;
+                _cntToken += 1;
+
+                gptMessages.add(msg);
+              }
+            });
+            safePrint('Received: $event');
           },
-          onError: (Object e) => safePrint('Error in subscription stream: $e'),
+          onError: (Object e) => safePrint('Error: $e'),
         );
 
         final res4 = await appRep.initGptQuery(
             prompt: "TEST", gptSessionId: res3.data!.id);
 
         safePrint(res4);
+
+        gptMessages.sort(
+          (a, b) => a.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch <
+                  b.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch
+              ? -1
+              : 1,
+        );
+
+        aiTextController.text = gptMessages.map((i) => i.chunk).join('');
       }
+
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        await _stop(context);
+      });
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
     }
   }
 
   Stream<GraphQLResponse<GptMessage>> subscribe(String uuid) {
-    final subscriptionRequest = ModelSubscriptions.onCreate(
-      GptMessage.classType,
-      where: GptMessage.ROLE.eq(uuid),
-    );
+    final subscriptionRequest =
+        ModelSubscriptions.onCreate(GptMessage.classType);
     return Amplify.API
         .subscribe(
       subscriptionRequest,
@@ -166,7 +216,11 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   _stop(BuildContext context) async {
+    if (timer1!.isActive) timer1?.cancel();
     if (timer2!.isActive) timer2?.cancel();
+    if (stream1 != null) stream1?.cancel();
+
+    stopwatch.stop();
 
     setState(() {
       _isGenerating = false;

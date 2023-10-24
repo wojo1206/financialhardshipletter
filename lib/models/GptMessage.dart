@@ -27,8 +27,7 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class GptMessage extends amplify_core.Model {
   static const classType = const _GptMessageModelType();
   final String id;
-  final String? _role;
-  final String? _content;
+  final String? _chunk;
   final GptSession? _gptSession;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -46,9 +45,9 @@ class GptMessage extends amplify_core.Model {
       );
   }
   
-  String get role {
+  String get chunk {
     try {
-      return _role!;
+      return _chunk!;
     } catch(e) {
       throw amplify_core.AmplifyCodeGenModelException(
           amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -57,10 +56,6 @@ class GptMessage extends amplify_core.Model {
           underlyingException: e.toString()
           );
     }
-  }
-  
-  String? get content {
-    return _content;
   }
   
   GptSession? get gptSession {
@@ -75,13 +70,12 @@ class GptMessage extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const GptMessage._internal({required this.id, required role, content, gptSession, createdAt, updatedAt}): _role = role, _content = content, _gptSession = gptSession, _createdAt = createdAt, _updatedAt = updatedAt;
+  const GptMessage._internal({required this.id, required chunk, gptSession, createdAt, updatedAt}): _chunk = chunk, _gptSession = gptSession, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory GptMessage({String? id, required String role, String? content, GptSession? gptSession}) {
+  factory GptMessage({String? id, required String chunk, GptSession? gptSession}) {
     return GptMessage._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      role: role,
-      content: content,
+      chunk: chunk,
       gptSession: gptSession);
   }
   
@@ -94,8 +88,7 @@ class GptMessage extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is GptMessage &&
       id == other.id &&
-      _role == other._role &&
-      _content == other._content &&
+      _chunk == other._chunk &&
       _gptSession == other._gptSession;
   }
   
@@ -108,8 +101,7 @@ class GptMessage extends amplify_core.Model {
     
     buffer.write("GptMessage {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("role=" + "$_role" + ", ");
-    buffer.write("content=" + "$_content" + ", ");
+    buffer.write("chunk=" + "$_chunk" + ", ");
     buffer.write("gptSession=" + (_gptSession != null ? _gptSession!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -118,31 +110,27 @@ class GptMessage extends amplify_core.Model {
     return buffer.toString();
   }
   
-  GptMessage copyWith({String? role, String? content, GptSession? gptSession}) {
+  GptMessage copyWith({String? chunk, GptSession? gptSession}) {
     return GptMessage._internal(
       id: id,
-      role: role ?? this.role,
-      content: content ?? this.content,
+      chunk: chunk ?? this.chunk,
       gptSession: gptSession ?? this.gptSession);
   }
   
   GptMessage copyWithModelFieldValues({
-    ModelFieldValue<String>? role,
-    ModelFieldValue<String?>? content,
+    ModelFieldValue<String>? chunk,
     ModelFieldValue<GptSession?>? gptSession
   }) {
     return GptMessage._internal(
       id: id,
-      role: role == null ? this.role : role.value,
-      content: content == null ? this.content : content.value,
+      chunk: chunk == null ? this.chunk : chunk.value,
       gptSession: gptSession == null ? this.gptSession : gptSession.value
     );
   }
   
   GptMessage.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _role = json['role'],
-      _content = json['content'],
+      _chunk = json['chunk'],
       _gptSession = json['gptSession']?['serializedData'] != null
         ? GptSession.fromJson(new Map<String, dynamic>.from(json['gptSession']['serializedData']))
         : null,
@@ -150,13 +138,12 @@ class GptMessage extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'role': _role, 'content': _content, 'gptSession': _gptSession?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'chunk': _chunk, 'gptSession': _gptSession?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'role': _role,
-    'content': _content,
+    'chunk': _chunk,
     'gptSession': _gptSession,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -164,8 +151,7 @@ class GptMessage extends amplify_core.Model {
 
   static final amplify_core.QueryModelIdentifier<GptMessageModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GptMessageModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final ROLE = amplify_core.QueryField(fieldName: "role");
-  static final CONTENT = amplify_core.QueryField(fieldName: "content");
+  static final CHUNK = amplify_core.QueryField(fieldName: "chunk");
   static final GPTSESSION = amplify_core.QueryField(
     fieldName: "gptSession",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'GptSession'));
@@ -176,14 +162,8 @@ class GptMessage extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptMessage.ROLE,
+      key: GptMessage.CHUNK,
       isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptMessage.CONTENT,
-      isRequired: false,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     

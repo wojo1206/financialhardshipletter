@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"12.7.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"12.7.1\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -50,12 +50,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "hardshipletteraskai",
+            "writerchatgpt",
             {
               "Fn::Join": [
                 "",
                 [
-                  "hardshipletteraskai",
+                  "writerchatgpt",
                   "-",
                   {
                     "Ref": "env"
@@ -87,7 +87,7 @@
                         "env": {
                           "Ref": "env"
                         },
-                        "functionName": "hardshipletteraskai"
+                        "functionName": "writerchatgpt"
                       }
                     ]
                   },
@@ -103,9 +103,11 @@
             "Arn"
           ]
         },
-        "Runtime": "python3.8",
-        "Layers": [],
-        "Timeout": 180
+        "Runtime": "nodejs18.x",
+        "Layers": [
+          "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11"
+        ],
+        "Timeout": 25
       }
     },
     "LambdaExecutionRole": {
@@ -114,12 +116,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "hardshipletterLambdaRole278f56a9",
+            "hardshipletterLambdaRolea25bd67c",
             {
               "Fn::Join": [
                 "",
                 [
-                  "hardshipletterLambdaRole278f56a9",
+                  "hardshipletterLambdaRolea25bd67c",
                   "-",
                   {
                     "Ref": "env"
@@ -190,6 +192,32 @@
         }
       }
     },
+    "CustomLambdaExecutionPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "custom-lambda-execution-policy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ssm:GetParameter"
+              ],
+              "Resource": [
+                "*"
+              ]
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ]
+      },
+      "DependsOn": "LambdaExecutionRole"
+    },
     "AmplifyFunctionSecretsPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -231,7 +259,7 @@
                           "env": {
                             "Ref": "env"
                           },
-                          "functionName": "hardshipletteraskai"
+                          "functionName": "writerchatgpt"
                         }
                       ]
                     },
@@ -246,32 +274,6 @@
       "DependsOn": [
         "LambdaExecutionRole"
       ]
-    },
-    "CustomLambdaExecutionPolicy": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "custom-lambda-execution-policy",
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "ssm:GetParameter"
-              ],
-              "Resource": [
-                "*"
-              ]
-            }
-          ]
-        },
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ]
-      },
-      "DependsOn": "LambdaExecutionRole"
     }
   },
   "Outputs": {
