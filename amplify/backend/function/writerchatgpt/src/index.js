@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import * as https from "https";
 import OpenAI from "openai";
 
 /**
@@ -14,26 +13,24 @@ export async function handler(event) {
 
   const stream = await openai.chat.completions.create({
     model: "gpt-4",
-    messages: [{ role: "system", content: "Say this is a test" }],
+    messages: [
+      {
+        role: "system",
+        content: `I want you to act as an hardship letter writer for a medical patient. 
+    The name of the patient is Joe Doe and he was born on 3/3/2023 and he has been treated for DifficultyB at Chicago Christ Hospital at Chicago. 
+    Please express gratitude to the hospital staff.`,
+      },
+    ],
     stream: true,
   });
 
-  const options = {
-    hostname: event["request"]["headers"]["host"],
-    port: 443,
-    path: "/graphql",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": event["request"]["headers"]["x-api-key"],
-    },
-  };
-
   for await (const part of stream) {
     const uuid = uuidv4();
-    const chunk = part.choices[0].delta.content
-      .replace("\n", "\\n")
-      .replace("\t", "\\t");
+    var chunk = part.choices[0].delta.content;
+
+    if (!chunk) continue;
+
+    chunk = chunk.replace(/\n/g, "\\n");
 
     const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", gptSessionGptMessagesId: "${gptSessionIdStr}" }) { 
         id
@@ -44,30 +41,29 @@ export async function handler(event) {
       }
     }`;
 
-    const req = https.request(options);
-
-    req.on("error", (e) => {
-      console.error(e);
-    });
-
-    const write = JSON.stringify({
-      query: mutation,
-      operationName: "MyMutation",
-    });
-
-    console.log(write);
-
-    req.write(write);
+    try {
+      await fetch(
+        "https://" + event["request"]["headers"]["host"] + "/graphql",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            query: mutation,
+            operationName: "MyMutation",
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": event["request"]["headers"]["x-api-key"],
+          },
+        }
+      );
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+    }
   }
 
   return {
     statusCode: 200,
-    //  Uncomment below to enable CORS requests
-    //  headers: {
-    //      "Access-Control-Allow-Origin": "*",
-    //      "Access-Control-Allow-Headers": "*"
-    //  },
-    body: JSON.stringify("Hello from Lambda!"),
+    body: "",
   };
 }
 

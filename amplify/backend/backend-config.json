@@ -23,6 +23,11 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "initasync": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "writerchatgpt": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -51,6 +56,22 @@
         {
           "category": "function",
           "resourceName": "hardshipletteraskai"
+        }
+      ]
+    },
+    "AMPLIFY_function_initasync_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "initasync"
+        }
+      ]
+    },
+    "AMPLIFY_function_initasync_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "initasync"
         }
       ]
     },

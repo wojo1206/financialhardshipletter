@@ -5,14 +5,14 @@ input AMPLIFY {
 } # FOR TESTING ONLY!
 type User @model {
   id: ID!
-  email: String! @index
+  email: AWSEmail! @index
   gptSessions: [GptSession] @hasMany
   settings: Setting @hasOne
 }
 
 type GptMessage @model {
   id: ID!
-  chunk: String!
+  chunk: AWSJSON!
   gptSession: GptSession @belongsTo
 }
 
@@ -33,7 +33,7 @@ type Setting @model {
 
 type Mutation {
   initGptQuery(prompt: String!, gptSessionId: ID!): String!
-    @function(name: "writerchatgpt-${env}")
+    @function(name: "initasync-${env}")
 }
 
 schema {

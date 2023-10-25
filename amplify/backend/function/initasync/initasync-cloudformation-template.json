@@ -15,9 +15,6 @@
     },
     "s3Key": {
       "Type": "String"
-    },
-    "secretsPathAmplifyAppId": {
-      "Type": "String"
     }
   },
   "Conditions": {
@@ -50,12 +47,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "writerchatgpt",
+            "initasync",
             {
               "Fn::Join": [
                 "",
                 [
-                  "writerchatgpt",
+                  "initasync",
                   "-",
                   {
                     "Ref": "env"
@@ -72,28 +69,6 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
-            },
-            "OPENAI_API_KEY": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Sub": [
-                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
-                      {
-                        "appId": {
-                          "Ref": "secretsPathAmplifyAppId"
-                        },
-                        "env": {
-                          "Ref": "env"
-                        },
-                        "functionName": "writerchatgpt"
-                      }
-                    ]
-                  },
-                  "OPENAI_API_KEY"
-                ]
-              ]
             }
           }
         },
@@ -104,10 +79,8 @@
           ]
         },
         "Runtime": "nodejs18.x",
-        "Layers": [
-          "arn:aws:lambda:us-east-2:590474943231:layer:AWS-Parameters-and-Secrets-Lambda-Extension:11"
-        ],
-        "Timeout": 180
+        "Layers": [],
+        "Timeout": 25
       }
     },
     "LambdaExecutionRole": {
@@ -116,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "hardshipletterLambdaRolea25bd67c",
+            "hardshipletterLambdaRoled81fa5e4",
             {
               "Fn::Join": [
                 "",
                 [
-                  "hardshipletterLambdaRolea25bd67c",
+                  "hardshipletterLambdaRoled81fa5e4",
                   "-",
                   {
                     "Ref": "env"
@@ -202,7 +175,7 @@
             {
               "Effect": "Allow",
               "Action": [
-                "ssm:GetParameter"
+                "lambda:InvokeFunction"
               ],
               "Resource": [
                 "*"
@@ -217,117 +190,6 @@
         ]
       },
       "DependsOn": "LambdaExecutionRole"
-    },
-    "AmplifyFunctionSecretsPolicy": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "amplify-function-secrets-policy",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "ssm:GetParameter",
-                "ssm:GetParameters"
-              ],
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:ssm:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":parameter",
-                    {
-                      "Fn::Sub": [
-                        "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
-                        {
-                          "appId": {
-                            "Ref": "secretsPathAmplifyAppId"
-                          },
-                          "env": {
-                            "Ref": "env"
-                          },
-                          "functionName": "writerchatgpt"
-                        }
-                      ]
-                    },
-                    "*"
-                  ]
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ]
-    },
-    "LambdaFunctionAlias": {
-      "Type": "AWS::Lambda::Alias",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "LambdaFunction",
-            "Arn"
-          ]
-        },
-        "FunctionVersion": "$LATEST",
-        "Name": "live"
-      }
-    },
-    "LambdaFunctionAliasSNSTopic": {
-      "Type": "AWS::SNS::Topic",
-      "DependsOn": [
-        "LambdaFunctionAlias"
-      ],
-      "Properties": {
-        "DisplayName": {
-          "Fn::Join": [
-            "-",
-            [
-              "for",
-              "writerchatgpt",
-              {
-                "Ref": "env"
-              }
-            ]
-          ]
-        },
-        "Subscription": [
-          {
-            "Endpoint": {
-              "Ref": "LambdaFunctionAlias"
-            },
-            "Protocol": "lambda"
-          }
-        ]
-      }
-    },
-    "LambdaInvokePermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "LambdaFunctionAliasSNSTopic"
-        },
-        "FunctionName": {
-          "Ref": "LambdaFunctionAlias"
-        }
-      }
     }
   },
   "Outputs": {

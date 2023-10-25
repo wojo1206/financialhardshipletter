@@ -45,8 +45,12 @@
         },
         "writerchatgpt": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-2b5739624e78354f6230-build.zip",
+          "s3Key": "amplify-builds/writerchatgpt-3531382b784a79447359-build.zip",
           "secretsPathAmplifyAppId": "d35nmn688a6cyy"
+        },
+        "initasync": {
+          "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
+          "s3Key": "amplify-builds/initasync-69325544644b75704b41-build.zip"
         }
       },
       "api": {

@@ -32,7 +32,7 @@ export 'User.dart';
 
 class ModelProvider implements amplify_core.ModelProviderInterface {
   @override
-  String version = "060712c1919180914a2229513c476a11";
+  String version = "6fb0c8c81740a4942088810b94234c81";
   @override
   List<amplify_core.ModelSchema> modelSchemas = [GptMessage.schema, GptSession.schema, Setting.schema, User.schema];
   @override

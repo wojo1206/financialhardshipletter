@@ -37,16 +37,12 @@ class _WritingScreenState extends State<WritingScreen> {
   List<GptMessage> gptMessages = [];
 
   Timer? timer1;
-  Timer? timer2;
+
   StreamSubscription<GraphQLResponse<GptMessage>>? stream1;
 
   @override
   void initState() {
     super.initState();
-
-    timer2 = Timer.periodic(const Duration(milliseconds: 250), (timer) {
-      _scrollDown(context);
-    });
 
     stopwatch.start();
     timer1 = Timer.periodic(const Duration(milliseconds: 250), (timer) {
@@ -63,7 +59,6 @@ class _WritingScreenState extends State<WritingScreen> {
   @override
   void dispose() {
     if (timer1!.isActive) timer1?.cancel();
-    if (timer2!.isActive) timer2?.cancel();
 
     stopwatch.reset();
 
@@ -156,25 +151,31 @@ class _WritingScreenState extends State<WritingScreen> {
         final res3 = await appRep.createGptSessionForUser(user: user);
         safePrint(res3);
 
-        stream1 = subscribe("TEST").listen(
+        final sessionUuid = res3.data!.id;
+
+        stream1 = subscribe(res3.data!).listen(
           (event) {
-            setState(() {
-              GptMessage? msg = event.data;
-              if (msg is GptMessage) {
+            GptMessage? msg = event.data;
+            if (msg is GptMessage) {
+              setState(() {
                 aiTextController.text += msg.chunk;
                 _cntToken += 1;
+              });
 
-                gptMessages.add(msg);
-              }
-            });
+              gptMessages.add(msg);
+
+              _scrollDown(context);
+            }
+
             safePrint('Received: $event');
           },
           onError: (Object e) => safePrint('Error: $e'),
+          onDone: () => safePrint('Done'),
         );
 
-        final res4 = await appRep.initGptQuery(
-            prompt: "TEST", gptSessionId: res3.data!.id);
+        appRep.initGptQuery(prompt: "TEST", gptSessionId: sessionUuid);
 
+        /*
         safePrint(res4);
 
         gptMessages.sort(
@@ -185,19 +186,17 @@ class _WritingScreenState extends State<WritingScreen> {
         );
 
         aiTextController.text = gptMessages.map((i) => i.chunk).join('');
+        */
       }
-
-      Future.delayed(const Duration(milliseconds: 500), () async {
-        await _stop(context);
-      });
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
     }
   }
 
-  Stream<GraphQLResponse<GptMessage>> subscribe(String uuid) {
+  Stream<GraphQLResponse<GptMessage>> subscribe(GptSession session) {
     final subscriptionRequest =
         ModelSubscriptions.onCreate(GptMessage.classType);
+
     return Amplify.API
         .subscribe(
       subscriptionRequest,
@@ -217,7 +216,6 @@ class _WritingScreenState extends State<WritingScreen> {
 
   _stop(BuildContext context) async {
     if (timer1!.isActive) timer1?.cancel();
-    if (timer2!.isActive) timer2?.cancel();
     if (stream1 != null) stream1?.cancel();
 
     stopwatch.stop();
