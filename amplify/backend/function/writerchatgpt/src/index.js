@@ -16,9 +16,10 @@ export async function handler(event) {
     messages: [
       {
         role: "system",
-        content: `I want you to act as an hardship letter writer for a medical patient. 
-    The name of the patient is Joe Doe and he was born on 3/3/2023 and he has been treated for DifficultyB at Chicago Christ Hospital at Chicago. 
-    Please express gratitude to the hospital staff.`,
+        content: `As a letter writer, your task to write a [medical|credit card|mortgage] hardship letter to [medical|credit card|mortgage] 
+        institution explaining my hardship to [institution name] at [institution address] using a [friendly|kind|neutral|positive|negative] tone. 
+        The main objective is to explain my situation clearly, and write the letter with a “Subject:” statement at the very top with the body of the letter following the subject. 
+        My name is [my name] and my contact info is [contact info]. [I am writing on behalf of [subject name]].`,
       },
     ],
     stream: true,
@@ -26,11 +27,15 @@ export async function handler(event) {
 
   for await (const part of stream) {
     const uuid = uuidv4();
-    var chunk = part.choices[0].delta.content;
-
-    if (!chunk) continue;
-
-    chunk = chunk.replace(/\n/g, "\\n");
+    const chunk = JSON.stringify(part)
+      .replace(/[\\]/g, "\\\\")
+      .replace(/[\"]/g, '\\"')
+      .replace(/[\/]/g, "\\/")
+      .replace(/[\b]/g, "\\b")
+      .replace(/[\f]/g, "\\f")
+      .replace(/[\n]/g, "\\n")
+      .replace(/[\r]/g, "\\r")
+      .replace(/[\t]/g, "\\t");
 
     const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", gptSessionGptMessagesId: "${gptSessionIdStr}" }) { 
         id

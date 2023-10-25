@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -6,14 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/bloc/app-repository.dart';
+import 'package:simpleiawriter/bloc/app.repository.dart';
 
 import 'package:simpleiawriter/graphql/queries.graphql.dart';
-import 'package:simpleiawriter/helpers/view-helper.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
+import 'package:simpleiawriter/models/chatgtp.types.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step2-screen.dart';
 
-import 'form/textarea-form.dart';
+import 'form/textarea.form.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({super.key});
@@ -30,24 +32,14 @@ class _WritingScreenState extends State<WritingScreen> {
 
   var _isGenerating = false;
   var _cntToken = 0;
-  var _elapsTime = '';
-
-  final stopwatch = Stopwatch();
 
   List<GptMessage> gptMessages = [];
-
-  Timer? timer1;
 
   StreamSubscription<GraphQLResponse<GptMessage>>? stream1;
 
   @override
   void initState() {
     super.initState();
-
-    stopwatch.start();
-    timer1 = Timer.periodic(const Duration(milliseconds: 250), (timer) {
-      _elapsTime = (stopwatch.elapsedMilliseconds / 1000).toStringAsFixed(1);
-    });
 
     setState(() {
       _isGenerating = true;
@@ -58,10 +50,6 @@ class _WritingScreenState extends State<WritingScreen> {
 
   @override
   void dispose() {
-    if (timer1!.isActive) timer1?.cancel();
-
-    stopwatch.reset();
-
     aiTextController.dispose();
     aiScrollController.dispose();
 
@@ -105,7 +93,6 @@ class _WritingScreenState extends State<WritingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(_cntToken.toString()),
-                  Text(_elapsTime.toString()),
                 ]),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,21 +140,29 @@ class _WritingScreenState extends State<WritingScreen> {
 
         final sessionUuid = res3.data!.id;
 
-        stream1 = subscribe(res3.data!).listen(
+        stream1 = appRep.subscribeToChat(session: res3.data!).listen(
           (event) {
             GptMessage? msg = event.data;
             if (msg is GptMessage) {
-              setState(() {
-                aiTextController.text += msg.chunk;
-                _cntToken += 1;
-              });
+              final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
+
+              if (chunk.choices is List) {
+                final choice = chunk.choices?.first;
+
+                setState(() {
+                  aiTextController.text += choice!.message!.content;
+                  _cntToken += 1;
+                });
+
+                if (choice!.finishReason == 'stop') {
+                  _stop(context);
+                }
+
+                _scrollDown(context);
+              }
 
               gptMessages.add(msg);
-
-              _scrollDown(context);
             }
-
-            safePrint('Received: $event');
           },
           onError: (Object e) => safePrint('Error: $e'),
           onDone: () => safePrint('Done'),
@@ -193,32 +188,13 @@ class _WritingScreenState extends State<WritingScreen> {
     }
   }
 
-  Stream<GraphQLResponse<GptMessage>> subscribe(GptSession session) {
-    final subscriptionRequest =
-        ModelSubscriptions.onCreate(GptMessage.classType);
-
-    return Amplify.API
-        .subscribe(
-      subscriptionRequest,
-      onEstablished: () => safePrint('Subscription established'),
-    )
-        .handleError(
-      (Object error) {
-        safePrint('Error in subscription stream: $error');
-      },
-    );
-  }
-
   _scrollDown(BuildContext context) {
     aiScrollController.animateTo(aiScrollController.position.maxScrollExtent,
         duration: const Duration(microseconds: 100), curve: Curves.linear);
   }
 
   _stop(BuildContext context) async {
-    if (timer1!.isActive) timer1?.cancel();
     if (stream1 != null) stream1?.cancel();
-
-    stopwatch.stop();
 
     setState(() {
       _isGenerating = false;

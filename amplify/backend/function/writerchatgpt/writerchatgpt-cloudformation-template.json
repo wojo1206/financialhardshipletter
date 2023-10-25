@@ -287,47 +287,6 @@
         "FunctionVersion": "$LATEST",
         "Name": "live"
       }
-    },
-    "LambdaFunctionAliasSNSTopic": {
-      "Type": "AWS::SNS::Topic",
-      "DependsOn": [
-        "LambdaFunctionAlias"
-      ],
-      "Properties": {
-        "DisplayName": {
-          "Fn::Join": [
-            "-",
-            [
-              "for",
-              "writerchatgpt",
-              {
-                "Ref": "env"
-              }
-            ]
-          ]
-        },
-        "Subscription": [
-          {
-            "Endpoint": {
-              "Ref": "LambdaFunctionAlias"
-            },
-            "Protocol": "lambda"
-          }
-        ]
-      }
-    },
-    "LambdaInvokePermission": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "Principal": "sns.amazonaws.com",
-        "SourceArn": {
-          "Ref": "LambdaFunctionAliasSNSTopic"
-        },
-        "FunctionName": {
-          "Ref": "LambdaFunctionAlias"
-        }
-      }
     }
   },
   "Outputs": {
