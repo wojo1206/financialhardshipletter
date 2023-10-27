@@ -45,12 +45,12 @@
         },
         "writerchatgpt": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-43484d6a59474c436b42-build.zip",
+          "s3Key": "amplify-builds/writerchatgpt-55624c35644e45734f4f-build.zip",
           "secretsPathAmplifyAppId": "d35nmn688a6cyy"
         },
         "initasync": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/initasync-4b7033783967454a4851-build.zip"
+          "s3Key": "amplify-builds/initasync-69325544644b75704b41-build.zip"
         }
       },
       "api": {

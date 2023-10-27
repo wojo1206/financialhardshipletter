@@ -79,10 +79,10 @@ class HttpAppRepository implements AppRepository {
       {required GptSession session}) {
     final subscriptionRequest = ModelSubscriptions.onCreate(
       GptMessage.classType,
-      where: GptMessage.GPTSESSION.eq(session.id),
+      // where: GptMessage.GPTSESSION.eq(session.id),
     );
 
-    return Amplify.API.subscribe(
+    return api.subscribe(
       subscriptionRequest,
       onEstablished: () => safePrint('Subscription established'),
     );

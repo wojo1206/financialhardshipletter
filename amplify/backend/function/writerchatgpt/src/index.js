@@ -11,15 +11,24 @@ export async function handler(event) {
 
   const gptSessionIdStr = event["arguments"]["gptSessionId"];
 
+  const TYPE = "medical"; // [medical|credit card|mortgage]
+  const INSTITUTION_NAME = "Christ Medical Center";
+  const INSTITUTION_ADDRESS = "1234 S Main St, Chicago, IL";
+  const TONE = "friendly"; // [friendly|kind|neutral|positive|negative]
+  const MY_NAME = "Joe Doe";
+  const MY_CONTACT_INFO = "Joe Doe";
+  // [I am writing on behalf of [subject name]].`
+  const LONG_OR_SHORT = "short";
+
   const stream = await openai.chat.completions.create({
     model: "gpt-4",
     messages: [
       {
         role: "system",
-        content: `As a letter writer, your task to write a [medical|credit card|mortgage] hardship letter to [medical|credit card|mortgage] 
-        institution explaining my hardship to [institution name] at [institution address] using a [friendly|kind|neutral|positive|negative] tone. 
-        The main objective is to explain my situation clearly, and write the letter with a “Subject:” statement at the very top with the body of the letter following the subject. 
-        My name is [my name] and my contact info is [contact info]. [I am writing on behalf of [subject name]].`,
+        content: `As a letter writer, your task to write a ${TYPE} hardship letter to ${TYPE} institution explaining my hardship to 
+        ${INSTITUTION_NAME} at ${INSTITUTION_ADDRESS} using a ${TONE} tone. The main objective is to explain my situation clearly, 
+        and write the letter with a “Subject:” statement at the very top with the body of the letter following the subject. 
+        My name is ${MY_NAME} and my contact info is ${MY_CONTACT_INFO}. Keep the letter ${LONG_OR_SHORT}.`,
       },
     ],
     stream: true,

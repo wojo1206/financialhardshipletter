@@ -4,7 +4,14 @@
   "letterTypeMedical": "Medical",
   "letterTypeMortgage": "Mortgage",
   "letterTypeCreditCard": "Credit Card",
-  "letterTypeUnspecified": "Unspecified",
+  "askYourName": "What is your name?",
+  "askYourContact": "What is your contact info?",
+  "askPersonFirst": "I am writing for myself.",
+  "askPersonThird": "I am writing on behalf of other person.",
+  "askForRelation": "What is your relationship ot the ?",
+  "hintPage1": "Select the type of the letter you want to write:",
+  "hintPage2": "Let's get some basics:",
+  "hintPage3": "",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."
 }

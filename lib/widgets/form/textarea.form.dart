@@ -7,6 +7,9 @@ class TextareaForm extends StatelessWidget {
   final FocusNode? focusNode;
   final ScrollController? scrollController;
   final bool readonly;
+  final bool expands;
+  final int? maxLines;
+  final int? minLines;
 
   const TextareaForm(
       {super.key,
@@ -15,7 +18,10 @@ class TextareaForm extends StatelessWidget {
       this.controller,
       this.focusNode,
       this.scrollController,
-      this.readonly = false});
+      this.maxLines,
+      this.minLines,
+      this.readonly = false,
+      this.expands = true});
 
   // This widget is the root of your application.
   @override
@@ -23,16 +29,16 @@ class TextareaForm extends StatelessWidget {
     return TextFormField(
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(8.0),
-        border: InputBorder.none,
+        border: const OutlineInputBorder(),
         hintText: hintText,
         helperText: helperText,
         alignLabelWithHint: true,
       ),
-      expands: true,
+      expands: expands,
       focusNode: focusNode,
       keyboardType: TextInputType.multiline,
-      maxLines: null,
-      minLines: null,
+      maxLines: maxLines,
+      minLines: minLines,
       readOnly: readonly,
       scrollController: scrollController,
       textAlignVertical: TextAlignVertical.top,

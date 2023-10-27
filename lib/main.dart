@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simpleiawriter/bloc/app.cubit.dart';
 import 'package:simpleiawriter/bloc/app.repository.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step1-screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
 
 import 'package:simpleiawriter/widgets/intro.screen.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2-screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
 
 import 'amplifyconfiguration.dart';
 import 'models/ModelProvider.dart';

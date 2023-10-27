@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/istep.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2-screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
 import 'package:simpleiawriter/widgets/writing.screen.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -39,13 +39,15 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Letter - Context',
+        title: Text('New Letter - Type',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
+      body: FormHelper.pageWrapper(
+        context,
+        Column(
           children: [
+            ViewHelper.infoText(
+                context, AppLocalizations.of(context)!.hintPage1),
             Expanded(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,

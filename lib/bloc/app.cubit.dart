@@ -1,8 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AppCubit extends Cubit<int> {
-  AppCubit() : super(0);
+import 'package:simpleiawriter/models/assistant/assistant.dart';
+import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 
-  void increment() => emit(state + 1);
-  void decrement() => emit(state - 1);
+class AppState {
+  Assistant assistant = MedicalAssistant();
+}
+
+class AppCubit extends Cubit<AppState> {
+  AppCubit() : super(AppState());
+
+  // void increment() => emit(state + 1);
+  // void decrement() => emit(state - 1);
 }

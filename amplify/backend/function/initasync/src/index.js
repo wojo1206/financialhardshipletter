@@ -16,7 +16,7 @@ export async function handler(event) {
     Payload: JSON.stringify(event, null, 2),
   });
 
-  client.send(command);
+  await client.send(command);
 
   return {
     statusCode: 200,

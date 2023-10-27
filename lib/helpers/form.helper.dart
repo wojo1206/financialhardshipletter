@@ -11,9 +11,21 @@ class FormHelper {
       HardshipLetterType.mortgage:
           AppLocalizations.of(context)!.letterTypeMortgage,
       HardshipLetterType.creditCard:
-          AppLocalizations.of(context)!.letterTypeCreditCard,
-      HardshipLetterType.unspecified:
-          AppLocalizations.of(context)!.letterTypeUnspecified
+          AppLocalizations.of(context)!.letterTypeCreditCard
     };
+  }
+
+  static Widget pageWrapper(BuildContext context, Widget child) {
+    return SafeArea(
+        child: SingleChildScrollView(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        height: MediaQuery.of(context).size.height -
+            AppBar().preferredSize.height -
+            MediaQuery.of(context).padding.top -
+            MediaQuery.of(context).padding.bottom,
+        child: child,
+      ),
+    ));
   }
 }

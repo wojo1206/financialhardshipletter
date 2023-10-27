@@ -10,10 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/bloc/app.repository.dart';
 
 import 'package:simpleiawriter/graphql/queries.graphql.dart';
+
+import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2-screen.dart';
 
 import 'form/textarea.form.dart';
 
@@ -53,6 +54,8 @@ class _WritingScreenState extends State<WritingScreen> {
     aiTextController.dispose();
     aiScrollController.dispose();
 
+    if (stream1 != null) stream1?.cancel();
+
     super.dispose();
   }
 
@@ -64,9 +67,9 @@ class _WritingScreenState extends State<WritingScreen> {
         title: Text('New Letter - Writing',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
+      body: FormHelper.pageWrapper(
+        context,
+        Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -120,9 +123,12 @@ class _WritingScreenState extends State<WritingScreen> {
       String email = 'wszczurek@tbrelectronics.com';
 
       final appRep = RepositoryProvider.of<AppRepository>(context);
+      final stopwatch = Stopwatch();
+      stopwatch.start();
 
       final res1 = await appRep.usersByEmail(email: email);
       safePrint(res1);
+      safePrint(stopwatch.elapsedMilliseconds / 1000);
 
       User? user;
       if (res1.data!.items.isEmpty) {
@@ -137,31 +143,35 @@ class _WritingScreenState extends State<WritingScreen> {
       if (user != null) {
         final res3 = await appRep.createGptSessionForUser(user: user);
         safePrint(res3);
+        safePrint(stopwatch.elapsedMilliseconds / 1000);
 
         final sessionUuid = res3.data!.id;
 
         stream1 = appRep.subscribeToChat(session: res3.data!).listen(
           (event) {
             GptMessage? msg = event.data;
+
             if (msg is GptMessage) {
+              gptMessages.add(msg);
+
               final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
 
               if (chunk.choices is List) {
                 final choice = chunk.choices?.first;
 
+                aiTextController.text += choice!.message!.content;
+
                 setState(() {
-                  aiTextController.text += choice!.message!.content;
                   _cntToken += 1;
                 });
 
-                if (choice!.finishReason == 'stop') {
+                if (choice.finishReason == 'stop') {
+                  _sortText();
                   _stop(context);
                 }
 
                 _scrollDown(context);
               }
-
-              gptMessages.add(msg);
             }
           },
           onError: (Object e) => safePrint('Error: $e'),
@@ -169,23 +179,25 @@ class _WritingScreenState extends State<WritingScreen> {
         );
 
         appRep.initGptQuery(prompt: "TEST", gptSessionId: sessionUuid);
-
-        /*
-        safePrint(res4);
-
-        gptMessages.sort(
-          (a, b) => a.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch <
-                  b.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch
-              ? -1
-              : 1,
-        );
-
-        aiTextController.text = gptMessages.map((i) => i.chunk).join('');
-        */
       }
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
     }
+  }
+
+  _sortText() {
+    gptMessages.sort(
+      (a, b) => a.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch <
+              b.createdAt!.getDateTimeInUtc().microsecondsSinceEpoch
+          ? -1
+          : 1,
+    );
+
+    aiTextController.text = gptMessages
+        .map((e) => ChatResponseSSE.fromJson(json.decode(e.chunk)))
+        .map((e) => e.choices!.first)
+        .map((e) => e.message!.content)
+        .join('');
   }
 
   _scrollDown(BuildContext context) {

@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/writing.screen.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
 import '../form/textarea.form.dart';
 
-class WriterAssistantStep2 extends StatefulWidget {
-  const WriterAssistantStep2({super.key});
+class WriterAssistantStep4 extends StatefulWidget {
+  const WriterAssistantStep4({super.key});
 
   @override
-  State<WriterAssistantStep2> createState() => _WriterAssistantStep2State();
+  State<WriterAssistantStep4> createState() => _WriterAssistantStep4State();
 }
 
-class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
+class _WriterAssistantStep4State extends State<WriterAssistantStep4> {
   late FocusNode? focusNode;
 
   @override
@@ -32,7 +33,7 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
 
   @override
   void dispose() {
-    focusNode?.dispose();
+    focusNode!.dispose();
 
     super.dispose();
   }
@@ -40,14 +41,26 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    List<Widget> hardshipReasons = [];
+
+    MedicalAssistant().reasons(context).forEach(
+          (e) => hardshipReasons.add(
+            FilterChip(
+              label: Text(e),
+              selected: true,
+              onSelected: (value) => {},
+            ),
+          ),
+        );
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Letter - Details',
+        title: Text('New Letter - Introduction',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
+      body: FormHelper.pageWrapper(
+        context,
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,10 +70,9 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
                 focusNode: focusNode,
               ),
             ),
-            FilterChip(
-              label: const Text('Aaron Burr'),
-              selected: true,
-              onSelected: (value) => {},
+            Wrap(
+              spacing: 8.0,
+              children: hardshipReasons,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

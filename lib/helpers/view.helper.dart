@@ -27,6 +27,18 @@ class ViewHelper {
     );
   }
 
+  static Widget infoText(BuildContext context, String str) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 32.0,
+      ),
+      child: Text(
+        str,
+        style: Theme.of(context).textTheme.bodyLarge,
+      ),
+    );
+  }
+
   static Widget listHorizontal(BuildContext context, List<Widget> children) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
