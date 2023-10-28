@@ -39,6 +39,17 @@ class ViewHelper {
     );
   }
 
+  static Widget colorBox(BuildContext context, String txt) {
+    return Expanded(
+      child: Text(txt,
+          textAlign: TextAlign.center,
+          style: Theme.of(context)
+              .textTheme
+              .headlineMedium!
+              .copyWith(color: Colors.blue)),
+    );
+  }
+
   static Widget listHorizontal(BuildContext context, List<Widget> children) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

@@ -15,17 +15,27 @@ class FormHelper {
     };
   }
 
-  static Widget pageWrapper(BuildContext context, Widget child) {
+  static Widget bodyWrapper(BuildContext context, Widget child) {
     return SafeArea(
-        child: SingleChildScrollView(
-      child: Container(
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          height: MediaQuery.of(context).size.height -
+              AppBar().preferredSize.height -
+              MediaQuery.of(context).padding.top -
+              MediaQuery.of(context).padding.bottom,
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  static Widget pageWrapperNoScroll(BuildContext context, Widget child) {
+    return SafeArea(
+      child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        height: MediaQuery.of(context).size.height -
-            AppBar().preferredSize.height -
-            MediaQuery.of(context).padding.top -
-            MediaQuery.of(context).padding.bottom,
         child: child,
       ),
-    ));
+    );
   }
 }

@@ -1,16 +1,21 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
+
 import 'package:google_fonts/google_fonts.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:simpleiawriter/bloc/app.cubit.dart';
 import 'package:simpleiawriter/bloc/app.repository.dart';
+import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
-
+import 'package:simpleiawriter/widgets/history.screen.dart';
 import 'package:simpleiawriter/widgets/intro.screen.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
+import 'package:simpleiawriter/widgets/settings.screen.dart';
 
 import 'amplifyconfiguration.dart';
 import 'models/ModelProvider.dart';
@@ -79,54 +84,86 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int currentPageIndex = 0;
+  PackageInfo _packageInfo = PackageInfo(
+    appName: '',
+    packageName: '',
+    version: '',
+    buildNumber: '',
+    buildSignature: '',
+    installerStore: '',
+  );
 
   @override
   void initState() {
     super.initState();
+
+    _initPackageInfo();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() {
-              currentPageIndex = index;
-              Navigator.of(context).push(_createRoute());
-            });
+        appBar: AppBar(
+          title: Text('Hardship Letter Assistant',
+              style: Theme.of(context).textTheme.bodyMedium),
+        ),
+        drawer: Drawer(
+          // Add a ListView to the drawer. This ensures the user can scroll
+          // through the options in the drawer if there isn't enough vertical
+          // space to fit everything.
+          child: ListView(
+            // Important: Remove any padding from the ListView.
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                child: Image.asset(
+                  'assets/images/img1-kelly-sikkema.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              ListTile(
+                title: const Text('Account'),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(_createRoute(const AccountScreen()));
+                },
+              ),
+              ListTile(
+                title: const Text('History'),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(_createRoute(const HistoryScreen()));
+                },
+              ),
+              ListTile(
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context)
+                      .push(_createRoute(const SettingsScreen()));
+                },
+              ),
+              ListTile(
+                title: const Text('Version'),
+                onTap: () {},
+                enabled: false,
+                subtitle: Text(_packageInfo.version),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context)
+                .push(_createRoute(const WriterAssistantStep1()));
           },
-          selectedIndex: currentPageIndex,
-          destinations: const <Widget>[
-            NavigationDestination(
-              selectedIcon: Icon(Icons.note_outlined),
-              icon: Icon(Icons.note),
-              label: 'New Letter',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.history_outlined),
-              icon: Icon(Icons.history),
-              label: 'History',
-            ),
-            NavigationDestination(
-              selectedIcon: Icon(Icons.settings_outlined),
-              icon: Icon(Icons.settings),
-              label: 'Settings',
-            ),
-          ],
+          child: const Icon(Icons.add),
         ),
         body: const Column(
           children: [],
         ));
   }
 
-  Route _createRoute() {
-    Widget nextScreen = const IntroScreen();
-    switch (currentPageIndex) {
-      case 0:
-        nextScreen = const WriterAssistantStep1();
-        break;
-    }
+  Route _createRoute(Widget nextScreen) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -144,6 +181,13 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
 }
 
 final MAIN_THEME = ThemeData(
@@ -151,12 +195,7 @@ final MAIN_THEME = ThemeData(
 
   scaffoldBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
 
-  // Define the default brightness and colors.
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.blue,
-    // ···
-    brightness: Brightness.light,
-  ),
+  primarySwatch: Colors.blue,
 
   // Define the default `TextTheme`. Use this to specify the default
   // text styling for headlines, titles, bodies of text, and more.

@@ -54,14 +54,15 @@ class _WriterAssistantStep4State extends State<WriterAssistantStep4> {
         );
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('New Letter - Introduction',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.pageWrapper(
+      body: FormHelper.bodyWrapper(
         context,
         Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(

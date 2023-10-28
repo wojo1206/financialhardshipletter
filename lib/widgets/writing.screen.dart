@@ -67,12 +67,14 @@ class _WritingScreenState extends State<WritingScreen> {
         title: Text('New Letter - Writing',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.pageWrapper(
+      body: FormHelper.bodyWrapper(
         context,
         Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            ViewHelper.infoText(
+                context, AppLocalizations.of(context)!.hintPage4),
             Expanded(
               child: Scrollbar(
                 controller: aiScrollController,
@@ -83,14 +85,6 @@ class _WritingScreenState extends State<WritingScreen> {
                 ),
               ),
             ),
-            const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text(
-                'This screen is read only.You will be able to adjust\nthe text or share in next screens.',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-              ),
-            ]),
             Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,

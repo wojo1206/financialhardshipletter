@@ -12,6 +12,7 @@
   "hintPage1": "Select the type of the letter you want to write:",
   "hintPage2": "Let's get some basics:",
   "hintPage3": "",
+  "hintPage4": "This screen is read only.You will be able to adjust\nthe text or share in next screens.",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."
 }

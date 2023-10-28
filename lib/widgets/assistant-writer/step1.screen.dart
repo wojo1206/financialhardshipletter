@@ -37,12 +37,16 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
           ),
         );
 
+    // FormHelper.letterOptions(context).values.forEach(
+    //       (e) => letterTypes.add(ViewHelper.colorBox(context, e)),
+    //     );
+
     return Scaffold(
       appBar: AppBar(
         title: Text('New Letter - Type',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.pageWrapper(
+      body: FormHelper.bodyWrapper(
         context,
         Column(
           children: [

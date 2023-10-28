@@ -41,7 +41,7 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
         title: Text('New Letter - Introduction',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.pageWrapper(
+      body: FormHelper.bodyWrapper(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
