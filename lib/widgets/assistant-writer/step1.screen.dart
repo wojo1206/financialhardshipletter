@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/istep.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
-import 'package:simpleiawriter/widgets/writing.screen.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,24 +19,31 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
   Widget build(BuildContext context) {
     List<Widget> letterTypes = [];
 
-    FormHelper.letterOptions(context).values.forEach(
-          (e) => letterTypes.add(
-            ElevatedButton(
-              child: Text(
-                e,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const WriterAssistantStep2()),
-              ),
-            ),
-          ),
-        );
-
     // FormHelper.letterOptions(context).values.forEach(
-    //       (e) => letterTypes.add(ViewHelper.colorBox(context, e)),
+    //       (e) => letterTypes.add(
+    //         ElevatedButton(
+    //           child: Text(
+    //             e,
+    //             style: Theme.of(context).textTheme.bodyLarge,
+    //           ),
+    //           onPressed: () => Navigator.of(context).push(
+    //             MaterialPageRoute(
+    //                 builder: (context) => const WriterAssistantStep2()),
+    //           ),
+    //         ),
+    //       ),
     //     );
+
+    FormHelper.letterOptions(context).values.forEach(
+          (e) => letterTypes.add(Expanded(
+              child: ViewHelper.shadowBox(
+            context,
+            Text(
+              e,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ))),
+        );
 
     return Scaffold(
       appBar: AppBar(

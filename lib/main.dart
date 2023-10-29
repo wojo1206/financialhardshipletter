@@ -1,6 +1,7 @@
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,8 +12,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/bloc/app.cubit.dart';
 import 'package:simpleiawriter/bloc/app.repository.dart';
+import 'package:simpleiawriter/bloc/auth.repository.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
+import 'package:simpleiawriter/widgets/auth/login.screen.dart';
 import 'package:simpleiawriter/widgets/history.screen.dart';
 import 'package:simpleiawriter/widgets/intro.screen.dart';
 import 'package:simpleiawriter/widgets/settings.screen.dart';
@@ -25,7 +28,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final api = AmplifyAPI(modelProvider: ModelProvider.instance);
+  final auth = AmplifyAuthCognito();
+
   await Amplify.addPlugin(api);
+  await Amplify.addPlugin(auth);
 
   try {
     await Amplify.configure(amplifyconfig);
@@ -34,28 +40,37 @@ void main() async {
   }
 
   runApp(App(
-    appRepository: HttpAppRepository(api: api),
+    apiRepository: AmplifyAppRepository(api: api),
+    authRepository: AmplifyAuthRepository(auth: auth),
   ));
 }
 
 class App extends StatelessWidget {
-  const App({Key? key, required HttpAppRepository appRepository})
-      : _appRepository = appRepository,
+  const App(
+      {Key? key,
+      required AmplifyAppRepository apiRepository,
+      required AmplifyAuthRepository authRepository})
+      : _appRepository = apiRepository,
+        _authRepository = authRepository,
         super(key: key);
 
   final AppRepository _appRepository;
+  final AuthRepository _authRepository;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _appRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AppRepository>(create: (context) => _appRepository),
+        RepositoryProvider<AuthRepository>(
+            create: (context) => _authRepository),
+      ],
       child: BlocProvider(
-        create: (_) => AppCubit(),
+        create: (_) => AppBloc(),
         child: MaterialApp(
-          title: 'Flutter Demo',
           theme: MAIN_THEME,
-          home: const HomeScreen(title: 'Flutter Demo Home Page'),
+          home: const HomeScreen(),
           routes: {
             '/intro': (context) => const IntroScreen(),
           },
@@ -75,9 +90,7 @@ class App extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.title});
-
-  final String title;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -143,6 +156,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               ListTile(
+                title: const Text('Sign Out'),
+                onTap: () async {
+                  final appRep = RepositoryProvider.of<AuthRepository>(context);
+                  await appRep.signOut();
+
+                  Navigator.of(context)
+                      .push(_createRoute(const SettingsScreen()));
+                },
+              ),
+              ListTile(
                 title: const Text('Version'),
                 onTap: () {},
                 enabled: false,
@@ -151,13 +174,24 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context)
-                .push(_createRoute(const WriterAssistantStep1()));
-          },
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton:
+            Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+          FloatingActionButton(
+            heroTag: "btn1",
+            onPressed: () {
+              Navigator.of(context)
+                  .push(_createRoute(const WriterAssistantStep1()));
+            },
+            child: const Icon(Icons.add),
+          ),
+          FloatingActionButton(
+            heroTag: "btn2",
+            onPressed: () {
+              Navigator.of(context).push(_createRoute(const LoginScreen()));
+            },
+            child: const Icon(Icons.account_box),
+          )
+        ]),
         body: const Column(
           children: [],
         ));

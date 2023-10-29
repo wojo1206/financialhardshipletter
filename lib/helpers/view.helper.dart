@@ -50,6 +50,27 @@ class ViewHelper {
     );
   }
 
+  static Widget shadowBox(BuildContext context, Widget child) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 10,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
   static Widget listHorizontal(BuildContext context, List<Widget> children) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

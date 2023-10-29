@@ -1,4 +1,5 @@
 import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 import 'package:simpleiawriter/graphql/queries.graphql.dart';
@@ -21,8 +22,8 @@ abstract class AppRepository {
       {required GptSession session});
 }
 
-class HttpAppRepository implements AppRepository {
-  HttpAppRepository({required this.api});
+class AmplifyAppRepository implements AppRepository {
+  AmplifyAppRepository({required this.api});
 
   final AmplifyAPI api;
 

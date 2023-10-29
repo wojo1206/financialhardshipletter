@@ -172,7 +172,7 @@ class _WritingScreenState extends State<WritingScreen> {
           onDone: () => safePrint('Done'),
         );
 
-        appRep.initGptQuery(prompt: "TEST", gptSessionId: sessionUuid);
+        appRep.initGptQuery(prompt: "", gptSessionId: sessionUuid);
       }
     } on ApiException catch (e) {
       safePrint('ERROR: $e');
