@@ -35,19 +35,32 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
     //     );
 
     FormHelper.letterOptions(context).values.forEach(
-          (e) => letterTypes.add(Expanded(
-              child: ViewHelper.shadowBox(
-            context,
-            Text(
-              e,
-              style: Theme.of(context).textTheme.bodyLarge,
+          (e) => letterTypes.add(
+            Expanded(
+              child: Row(
+                children: [
+                  Radio<String?>(
+                      value: null,
+                      groupValue: null,
+                      onChanged: (String? value) {}),
+                  Expanded(
+                    child: ViewHelper.boxFlat(
+                      context,
+                      Text(
+                        e,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ))),
+          ),
         );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('New Letter - Type',
+        title: Text('Assistant - Type',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: FormHelper.bodyWrapper(

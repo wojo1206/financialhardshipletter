@@ -1,8 +1,8 @@
 import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,9 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:simpleiawriter/bloc/app.block.dart';
-import 'package:simpleiawriter/bloc/app.repository.dart';
+import 'package:simpleiawriter/bloc/app.bloc.dart';
+import 'package:simpleiawriter/bloc/api.repository.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
+import 'package:simpleiawriter/bloc/datastore.repository.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
 import 'package:simpleiawriter/widgets/auth/login.screen.dart';
@@ -30,11 +31,9 @@ void main() async {
 
   final api = AmplifyAPI(modelProvider: ModelProvider.instance);
   final auth = AmplifyAuthCognito();
-  final datastore = AmplifyDataStore(modelProvider: ModelProvider.instance);
+  final dataStore = AmplifyDataStore(modelProvider: ModelProvider.instance);
 
-  await Amplify.addPlugin(datastore);
-  await Amplify.addPlugin(api);
-  await Amplify.addPlugin(auth);
+  await Amplify.addPlugins([auth, dataStore, api]);
 
   try {
     await Amplify.configure(amplifyconfig);
@@ -45,6 +44,7 @@ void main() async {
   runApp(App(
     apiRepository: AmplifyAppRepository(api: api),
     authRepository: AmplifyAuthRepository(auth: auth),
+    dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
   ));
 }
 
@@ -52,22 +52,27 @@ class App extends StatelessWidget {
   const App(
       {Key? key,
       required AmplifyAppRepository apiRepository,
-      required AmplifyAuthRepository authRepository})
+      required AmplifyAuthRepository authRepository,
+      required AmplifyDataStoreRepository dataStoreRepository})
       : _appRepository = apiRepository,
         _authRepository = authRepository,
+        _dataStoreRepository = dataStoreRepository,
         super(key: key);
 
-  final AppRepository _appRepository;
+  final ApiRepository _appRepository;
   final AuthRepository _authRepository;
+  final DataStoreRepository _dataStoreRepository;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<AppRepository>(create: (context) => _appRepository),
+        RepositoryProvider<ApiRepository>(create: (context) => _appRepository),
         RepositoryProvider<AuthRepository>(
             create: (context) => _authRepository),
+        RepositoryProvider<DataStoreRepository>(
+            create: (context) => _dataStoreRepository),
       ],
       child: BlocProvider(
         create: (_) => AppBloc(),
@@ -114,6 +119,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _initPackageInfo();
+  }
+
+  @override
+  void dispose() {
+    safePrint("DISPOSED");
+
+    super.dispose();
   }
 
   @override

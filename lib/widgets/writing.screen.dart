@@ -7,9 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/bloc/app.repository.dart';
-
-import 'package:simpleiawriter/graphql/queries.graphql.dart';
+import 'package:simpleiawriter/bloc/api.repository.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
@@ -92,20 +90,21 @@ class _WritingScreenState extends State<WritingScreen> {
                   Text(_cntToken.toString()),
                 ]),
             Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextButton.icon(
-                    icon: const Icon(Icons.stop),
-                    label: const Text("Stop"),
-                    onPressed: _isGenerating ? () => _stop(context) : null,
-                  ),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.chevron_right),
-                    label: const Text("Fill the blanks"),
-                    onPressed: () => _fillTheBlanks(context),
-                  ),
-                ])
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.stop),
+                  label: const Text("Stop"),
+                  onPressed: _isGenerating ? () => _stop(context) : null,
+                ),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.chevron_right),
+                  label: const Text("Fill the blanks"),
+                  onPressed: () => _fillTheBlanks(context),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -116,7 +115,7 @@ class _WritingScreenState extends State<WritingScreen> {
     try {
       String email = 'wszczurek@tbrelectronics.com';
 
-      final appRep = RepositoryProvider.of<AppRepository>(context);
+      final appRep = RepositoryProvider.of<ApiRepository>(context);
       final stopwatch = Stopwatch();
       stopwatch.start();
 

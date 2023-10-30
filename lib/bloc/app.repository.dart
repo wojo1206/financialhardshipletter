@@ -6,7 +6,7 @@ import 'package:simpleiawriter/graphql/queries.graphql.dart';
 import 'package:simpleiawriter/graphql/mutations.graphql.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
-abstract class AppRepository {
+abstract class ApiRepository {
   Future<GraphQLResponse<User>> createUser({required String email});
 
   Future<GraphQLResponse<String>> initGptQuery(
@@ -22,7 +22,7 @@ abstract class AppRepository {
       {required GptSession session});
 }
 
-class AmplifyAppRepository implements AppRepository {
+class AmplifyAppRepository implements ApiRepository {
   AmplifyAppRepository({required this.api});
 
   final AmplifyAPI api;

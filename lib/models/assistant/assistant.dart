@@ -1,24 +1,28 @@
 import 'package:flutter/widgets.dart';
 
-enum PERSON { FIRST, THIRD }
+enum PERSON { first, third }
 
 class Subject {
   String name = '';
   String address = '';
   String contactInfo = '';
-  PERSON person = PERSON.FIRST;
+  PERSON person = PERSON.first;
 }
 
 abstract class Assistant {
-  String base = '';
-
-  Subject subject = Subject();
+  late BuildContext context;
+  late List<Color> colors;
+  late String label;
 
   List<String> tones(BuildContext context) {
     return ["friendly", "kind", "neutral", "positive"];
   }
 
-  List<String> reasons(BuildContext context);
+  List<String> reasons();
 
-  List<String> outcomes(BuildContext context);
+  List<String> outcomes();
+
+  Assistant(BuildContext context) {
+    context = context;
+  }
 }

@@ -21,7 +21,7 @@ class WriterAssistantStep2 extends StatefulWidget {
 }
 
 class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
-  late PERSON? _character = PERSON.FIRST;
+  late PERSON? _character = PERSON.first;
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
                 children: [
                   RadioListTile<PERSON>(
                     title: Text(AppLocalizations.of(context)!.askPersonFirst),
-                    value: PERSON.FIRST,
+                    value: PERSON.first,
                     groupValue: _character,
                     onChanged: (PERSON? value) {
                       setState(() {
@@ -64,7 +64,7 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
                   ),
                   RadioListTile<PERSON>(
                     title: Text(AppLocalizations.of(context)!.askPersonThird),
-                    value: PERSON.THIRD,
+                    value: PERSON.third,
                     groupValue: _character,
                     onChanged: (PERSON? value) {
                       setState(() {

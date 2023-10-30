@@ -16,22 +16,23 @@ class IntroScreen extends StatelessWidget {
                 fit: BoxFit.cover),
           ),
           Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('Welcome',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const Text(
-                    'This app will guide you through the process of writing a hardship letter with a help from artificial intelligence. User friendly process with autocomplete features and high quality results is what distinguish this app from others.',
-                    textAlign: TextAlign.center,
-                  ),
-                  ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Let\'s Start')),
-                ]),
-          )),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Welcome',
+                        style: Theme.of(context).textTheme.titleLarge),
+                    const Text(
+                      'This app will guide you through the process of writing a hardship letter with a help from artificial intelligence. User friendly process with autocomplete features and high quality results is what distinguish this app from others.',
+                      textAlign: TextAlign.center,
+                    ),
+                    ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Let\'s Start')),
+                  ]),
+            ),
+          ),
         ],
       ),
     );

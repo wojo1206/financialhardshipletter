@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:simpleiawriter/bloc/api.repository.dart';
+import 'package:simpleiawriter/bloc/app.bloc.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
+import 'package:simpleiawriter/bloc/datastore.repository.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/widgets/form/textarea.form.dart';
 
@@ -122,13 +125,38 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _socialSignIn(AuthProvider provider) async {
-    final authRep = RepositoryProvider.of<AuthRepository>(context);
+    try {
+      final authRep = RepositoryProvider.of<AuthRepository>(context);
+      final apiRep = RepositoryProvider.of<ApiRepository>(context);
+      // final dataRep = RepositoryProvider.of<DataStoreRepository>(context);
 
-    final res1 = await authRep.signInWithWebUI(provider: provider);
-    safePrint(res1);
+      final res1 = await authRep.signInWithWebUI(provider: provider);
+      safePrint(res1);
 
-    final res2 = await authRep.fetchCurrentUserAttributes();
-    safePrint(res2);
+      final res2 = await authRep.fetchCurrentUserAttributes();
+      safePrint(res2);
+
+      if (res2!.isEmpty) throw Exception("Empty auth user attributes.");
+
+      var attr1 =
+          res2.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
+
+      if (attr1 == null) throw Exception("Email attribute non exists.");
+
+      final res3 = await apiRep.usersByEmail(email: attr1.value);
+      safePrint(res3);
+
+      if (res3.data!.items.isEmpty) {
+        final res4 = await apiRep.createUser(email: attr1.value);
+        safePrint(res4);
+      } else {
+        throw Exception("User not created.");
+      }
+
+      BlocProvider.of<AppBloc>(context).add(UserLogIn(res2));
+    } on Exception catch (e) {
+      safePrint(e.toString());
+    }
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {
