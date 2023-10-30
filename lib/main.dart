@@ -1,4 +1,5 @@
 import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:simpleiawriter/bloc/app.cubit.dart';
+import 'package:simpleiawriter/bloc/app.block.dart';
 import 'package:simpleiawriter/bloc/app.repository.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
@@ -29,7 +30,9 @@ void main() async {
 
   final api = AmplifyAPI(modelProvider: ModelProvider.instance);
   final auth = AmplifyAuthCognito();
+  final datastore = AmplifyDataStore(modelProvider: ModelProvider.instance);
 
+  await Amplify.addPlugin(datastore);
   await Amplify.addPlugin(api);
   await Amplify.addPlugin(auth);
 

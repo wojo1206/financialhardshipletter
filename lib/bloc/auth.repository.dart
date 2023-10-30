@@ -13,7 +13,7 @@ abstract class AuthRepository {
 
   Future<AuthUser> getCurrentUser();
 
-  Future<SignInResult?> signInWithWebUI();
+  Future<SignInResult?> signInWithWebUI({required AuthProvider provider});
 
   Future<CognitoSignInResult?> signIn(
       {required String username, required String password});
@@ -54,14 +54,15 @@ class AmplifyAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<SignInResult?> signInWithWebUI() async {
+  Future<SignInResult?> signInWithWebUI(
+      {required AuthProvider provider}) async {
     try {
       const pluginOptions = CognitoSignInWithWebUIPluginOptions(
         isPreferPrivateSession: true,
       );
 
       return await auth.signInWithWebUI(
-        provider: AuthProvider.google,
+        provider: provider,
         options: const SignInWithWebUIOptions(pluginOptions: pluginOptions),
       );
     } on AuthException catch (e) {

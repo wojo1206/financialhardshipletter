@@ -74,25 +74,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           TextButton(
                             onPressed: () {},
-                            child: Text('Forget Password?'),
+                            child: const Text('Forget Password?'),
                           ),
                         ],
                       ),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            _socialSignIn();
-                          },
+                          onPressed: () {},
                           child: const Text('Sign In'),
                         ),
                       ),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            _socialSignIn();
-                          },
+                          onPressed: () {},
                           child: const Text('Sign Up'),
                         ),
                       ),
@@ -104,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            _socialSignIn();
+                            _socialSignIn(AuthProvider.google);
                           },
                           child: const Text('Sign In with Google'),
                         ),
@@ -112,7 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _socialSignIn(AuthProvider.facebook);
+                          },
                           child: const Text('Sign In with Facebook'),
                         ),
                       ),
@@ -123,10 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _socialSignIn() async {
+  Future<void> _socialSignIn(AuthProvider provider) async {
     final authRep = RepositoryProvider.of<AuthRepository>(context);
 
-    final res1 = await authRep.signInWithWebUI();
+    final res1 = await authRep.signInWithWebUI(provider: provider);
     safePrint(res1);
 
     final res2 = await authRep.fetchCurrentUserAttributes();

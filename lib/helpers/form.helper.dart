@@ -19,7 +19,7 @@ class FormHelper {
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           height: MediaQuery.of(context).size.height -
               AppBar().preferredSize.height -
               MediaQuery.of(context).padding.top -
@@ -33,7 +33,7 @@ class FormHelper {
   static Widget pageWrapperNoScroll(BuildContext context, Widget child) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: child,
       ),
     );
