@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
         title:
             Text('Auth - Login', style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.bodyWrapper(
+      body: FormHelper.wrapperBody(
           context,
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

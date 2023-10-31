@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:simpleiawriter/constants.dart';
+import 'package:simpleiawriter/models/assistant/assistant.dart';
+import 'package:simpleiawriter/models/assistant/credit-card.assistant.dart';
+import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
+import 'package:simpleiawriter/models/assistant/mortgage.assistant.dart';
 
 class FormHelper {
-  static Map<Enum, String> letterOptions(BuildContext context) {
-    return {
-      HardshipLetterType.medical:
-          AppLocalizations.of(context)!.letterTypeMedical,
-      HardshipLetterType.mortgage:
-          AppLocalizations.of(context)!.letterTypeMortgage,
-      HardshipLetterType.creditCard:
-          AppLocalizations.of(context)!.letterTypeCreditCard
-    };
+  static List<Assistant>? assistants;
+
+  static List<Assistant>? getAssistants() {
+    if (assistants != null) {
+      return assistants;
+    }
+
+    assistants = [
+      MedicalAssistant(),
+      CreditCardAssistant(),
+      MortgageAssistant(),
+    ];
+
+    return assistants;
   }
 
-  static Widget bodyWrapper(BuildContext context, Widget child) {
+  static Widget wrapperBody(BuildContext context, Widget child) {
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -30,7 +37,7 @@ class FormHelper {
     );
   }
 
-  static Widget pageWrapperNoScroll(BuildContext context, Widget child) {
+  static Widget wrapperBodyNoScroll(BuildContext context, Widget child) {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),

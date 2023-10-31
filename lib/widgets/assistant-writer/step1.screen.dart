@@ -1,8 +1,11 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/constants.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,56 +17,48 @@ class WriterAssistantStep1 extends StatefulWidget {
 }
 
 class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
+  HardshipLetterType? _letterType = HardshipLetterType.medical;
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     List<Widget> letterTypes = [];
 
-    // FormHelper.letterOptions(context).values.forEach(
-    //       (e) => letterTypes.add(
-    //         ElevatedButton(
-    //           child: Text(
-    //             e,
-    //             style: Theme.of(context).textTheme.bodyLarge,
-    //           ),
-    //           onPressed: () => Navigator.of(context).push(
-    //             MaterialPageRoute(
-    //                 builder: (context) => const WriterAssistantStep2()),
-    //           ),
-    //         ),
-    //       ),
-    //     );
+    FormHelper.getAssistants()?.forEach((e) {
+      var icon = e.icon;
 
-    FormHelper.letterOptions(context).values.forEach(
-          (e) => letterTypes.add(
-            Expanded(
-              child: Row(
-                children: [
-                  Radio<String?>(
-                      value: null,
-                      groupValue: null,
-                      onChanged: (String? value) {}),
-                  Expanded(
-                    child: ViewHelper.boxFlat(
-                      context,
-                      Text(
-                        e,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ),
-                  ),
-                ],
+      letterTypes.add(
+        Expanded(
+          child: Row(
+            children: [
+              Radio<HardshipLetterType>(
+                  value: e.letterType,
+                  groupValue: _letterType,
+                  onChanged: (HardshipLetterType? value) {
+                    setState(() {
+                      _letterType = value;
+                    });
+                  }),
+              Expanded(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [icon, Text(e.getLabel(context))]),
               ),
-            ),
+            ],
           ),
-        );
+        ),
+      );
+    });
+
+    safePrint("REPAINT");
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('Assistant - Type',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.bodyWrapper(
+      body: FormHelper.wrapperBody(
         context,
         Column(
           children: [
@@ -75,16 +70,26 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: letterTypes),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  icon: const Icon(Icons.help),
-                  label: Text(AppLocalizations.of(context)!.help),
-                  onPressed: () => _showHelp(context),
-                )
-              ],
+          ],
+        ),
+      ),
+      bottomSheet: SafeArea(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextButton.icon(
+              icon: const Icon(Icons.help),
+              label: Text(AppLocalizations.of(context)!.help),
+              onPressed: () => _showHelp(context),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.chevron_right),
+              label: Text(AppLocalizations.of(context)!.next),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => const WriterAssistantStep2()),
+              ),
             ),
           ],
         ),

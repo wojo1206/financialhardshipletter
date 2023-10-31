@@ -65,7 +65,7 @@ class _WritingScreenState extends State<WritingScreen> {
         title: Text('New Letter - Writing',
             style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.bodyWrapper(
+      body: FormHelper.wrapperBody(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.start,

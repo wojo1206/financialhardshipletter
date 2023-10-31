@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:simpleiawriter/constants.dart';
 
 enum PERSON { first, third }
 
@@ -10,19 +11,17 @@ class Subject {
 }
 
 abstract class Assistant {
-  late BuildContext context;
-  late List<Color> colors;
-  late String label;
+  late Gradient gradient;
+  late Icon icon;
+  late HardshipLetterType letterType;
+
+  String getLabel(BuildContext context);
+
+  List<String> reasons(BuildContext context);
+
+  List<String> outcomes(BuildContext context);
 
   List<String> tones(BuildContext context) {
     return ["friendly", "kind", "neutral", "positive"];
-  }
-
-  List<String> reasons();
-
-  List<String> outcomes();
-
-  Assistant(BuildContext context) {
-    context = context;
   }
 }

@@ -3,33 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
-class MedicalAssistant extends Assistant {
+class CreditCardAssistant extends Assistant {
   @override
-  Icon get icon => const Icon(Icons.medical_services);
+  Icon get icon => const Icon(Icons.credit_card);
 
   @override
   Gradient get gradient => const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment(0.8, 1),
-        colors: <Color>[
-          Color(0xff1f005c),
-          Color(0xff5b0060),
-          Color(0xff870160),
-          Color(0xffac255e),
-          Color(0xffca485c),
-          Color(0xffe16b5c),
-          Color(0xfff39060),
-          Color(0xffffb56b),
-        ], // Gradient from https://learnui.design/tools/gradient-generator.html
-        tileMode: TileMode.mirror,
-      );
+      stops: [0, 0.46, 1],
+      begin: Alignment.bottomCenter,
+      end: Alignment.topCenter,
+      colors: [Color(0xFF23408E), Color(0xFF385399), Color(0xFF3A4CB4)]);
 
   @override
-  HardshipLetterType get letterType => HardshipLetterType.medical;
+  HardshipLetterType get letterType => HardshipLetterType.creditCard;
 
   @override
   String getLabel(BuildContext context) {
-    return AppLocalizations.of(context!)!.letterTypeMedical;
+    return AppLocalizations.of(context!)!.letterTypeCreditCard;
   }
 
   @override

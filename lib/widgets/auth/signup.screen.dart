@@ -14,7 +14,7 @@ class SignupScreen extends StatelessWidget {
         title:
             Text('Auth Sign Up', style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.bodyWrapper(
+      body: FormHelper.wrapperBody(
           context,
           const Column(
             mainAxisAlignment: MainAxisAlignment.start,

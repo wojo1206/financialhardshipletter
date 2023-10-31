@@ -71,29 +71,27 @@ class ViewHelper {
     );
   }
 
-  static Widget boxFlat(BuildContext context, Widget child) {
+  static Widget boxFlat(BuildContext context, Widget child, Gradient gradient) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment(0.8, 1),
-          colors: <Color>[
-            Color(0xff1f005c),
-            Color(0xff5b0060),
-            Color(0xff870160),
-            Color(0xffac255e),
-            Color(0xffca485c),
-            Color(0xffe16b5c),
-            Color(0xfff39060),
-            Color(0xffffb56b),
-          ], // Gradient from https://learnui.design/tools/gradient-generator.html
-          tileMode: TileMode.mirror,
-        ),
+        gradient: gradient,
+      ),
+      child: child,
+    );
+  }
+
+  static Widget boxFlatIconized(BuildContext context, Widget child) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      width: double.infinity,
+      height: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(width: 1.0, color: const Color(0xFFCCCCCC)),
       ),
       child: child,
     );
