@@ -5,7 +5,10 @@ import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 class MortgageAssistant extends Assistant {
   @override
-  Icon get icon => const Icon(Icons.house);
+  Icon get icon => const Icon(
+        Icons.house,
+        size: 96.0,
+      );
 
   @override
   Gradient get gradient => const LinearGradient(
@@ -30,11 +33,11 @@ class MortgageAssistant extends Assistant {
   @override
   List<String> reasons(BuildContext context) {
     return [
-      'severe injury',
-      'severe illness',
       'death of a family member',
       'layoff',
-      'loss of insurance'
+      'loss of insurance',
+      'severe illness',
+      'severe injury',
     ];
   }
 }

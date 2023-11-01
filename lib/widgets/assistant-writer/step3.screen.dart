@@ -1,13 +1,9 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
-import 'package:simpleiawriter/helpers/form.helper.dart';
-import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step4.screen.dart';
-import 'package:simpleiawriter/widgets/writing.screen.dart';
-
-import 'package:url_launcher/url_launcher.dart';
+import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
 import '../form/textarea.form.dart';
 
@@ -57,74 +53,27 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           ),
         );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('New Letter - Introduction',
-            style: Theme.of(context).textTheme.bodyMedium),
-      ),
-      body: FormHelper.wrapperBody(
-        context,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ViewHelper.infoText(
-                context, AppLocalizations.of(context)!.hintPage2),
-            Expanded(
-              child: Column(
-                children: [
-                  TextareaForm(
-                    hintText: AppLocalizations.of(context)!.askYourName,
-                    helperText: AppLocalizations.of(context)!.askYourName,
-                    expands: false,
-                    maxLines: 1,
-                    focusNode: focusNodeForName,
-                  ),
-                  TextareaForm(
-                    hintText: AppLocalizations.of(context)!.askYourContact,
-                    helperText: AppLocalizations.of(context)!.askYourContact,
-                    expands: false,
-                    maxLines: 1,
-                    focusNode: focusNodeForContact,
-                  ),
-                ],
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  icon: const Icon(Icons.help),
-                  label: Text(AppLocalizations.of(context)!.help),
-                  onPressed: () => _showHelp(context),
-                ),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.chevron_right),
-                  label: Text(AppLocalizations.of(context)!.next),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const WriterAssistantStep4()),
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return AssistantLayout(
+      title: 'Assistant - Question',
+      helpText: AppLocalizations.of(context)!.hintPage3,
+      screenNext: const WriterAssistantStep4(),
+      helpUrl: '',
+      children: [
+        TextareaForm(
+          hintText: AppLocalizations.of(context)!.askYourName,
+          helperText: AppLocalizations.of(context)!.askYourName,
+          expands: false,
+          maxLines: 1,
+          focusNode: focusNodeForName,
         ),
-      ),
+        TextareaForm(
+          hintText: AppLocalizations.of(context)!.askYourContact,
+          helperText: AppLocalizations.of(context)!.askYourContact,
+          expands: false,
+          maxLines: 1,
+          focusNode: focusNodeForContact,
+        ),
+      ],
     );
-  }
-
-  _showHelp(BuildContext context) async {
-    if (!await launchUrl(
-        Uri.https(
-          'tocojest.com',
-          '/en/my-apps/recipe-polisher-app/recipe-polisher-privacy-policy',
-        ),
-        mode: LaunchMode.inAppWebView)) {
-      throw Exception('Could not launch');
-    }
-
-    // ViewHelper.helpSheet(context, "HELP");
   }
 }

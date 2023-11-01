@@ -1,13 +1,11 @@
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/constants.dart';
 
+import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
-
-import 'package:url_launcher/url_launcher.dart';
+import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
 class WriterAssistantStep1 extends StatefulWidget {
   const WriterAssistantStep1({super.key});
@@ -29,82 +27,43 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
 
       letterTypes.add(
         Expanded(
-          child: Row(
-            children: [
-              Radio<HardshipLetterType>(
-                  value: e.letterType,
-                  groupValue: _letterType,
-                  onChanged: (HardshipLetterType? value) {
-                    setState(() {
-                      _letterType = value;
-                    });
-                  }),
-              Expanded(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [icon, Text(e.getLabel(context))]),
-              ),
-            ],
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _letterType = e.letterType;
+              });
+            },
+            child: ViewHelper.boxFlatIconized(
+                context,
+                Row(
+                  children: [
+                    Radio<HardshipLetterType>(
+                        value: e.letterType,
+                        groupValue: _letterType,
+                        onChanged: (HardshipLetterType? value) {
+                          setState(() {
+                            _letterType = value;
+                          });
+                        }),
+                    Expanded(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [icon, Text(e.getLabel(context))]),
+                    ),
+                  ],
+                ),
+                e.icon),
           ),
         ),
       );
     });
 
-    safePrint("REPAINT");
-
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text('Assistant - Type',
-            style: Theme.of(context).textTheme.bodyMedium),
-      ),
-      body: FormHelper.wrapperBody(
-        context,
-        Column(
-          children: [
-            ViewHelper.infoText(
-                context, AppLocalizations.of(context)!.hintPage1),
-            Expanded(
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: letterTypes),
-            ),
-          ],
-        ),
-      ),
-      bottomSheet: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TextButton.icon(
-              icon: const Icon(Icons.help),
-              label: Text(AppLocalizations.of(context)!.help),
-              onPressed: () => _showHelp(context),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.chevron_right),
-              label: Text(AppLocalizations.of(context)!.next),
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const WriterAssistantStep2()),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return AssistantLayout(
+      title: 'Assistant - Type',
+      helpText: AppLocalizations.of(context)!.hintPage1,
+      screenNext: const WriterAssistantStep2(),
+      helpUrl: '',
+      children: letterTypes,
     );
-  }
-
-  _showHelp(BuildContext context) async {
-    if (!await launchUrl(
-        Uri.https(
-          'tocojest.com',
-          '/en/my-apps/recipe-polisher-app/recipe-polisher-privacy-policy',
-        ),
-        mode: LaunchMode.inAppWebView)) {
-      throw Exception('Could not launch');
-    }
   }
 }

@@ -5,7 +5,10 @@ import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 class CreditCardAssistant extends Assistant {
   @override
-  Icon get icon => const Icon(Icons.credit_card);
+  Icon get icon => const Icon(
+        Icons.credit_card,
+        size: 96.0,
+      );
 
   @override
   Gradient get gradient => const LinearGradient(
@@ -19,7 +22,7 @@ class CreditCardAssistant extends Assistant {
 
   @override
   String getLabel(BuildContext context) {
-    return AppLocalizations.of(context!)!.letterTypeCreditCard;
+    return AppLocalizations.of(context)!.letterTypeCreditCard;
   }
 
   @override
@@ -30,11 +33,15 @@ class CreditCardAssistant extends Assistant {
   @override
   List<String> reasons(BuildContext context) {
     return [
-      'severe injury',
-      'severe illness',
       'death of a family member',
-      'layoff',
-      'loss of insurance'
+      'divorce',
+      'job loss',
+      'loss of insurance',
+      'medical expenses',
+      'natural disaster',
+      'severe illness',
+      'severe injury',
+      'unexpected bills',
     ];
   }
 }

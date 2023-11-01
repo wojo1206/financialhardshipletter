@@ -84,7 +84,7 @@ class ViewHelper {
     );
   }
 
-  static Widget boxFlatIconized(BuildContext context, Widget child) {
+  static Widget boxFlatIconized(BuildContext context, Widget child, Icon icon) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,

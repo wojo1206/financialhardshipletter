@@ -102,6 +102,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF4285F4),
+                              foregroundColor: Colors.white),
                           onPressed: () {
                             _socialSignIn(AuthProvider.google);
                           },
@@ -111,6 +114,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF4267B2),
+                              foregroundColor: Colors.white),
                           onPressed: () {
                             _socialSignIn(AuthProvider.facebook);
                           },

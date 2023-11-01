@@ -5,7 +5,10 @@ import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 class MedicalAssistant extends Assistant {
   @override
-  Icon get icon => const Icon(Icons.medical_services);
+  Icon get icon => const Icon(
+        Icons.medical_services,
+        size: 96.0,
+      );
 
   @override
   Gradient get gradient => const LinearGradient(
@@ -29,7 +32,7 @@ class MedicalAssistant extends Assistant {
 
   @override
   String getLabel(BuildContext context) {
-    return AppLocalizations.of(context!)!.letterTypeMedical;
+    return AppLocalizations.of(context)!.letterTypeMedical;
   }
 
   @override
