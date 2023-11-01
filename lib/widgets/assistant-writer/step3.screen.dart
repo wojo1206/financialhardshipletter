@@ -17,6 +17,7 @@ class WriterAssistantStep3 extends StatefulWidget {
 class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
   late FocusNode? focusNodeForName;
   late FocusNode? focusNodeForContact;
+  final PageController controller = PageController();
 
   @override
   void initState() {
@@ -59,20 +60,33 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
       screenNext: const WriterAssistantStep4(),
       helpUrl: '',
       children: [
-        TextareaForm(
-          hintText: AppLocalizations.of(context)!.askYourName,
-          helperText: AppLocalizations.of(context)!.askYourName,
-          expands: false,
-          maxLines: 1,
-          focusNode: focusNodeForName,
-        ),
-        TextareaForm(
-          hintText: AppLocalizations.of(context)!.askYourContact,
-          helperText: AppLocalizations.of(context)!.askYourContact,
-          expands: false,
-          maxLines: 1,
-          focusNode: focusNodeForContact,
-        ),
+        Expanded(
+          child: PageView(
+            controller: controller,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24.0),
+                child: TextareaForm(
+                  hintText: AppLocalizations.of(context)!.askYourName,
+                  helperText: AppLocalizations.of(context)!.askYourName,
+                  expands: false,
+                  maxLines: 1,
+                  focusNode: focusNodeForName,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(24.0),
+                child: TextareaForm(
+                  hintText: AppLocalizations.of(context)!.askYourContact,
+                  helperText: AppLocalizations.of(context)!.askYourContact,
+                  expands: false,
+                  maxLines: 1,
+                  focusNode: focusNodeForContact,
+                ),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }
