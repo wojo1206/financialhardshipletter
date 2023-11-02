@@ -8,7 +8,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 
-import 'package:google_fonts/google_fonts.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/bloc/app.bloc.dart';
@@ -241,23 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 final MAIN_THEME = ThemeData(
   useMaterial3: true,
-
   scaffoldBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
-
   primarySwatch: Colors.blue,
-
-  // Define the default `TextTheme`. Use this to specify the default
-  // text styling for headlines, titles, bodies of text, and more.
-  textTheme: TextTheme(
-    titleLarge: GoogleFonts.openSans(
-      fontSize: 48,
-      fontWeight: FontWeight.bold,
-    ),
-    bodyMedium: GoogleFonts.openSans(
-      fontSize: 14,
-    ),
-    displaySmall: GoogleFonts.openSans(
-      fontSize: 10,
-    ),
-  ),
+  fontFamily: 'LibreBaskerville',
 );

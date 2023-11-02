@@ -29,9 +29,8 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
   @override
   Widget build(BuildContext context) {
     return AssistantLayout(
-      title: 'Assistant - Introduction',
+      title: 'Assistant',
       helpText: AppLocalizations.of(context)!.hintPage2,
-      screenNext: const WriterAssistantStep3(),
       helpUrl: '',
       children: [
         RadioListTile<PERSON>(
@@ -55,6 +54,9 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
           },
         ),
       ],
+      onNext: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const WriterAssistantStep3()),
+      ),
     );
   }
 }

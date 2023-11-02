@@ -59,11 +59,13 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
     });
 
     return AssistantLayout(
-      title: 'Assistant - Type',
+      title: 'Assistant',
       helpText: AppLocalizations.of(context)!.hintPage1,
-      screenNext: const WriterAssistantStep2(),
       helpUrl: '',
       children: letterTypes,
+      onNext: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const WriterAssistantStep2()),
+      ),
     );
   }
 }

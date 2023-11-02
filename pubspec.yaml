@@ -45,7 +45,6 @@ dependencies:
   amplify_flutter: 1.5.0
   animations: 2.0.8
   flutter_bloc: 8.1.3
-  google_fonts: 6.1.0
   in_app_purchase: 3.1.11
   package_info_plus: 4.2.0
   path_provider: 2.1.1
@@ -95,10 +94,11 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Open Sans
+    - family: LibreBaskerville
       fonts:
-        - asset: assets/fonts/OpenSans-Regular.ttf
-        - asset: assets/fonts/OpenSans-Bold.ttf
+        - asset: assets/fonts/LibreBaskerville-Bold.ttf
+        - asset: assets/fonts/LibreBaskerville-Italic.ttf
+        - asset: assets/fonts/LibreBaskerville-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

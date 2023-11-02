@@ -14,14 +14,15 @@ class AssistantLayout extends StatelessWidget {
       required this.helpUrl,
       required this.helpText,
       required this.children,
-      required this.screenNext});
+      required this.onNext});
 
   final String title;
   final String helpUrl;
   final String helpText;
 
-  final Widget screenNext;
   final List<Widget> children;
+
+  final Function onNext;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +36,18 @@ class AssistantLayout extends StatelessWidget {
     elements.add(_buildActionRow(context));
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
       ),
-      body: FormHelper.wrapperBody(
-          context,
-          Column(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
             children: elements,
-          )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -70,9 +74,7 @@ class AssistantLayout extends StatelessWidget {
         ElevatedButton.icon(
           icon: const Icon(Icons.chevron_right),
           label: Text(AppLocalizations.of(context)!.next),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => screenNext),
-          ),
+          onPressed: () => onNext(),
         ),
       ],
     );

@@ -30,11 +30,12 @@ class ViewHelper {
   static Widget infoText(BuildContext context, String str) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 32.0,
+        vertical: 16.0,
       ),
       child: Text(
         str,
-        style: Theme.of(context).textTheme.bodyLarge,
+        style: Theme.of(context).textTheme.bodyMedium,
+        textAlign: TextAlign.center,
       ),
     );
   }

@@ -29,7 +29,7 @@ class TextareaForm extends StatelessWidget {
     return TextFormField(
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(8.0),
-        border: const OutlineInputBorder(),
+        border: const OutlineInputBorder(gapPadding: 0),
         hintText: hintText,
         helperText: helperText,
         alignLabelWithHint: true,
@@ -42,7 +42,7 @@ class TextareaForm extends StatelessWidget {
       readOnly: readonly,
       scrollController: scrollController,
       textAlignVertical: TextAlignVertical.top,
-      style: const TextStyle(fontSize: 24),
+      style: const TextStyle(fontSize: 18),
       controller: controller,
     );
   }
