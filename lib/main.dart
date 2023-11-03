@@ -18,7 +18,8 @@ import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
 import 'package:simpleiawriter/widgets/auth/login.screen.dart';
 import 'package:simpleiawriter/widgets/history.screen.dart';
-import 'package:simpleiawriter/widgets/intro.screen.dart';
+import 'package:simpleiawriter/widgets/introduction/intro.screen.dart';
+import 'package:simpleiawriter/widgets/purchase.screen.dart';
 import 'package:simpleiawriter/widgets/settings.screen.dart';
 
 import 'amplifyconfiguration.dart';
@@ -78,9 +79,6 @@ class App extends StatelessWidget {
         child: MaterialApp(
           theme: MAIN_THEME,
           home: const HomeScreen(),
-          routes: {
-            '/intro': (context) => const IntroScreen(),
-          },
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -189,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         floatingActionButton:
-            Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Wrap(alignment: WrapAlignment.end, spacing: 8.0, children: [
           FloatingActionButton(
             heroTag: "btn1",
             onPressed: () {
@@ -203,11 +201,60 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.of(context).push(_createRoute(const LoginScreen()));
             },
-            child: const Icon(Icons.account_box),
+            child: const Icon(Icons.login),
+          ),
+          FloatingActionButton(
+            heroTag: "btn3",
+            onPressed: () {
+              Navigator.of(context).push(_createRoute(const PurchaseScreen()));
+            },
+            child: const Icon(Icons.monetization_on),
           )
         ]),
-        body: const Column(
-          children: [],
+        body: Column(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(color: MAIN_THEME.primaryColor),
+                child: const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Financial Hardship Letter',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            height: 1),
+                      ),
+                      Text(
+                        'With powers from ChatGPT',
+                        style: TextStyle(color: Colors.white),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(children: [
+                  ElevatedButton(
+                      onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const WriterAssistantStep1()),
+                          ),
+                      child: const Text('Let\'s Start')),
+                ]),
+              ),
+            )
+          ],
         ));
   }
 
@@ -241,6 +288,6 @@ class _HomeScreenState extends State<HomeScreen> {
 final MAIN_THEME = ThemeData(
   useMaterial3: true,
   scaffoldBackgroundColor: const Color.fromARGB(255, 245, 245, 245),
-  primarySwatch: Colors.blue,
+  colorSchemeSeed: Colors.blue,
   fontFamily: 'LibreBaskerville',
 );

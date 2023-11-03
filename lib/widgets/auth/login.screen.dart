@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_signin_button/button_list.dart';
+import 'package:flutter_signin_button/button_view.dart';
 import 'package:simpleiawriter/bloc/api.repository.dart';
 import 'package:simpleiawriter/bloc/app.bloc.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
@@ -101,26 +103,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4285F4),
-                              foregroundColor: Colors.white),
+                        child: SignInButton(
+                          Buttons.Facebook,
                           onPressed: () {
-                            _socialSignIn(AuthProvider.google);
+                            _socialSignIn(AuthProvider.facebook);
                           },
-                          child: const Text('Sign In with Google'),
                         ),
                       ),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4267B2),
-                              foregroundColor: Colors.white),
+                        child: SignInButton(
+                          Buttons.Google,
                           onPressed: () {
-                            _socialSignIn(AuthProvider.facebook);
+                            _socialSignIn(AuthProvider.google);
                           },
-                          child: const Text('Sign In with Facebook'),
                         ),
                       ),
                     ]),

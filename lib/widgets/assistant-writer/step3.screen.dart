@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:rxdart/rxdart.dart';
+
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
@@ -20,10 +23,26 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
   final PageController controller = PageController(
     viewportFraction: 1.0,
   );
-  double _currentSliderValue = 0;
+  double _sliderVal = 0;
+  final StreamController<double> _sliderCtrl = StreamController<double>();
+
+  List<Widget> hardshipReasons = [];
+  List<Widget> questionsAndSuggestions = [];
 
   @override
   void initState() {
+    _sliderCtrl.stream
+        .debounceTime(const Duration(milliseconds: 200))
+        .listen((event) {
+      controller
+          .animateToPage(
+            event.toInt(),
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+          )
+          .then((value) => {});
+    });
+
     super.initState();
   }
 
@@ -35,8 +54,8 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    List<Widget> hardshipReasons = [];
-    List<Widget> questionsAndSuggestions = [];
+    hardshipReasons = [];
+    questionsAndSuggestions = [];
 
     MedicalAssistant assistant = MedicalAssistant();
 
@@ -64,25 +83,31 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
       });
 
       questionsAndSuggestions.add(
-        Column(
-          children: [
-            Expanded(
-              child: TextareaForm(
-                hintText: e.question,
-                helperText: e.question,
-                expands: true,
-                focusNode: e.focusNode,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                e.question,
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
               ),
-            ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              clipBehavior: Clip.hardEdge,
-              child: Wrap(
-                spacing: 8.0,
-                children: suggestions,
+              Expanded(
+                child: TextareaForm(
+                  expands: true,
+                  focusNode: e.focusNode,
+                ),
               ),
-            ),
-          ],
+              Expanded(
+                child: Wrap(
+                  spacing: 8.0,
+                  children: suggestions,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     });
@@ -93,44 +118,38 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           'These ${questionsAndSuggestions.length} questions help to produce a letter specific to you needs.',
       helpUrl: '',
       children: [
-        SizedBox(
-          height: 200,
-          width: double.infinity,
+        Expanded(
           child: PageView(
             controller: controller,
             clipBehavior: Clip.antiAlias,
+            physics: const NeverScrollableScrollPhysics(),
             children: questionsAndSuggestions,
-            onPageChanged: (value) => {
-              setState(() {
-                _currentSliderValue = value.toDouble();
-              })
-            },
           ),
         ),
-        Expanded(child: Container()),
         Slider(
-          value: _currentSliderValue,
+          value: _sliderVal,
           min: 0,
           max: (questionsAndSuggestions.length - 1).toDouble(),
           divisions: questionsAndSuggestions.length - 1,
           onChanged: (double value) {
-            var asInt = value.toInt();
             setState(() {
-              controller
-                  .animateToPage(
-                    asInt,
-                    duration: const Duration(milliseconds: 400),
-                    curve: Curves.easeInOut,
-                  )
-                  .then((value) {});
+              _sliderVal = value;
+              _sliderCtrl.sink.add(value);
             });
           },
         ),
       ],
       onNext: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const WritingScreen()),
-        );
+        if ((_sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
+          setState(() {
+            _sliderVal += 1.0;
+          });
+          _sliderCtrl.sink.add(_sliderVal);
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const WritingScreen()),
+          );
+        }
       },
     );
   }
