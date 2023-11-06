@@ -1,3 +1,5 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,8 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account', style: Theme.of(context).textTheme.bodyMedium),
+        title: Text(AppLocalizations.of(context)!.titleAccount,
+            style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: FormHelper.wrapperBody(
         context,

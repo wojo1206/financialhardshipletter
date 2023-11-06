@@ -8,13 +8,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/bloc/api.repository.dart';
+import 'package:simpleiawriter/bloc/app.bloc.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
 
-import 'form/textarea.form.dart';
+import '../form/textarea.form.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({super.key});
@@ -87,7 +89,7 @@ class _WritingScreenState extends State<WritingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(_cntToken.toString()),
+                  Text('Tokens used: $_cntToken'),
                 ]),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,6 +159,8 @@ class _WritingScreenState extends State<WritingScreen> {
                 setState(() {
                   _cntToken += 1;
                 });
+
+                context.read<AppBloc>().add(SetTokens(1));
 
                 if (choice.finishReason == 'stop') {
                   _sortText();

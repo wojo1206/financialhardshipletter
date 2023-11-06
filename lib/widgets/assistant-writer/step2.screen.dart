@@ -30,7 +30,7 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
   @override
   Widget build(BuildContext context) {
     return AssistantLayout(
-      title: 'Assistant',
+      title: AppLocalizations.of(context)!.assistant,
       helpText: AppLocalizations.of(context)!.hintPage2,
       helpUrl: '',
       children: [

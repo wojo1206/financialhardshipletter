@@ -117,6 +117,10 @@ class ViewHelper {
         builder: (BuildContext context) => child);
   }
 
+  static void goHome(BuildContext context) {
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
   static Route routeSlide(Widget nextScreen) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => nextScreen,

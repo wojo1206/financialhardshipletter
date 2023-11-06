@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"12.7.0\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
+  "Description": "{\"createdOn\":\"Mac\",\"createdBy\":\"Amplify\",\"createdWith\":\"12.7.1\",\"stackType\":\"function-Lambda\",\"metadata\":{}}",
   "Parameters": {
     "CloudWatchRule": {
       "Type": "String",
@@ -14,9 +14,6 @@
       "Type": "String"
     },
     "s3Key": {
-      "Type": "String"
-    },
-    "secretsPathAmplifyAppId": {
       "Type": "String"
     }
   },
@@ -50,12 +47,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "hardshipletteraskai",
+            "hardshipletter3653312c",
             {
               "Fn::Join": [
                 "",
                 [
-                  "hardshipletteraskai",
+                  "hardshipletter3653312c",
                   "-",
                   {
                     "Ref": "env"
@@ -72,28 +69,6 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
-            },
-            "OPENAI_API_KEY": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Fn::Sub": [
-                      "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
-                      {
-                        "appId": {
-                          "Ref": "secretsPathAmplifyAppId"
-                        },
-                        "env": {
-                          "Ref": "env"
-                        },
-                        "functionName": "hardshipletteraskai"
-                      }
-                    ]
-                  },
-                  "OPENAI_API_KEY"
-                ]
-              ]
             }
           }
         },
@@ -103,9 +78,9 @@
             "Arn"
           ]
         },
-        "Runtime": "python3.8",
+        "Runtime": "nodejs18.x",
         "Layers": [],
-        "Timeout": 180
+        "Timeout": 25
       }
     },
     "LambdaExecutionRole": {
@@ -114,12 +89,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "hardshipletterLambdaRole278f56a9",
+            "hardshipletterLambdaRole555b2a7f",
             {
               "Fn::Join": [
                 "",
                 [
-                  "hardshipletterLambdaRole278f56a9",
+                  "hardshipletterLambdaRole555b2a7f",
                   "-",
                   {
                     "Ref": "env"
@@ -190,63 +165,6 @@
         }
       }
     },
-    "AmplifyFunctionSecretsPolicy": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyName": "amplify-function-secrets-policy",
-        "Roles": [
-          {
-            "Ref": "LambdaExecutionRole"
-          }
-        ],
-        "PolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "ssm:GetParameter",
-                "ssm:GetParameters"
-              ],
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:aws:ssm:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":parameter",
-                    {
-                      "Fn::Sub": [
-                        "/amplify/${appId}/${env}/AMPLIFY_${functionName}_",
-                        {
-                          "appId": {
-                            "Ref": "secretsPathAmplifyAppId"
-                          },
-                          "env": {
-                            "Ref": "env"
-                          },
-                          "functionName": "hardshipletteraskai"
-                        }
-                      ]
-                    },
-                    "*"
-                  ]
-                ]
-              }
-            }
-          ]
-        }
-      },
-      "DependsOn": [
-        "LambdaExecutionRole"
-      ]
-    },
     "CustomLambdaExecutionPolicy": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -257,7 +175,8 @@
             {
               "Effect": "Allow",
               "Action": [
-                "ssm:GetParameter"
+                "lambda:InvokeFunction",
+                "lambda:InvokeAsync"
               ],
               "Resource": [
                 "*"

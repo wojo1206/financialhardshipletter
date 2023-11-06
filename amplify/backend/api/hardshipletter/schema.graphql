@@ -33,7 +33,7 @@ type Setting @model {
 
 type Mutation {
   initGptQuery(prompt: String!, gptSessionId: ID!): String!
-    @function(name: "initasync-${env}")
+    @function(name: "hardshipletter3653312c-${env}")
 }
 
 schema {

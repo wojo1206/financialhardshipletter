@@ -38,19 +38,15 @@
     },
     "categories": {
       "function": {
-        "hardshipletteraskai": {
-          "secretsPathAmplifyAppId": "d35nmn688a6cyy",
-          "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/hardshipletteraskai-52334c6c617461667448-build.zip"
-        },
         "writerchatgpt": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-2f6d78495538342b6546-build.zip",
+          "s3Key": "amplify-builds/writerchatgpt-664b556c2f4f62444569-build.zip",
           "secretsPathAmplifyAppId": "d35nmn688a6cyy"
         },
-        "initasync": {
+        "hardshipletteraskai": {},
+        "hardshipletter3653312c": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/initasync-69325544644b75704b41-build.zip"
+          "s3Key": "amplify-builds/hardshipletter3653312c-52452b36422b364f347a-build.zip"
         }
       },
       "api": {

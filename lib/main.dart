@@ -77,7 +77,7 @@ class App extends StatelessWidget {
             create: (context) => _dataStoreRepository),
       ],
       child: BlocProvider(
-        create: (_) => AppBloc(),
+        create: (BuildContext context) => AppBloc(),
         child: MaterialApp(
           theme: MAIN_THEME,
           home: const HomeScreen(),
@@ -147,51 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text(AppLocalizations.of(context)!.appName,
               style: Theme.of(context).textTheme.bodyMedium),
         ),
-        drawer: MyDrawer(),
-        floatingActionButton: Wrap(
-          alignment: WrapAlignment.end,
-          spacing: 8.0,
-          children: [
-            FloatingActionButton(
-              heroTag: "btn1",
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const WriterAssistantStep1(),
-                  ),
-                );
-              },
-              child: const Icon(Icons.add),
-            ),
-            FloatingActionButton(
-              heroTag: "btn2",
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
-                  ),
-                );
-              },
-              child: const Icon(Icons.login),
-            ),
-            FloatingActionButton(
-              heroTag: "btn3",
-              onPressed: () {
-                ViewHelper.helpSheet(context, const PurchaseScreen());
-                // Navigator.of(context).push(_createRoute(const PurchaseScreen()));
-              },
-              child: const Icon(Icons.monetization_on),
-            ),
-            FloatingActionButton(
-              heroTag: "btn4",
-              onPressed: () {
-                _test = !_test;
-                BlocProvider.of<AppBloc>(context).add(UserLogIn(_test));
-              },
-              child: const Icon(Icons.toggle_on),
-            )
-          ],
-        ),
+        drawer: const MyDrawer(),
         body: Column(
           children: [
             Expanded(

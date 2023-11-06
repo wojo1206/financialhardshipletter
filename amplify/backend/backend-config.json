@@ -49,12 +49,7 @@
     }
   },
   "function": {
-    "hardshipletteraskai": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "initasync": {
+    "hardshipletter3653312c": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
@@ -66,43 +61,19 @@
     }
   },
   "parameters": {
-    "AMPLIFY_function_hardshipletteraskai_deploymentBucketName": {
+    "AMPLIFY_function_hardshipletter3653312c_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "hardshipletteraskai"
+          "resourceName": "hardshipletter3653312c"
         }
       ]
     },
-    "AMPLIFY_function_hardshipletteraskai_s3Key": {
+    "AMPLIFY_function_hardshipletter3653312c_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "hardshipletteraskai"
-        }
-      ]
-    },
-    "AMPLIFY_function_hardshipletteraskai_secretsPathAmplifyAppId": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "hardshipletteraskai"
-        }
-      ]
-    },
-    "AMPLIFY_function_initasync_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "initasync"
-        }
-      ]
-    },
-    "AMPLIFY_function_initasync_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "initasync"
+          "resourceName": "hardshipletter3653312c"
         }
       ]
     },

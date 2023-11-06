@@ -1,15 +1,8 @@
 import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:simpleiawriter/bloc/app.bloc.dart';
-import 'package:simpleiawriter/bloc/api.repository.dart';
-import 'package:simpleiawriter/bloc/auth.repository.dart';
-
-import 'package:simpleiawriter/helpers/form.helper.dart';
-import 'package:simpleiawriter/helpers/view.helper.dart';
 
 class PurchaseScreen extends StatefulWidget {
   const PurchaseScreen({super.key});
@@ -21,7 +14,11 @@ class PurchaseScreen extends StatefulWidget {
 class _PurchaseScreenState extends State<PurchaseScreen> {
   bool available = false;
   List<ProductDetails> products = [];
-  final Set<String> consumables = <String>{'tokens_5000', 'tokens_10000'};
+  final Set<String> consumables = <String>{
+    'tokens_1000',
+    'tokens_5000',
+    'tokens_10000'
+  };
   late StreamSubscription<List<PurchaseDetails>> _subscription;
 
   @override
@@ -119,6 +116,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
     setState(() {
       products = response.productDetails;
+      products.sort(((a, b) => a.rawPrice < b.rawPrice ? -1 : 1));
     });
   }
 }

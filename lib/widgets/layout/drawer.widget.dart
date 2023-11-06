@@ -35,22 +35,19 @@ class MyDrawer extends StatelessWidget {
               ListTile(
                 title: Text(AppLocalizations.of(context)!.titleAccount),
                 onTap: () {
-                  Navigator.of(context)
-                      .push(ViewHelper.routeSlide(const AccountScreen()));
+                  _popAndPush(context, const AccountScreen());
                 },
               ),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.titleHistory),
                 onTap: () {
-                  Navigator.of(context)
-                      .push(ViewHelper.routeSlide(const HistoryScreen()));
+                  _popAndPush(context, const HistoryScreen());
                 },
               ),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.titleSettings),
                 onTap: () {
-                  Navigator.of(context)
-                      .push(ViewHelper.routeSlide(const SettingsScreen()));
+                  _popAndPush(context, const SettingsScreen());
                 },
               ),
               ListTile(
@@ -69,8 +66,7 @@ class MyDrawer extends StatelessWidget {
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logIn),
                 onTap: () {
-                  Navigator.of(context)
-                      .push(ViewHelper.routeSlide(const LoginScreen()));
+                  _popAndPush(context, const LoginScreen());
                 },
               ),
             ]);
@@ -91,5 +87,10 @@ class MyDrawer extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _popAndPush(BuildContext context, Widget screen) {
+    Navigator.pop(context);
+    Navigator.of(context).push(ViewHelper.routeSlide(screen));
   }
 }

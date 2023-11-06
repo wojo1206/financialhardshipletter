@@ -20,14 +20,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
-    "hardshipletteraskai": {
-      "Arn": "string",
-      "LambdaExecutionRole": "string",
-      "LambdaExecutionRoleArn": "string",
-      "Name": "string",
-      "Region": "string"
-    },
-    "initasync": {
+    "hardshipletter3653312c": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

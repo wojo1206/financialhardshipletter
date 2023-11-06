@@ -1,11 +1,11 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+import 'package:flutter/material.dart';
+
 import 'package:simpleiawriter/bloc/api.repository.dart';
 import 'package:simpleiawriter/bloc/app.bloc.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
@@ -45,8 +45,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('Auth - Login', style: Theme.of(context).textTheme.bodyMedium),
+        title: Text(AppLocalizations.of(context)!.logIn,
+            style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: FormHelper.wrapperBody(
           context,
@@ -105,9 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         child: SignInButton(
                           Buttons.Facebook,
-                          onPressed: () {
-                            _socialSignIn(AuthProvider.facebook).then((value) =>
-                                BlocProvider.of<AppBloc>(context)
+                          onPressed: () async {
+                            await _socialSignIn(AuthProvider.facebook).then(
+                                (value) => BlocProvider.of<AppBloc>(context)
                                     .add(UserLogIn(value)));
                           },
                         ),
@@ -116,9 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         child: SignInButton(
                           Buttons.Google,
-                          onPressed: () {
-                            _socialSignIn(AuthProvider.google).then((value) =>
-                                BlocProvider.of<AppBloc>(context)
+                          onPressed: () async {
+                            await _socialSignIn(AuthProvider.google).then(
+                                (value) => BlocProvider.of<AppBloc>(context)
                                     .add(UserLogIn(value)));
                           },
                         ),
@@ -152,11 +152,15 @@ class _LoginScreenState extends State<LoginScreen> {
       final res3 = await apiRep.usersByEmail(email: attr1.value);
       safePrint(res3);
 
-      if (res3.data!.items.isEmpty) {
+      if (res3.hasErrors) {
+        throw Exception(res3.errors.join(', '));
+      } else {
         final res4 = await apiRep.createUser(email: attr1.value);
         safePrint(res4);
-      } else {
-        throw Exception("User not created.");
+
+        if (res4.hasErrors) {
+          throw Exception(res4.errors.join(', '));
+        }
       }
     } on Exception catch (e) {
       safePrint(e.toString());

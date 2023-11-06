@@ -9,7 +9,7 @@ import 'package:simpleiawriter/helpers/view.helper.dart';
 
 import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
-import 'package:simpleiawriter/widgets/writing.screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/writing.screen.dart';
 
 import '../form/textarea.form.dart';
 
@@ -103,7 +103,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
     });
 
     return AssistantLayout(
-      title: 'Assistant',
+      title: AppLocalizations.of(context)!.assistant,
       helpText:
           'These ${questionsAndSuggestions.length} questions help to produce a letter specific to you needs.',
       helpUrl: '',

@@ -6,10 +6,11 @@
   "license": "Apache-2.0",
   "type": "module",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.92"
+    "@types/aws-lambda": "8.10.92"
   },
   "dependencies": {
-    "openai": "^4.13.0",
-    "uuid": "^9.0.1"
+    "gpt-tokenizer": "2.1.2",
+    "openai": "4.13.0",
+    "uuid": "9.0.1"
   }
 }

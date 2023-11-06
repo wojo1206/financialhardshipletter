@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/main.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
@@ -60,7 +59,7 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
     });
 
     return AssistantLayout(
-      title: 'Assistant',
+      title: AppLocalizations.of(context)!.assistant,
       helpText: AppLocalizations.of(context)!.hintPage1,
       helpUrl: '',
       children: letterTypes,
