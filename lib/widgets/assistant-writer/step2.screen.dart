@@ -1,5 +1,6 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
 
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step3.screen.dart';
@@ -13,7 +14,7 @@ class WriterAssistantStep2 extends StatefulWidget {
 }
 
 class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
-  late PERSON? _character = PERSON.first;
+  late PERSON? perspective = PERSON.first;
 
   @override
   void initState() {
@@ -36,26 +37,28 @@ class _WriterAssistantStep2State extends State<WriterAssistantStep2> {
         RadioListTile<PERSON>(
           title: Text(AppLocalizations.of(context)!.askPersonFirst),
           value: PERSON.first,
-          groupValue: _character,
+          groupValue: perspective,
           onChanged: (PERSON? value) {
             setState(() {
-              _character = value;
+              perspective = value;
             });
           },
         ),
         RadioListTile<PERSON>(
           title: Text(AppLocalizations.of(context)!.askPersonThird),
           value: PERSON.third,
-          groupValue: _character,
+          groupValue: perspective,
           onChanged: (PERSON? value) {
             setState(() {
-              _character = value;
+              perspective = value;
             });
           },
         ),
       ],
       onNext: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const WriterAssistantStep3()),
+        ViewHelper.routeSlide(
+          const WriterAssistantStep3(),
+        ),
       ),
     );
   }

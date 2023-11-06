@@ -1,4 +1,7 @@
 {
+  "appCatchyPhrase": "Jump start your letter with ChatGPT help",
+  "appName": "Financial Hardship Letter",
+  "appStartButton": "Let's Start",
   "askForRelation": "What is your relationship ot the ?",
   "askPersonFirst": "First person. I am writing for myself.",
   "askPersonThird": "Third person. I am writing on behalf of other person.",
@@ -12,8 +15,13 @@
   "letterTypeCreditCard": "Credit Card",
   "letterTypeMedical": "Medical",
   "letterTypeMortgage": "Mortgage",
+  "logIn": "Log In",
+  "logOut": "Log Out",
   "next": "Next",
   "password": "Password",
+  "titleAccount": "Account",
+  "titleHistory": "History",
+  "titleSettings": "Settings",
   "username": "Username",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."

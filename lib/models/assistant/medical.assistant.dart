@@ -34,20 +34,4 @@ class MedicalAssistant extends Assistant {
   String getLabel(BuildContext context) {
     return AppLocalizations.of(context)!.letterTypeMedical;
   }
-
-  @override
-  List<String> outcomes(BuildContext context) {
-    return ['debt forgiveness', 'debt settlement'];
-  }
-
-  @override
-  List<String> reasons(BuildContext context) {
-    return [
-      'severe injury',
-      'severe illness',
-      'death of a family member',
-      'layoff',
-      'loss of insurance'
-    ];
-  }
 }

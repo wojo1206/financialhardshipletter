@@ -2,6 +2,7 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,11 +15,12 @@ import 'package:simpleiawriter/bloc/app.bloc.dart';
 import 'package:simpleiawriter/bloc/api.repository.dart';
 import 'package:simpleiawriter/bloc/auth.repository.dart';
 import 'package:simpleiawriter/bloc/datastore.repository.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
 import 'package:simpleiawriter/widgets/auth/login.screen.dart';
 import 'package:simpleiawriter/widgets/history.screen.dart';
-import 'package:simpleiawriter/widgets/introduction/intro.screen.dart';
+import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
 import 'package:simpleiawriter/widgets/purchase.screen.dart';
 import 'package:simpleiawriter/widgets/settings.screen.dart';
 
@@ -102,6 +104,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _test = false;
   PackageInfo _packageInfo = PackageInfo(
     appName: '',
     packageName: '',
@@ -115,13 +118,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    final authRep = RepositoryProvider.of<AuthRepository>(context);
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+      resumeCallBack: () async {
+        safePrint("resumeCallBack");
+
+        BlocProvider.of<AppBloc>(context)
+            .add(UserLogIn(await authRep.isUserSignedIn()));
+      },
+      suspendingCallBack: () async {
+        safePrint("suspendingCallBack");
+      },
+    ));
+
     _initPackageInfo();
   }
 
   @override
   void dispose() {
-    safePrint("DISPOSED");
-
     super.dispose();
   }
 
@@ -129,88 +144,54 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Hardship Letter Assistant',
+          title: Text(AppLocalizations.of(context)!.appName,
               style: Theme.of(context).textTheme.bodyMedium),
         ),
-        drawer: Drawer(
-          // Add a ListView to the drawer. This ensures the user can scroll
-          // through the options in the drawer if there isn't enough vertical
-          // space to fit everything.
-          child: ListView(
-            // Important: Remove any padding from the ListView.
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                child: Image.asset(
-                  'assets/images/img1-kelly-sikkema.jpg',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              ListTile(
-                title: const Text('Account'),
-                onTap: () {
-                  Navigator.of(context)
-                      .push(_createRoute(const AccountScreen()));
-                },
-              ),
-              ListTile(
-                title: const Text('History'),
-                onTap: () {
-                  Navigator.of(context)
-                      .push(_createRoute(const HistoryScreen()));
-                },
-              ),
-              ListTile(
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.of(context)
-                      .push(_createRoute(const SettingsScreen()));
-                },
-              ),
-              ListTile(
-                title: const Text('Sign Out'),
-                onTap: () async {
-                  final appRep = RepositoryProvider.of<AuthRepository>(context);
-                  await appRep.signOut();
-
-                  Navigator.of(context)
-                      .push(_createRoute(const SettingsScreen()));
-                },
-              ),
-              ListTile(
-                title: const Text('Version'),
-                onTap: () {},
-                enabled: false,
-                subtitle: Text(_packageInfo.version),
-              ),
-            ],
-          ),
+        drawer: MyDrawer(),
+        floatingActionButton: Wrap(
+          alignment: WrapAlignment.end,
+          spacing: 8.0,
+          children: [
+            FloatingActionButton(
+              heroTag: "btn1",
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WriterAssistantStep1(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
+            FloatingActionButton(
+              heroTag: "btn2",
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
+              child: const Icon(Icons.login),
+            ),
+            FloatingActionButton(
+              heroTag: "btn3",
+              onPressed: () {
+                ViewHelper.helpSheet(context, const PurchaseScreen());
+                // Navigator.of(context).push(_createRoute(const PurchaseScreen()));
+              },
+              child: const Icon(Icons.monetization_on),
+            ),
+            FloatingActionButton(
+              heroTag: "btn4",
+              onPressed: () {
+                _test = !_test;
+                BlocProvider.of<AppBloc>(context).add(UserLogIn(_test));
+              },
+              child: const Icon(Icons.toggle_on),
+            )
+          ],
         ),
-        floatingActionButton:
-            Wrap(alignment: WrapAlignment.end, spacing: 8.0, children: [
-          FloatingActionButton(
-            heroTag: "btn1",
-            onPressed: () {
-              Navigator.of(context)
-                  .push(_createRoute(const WriterAssistantStep1()));
-            },
-            child: const Icon(Icons.add),
-          ),
-          FloatingActionButton(
-            heroTag: "btn2",
-            onPressed: () {
-              Navigator.of(context).push(_createRoute(const LoginScreen()));
-            },
-            child: const Icon(Icons.login),
-          ),
-          FloatingActionButton(
-            heroTag: "btn3",
-            onPressed: () {
-              Navigator.of(context).push(_createRoute(const PurchaseScreen()));
-            },
-            child: const Icon(Icons.monetization_on),
-          )
-        ]),
         body: Column(
           children: [
             Expanded(
@@ -218,22 +199,23 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(color: MAIN_THEME.primaryColor),
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Financial Hardship Letter',
-                        style: TextStyle(
+                        AppLocalizations.of(context)!.appName,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 48,
                             fontWeight: FontWeight.bold,
                             height: 1),
                       ),
                       Text(
-                        'With powers from ChatGPT',
-                        style: TextStyle(color: Colors.white),
+                        AppLocalizations.of(context)!.appCatchyPhrase,
+                        style: const TextStyle(color: Colors.white),
                       )
                     ],
                   ),
@@ -243,38 +225,23 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: SizedBox(
                 width: double.infinity,
-                child: Column(children: [
-                  ElevatedButton(
-                      onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const WriterAssistantStep1()),
-                          ),
-                      child: const Text('Let\'s Start')),
-                ]),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                          onPressed: () => Navigator.of(context).push(
+                                ViewHelper.routeSlide(
+                                  const WriterAssistantStep1(),
+                                ),
+                              ),
+                          child: Text(
+                              AppLocalizations.of(context)!.appStartButton)),
+                    ]),
               ),
             )
           ],
         ));
-  }
-
-  Route _createRoute(Widget nextScreen) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        const begin = Offset(0.0, 1.0);
-        const end = Offset.zero;
-        const curve = Curves.easeIn;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
   }
 
   Future<void> _initPackageInfo() async {
@@ -282,6 +249,33 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _packageInfo = info;
     });
+  }
+}
+
+/// The life-cycle event handler is global. Gets triggered when sub pages!
+class LifecycleEventHandler extends WidgetsBindingObserver {
+  final AsyncCallback resumeCallBack;
+  final AsyncCallback suspendingCallBack;
+
+  LifecycleEventHandler({
+    required this.resumeCallBack,
+    required this.suspendingCallBack,
+  });
+
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        await resumeCallBack();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        await suspendingCallBack();
+        break;
+      case AppLifecycleState.hidden:
+      // TODO: Handle this case.
+    }
   }
 }
 

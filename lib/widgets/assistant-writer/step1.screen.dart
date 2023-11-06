@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/main.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
@@ -64,7 +65,9 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
       helpUrl: '',
       children: letterTypes,
       onNext: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const WriterAssistantStep2()),
+        ViewHelper.routeSlide(
+          const WriterAssistantStep2(),
+        ),
       ),
     );
   }

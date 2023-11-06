@@ -24,24 +24,4 @@ class CreditCardAssistant extends Assistant {
   String getLabel(BuildContext context) {
     return AppLocalizations.of(context)!.letterTypeCreditCard;
   }
-
-  @override
-  List<String> outcomes(BuildContext context) {
-    return ['debt forgiveness', 'debt settlement'];
-  }
-
-  @override
-  List<String> reasons(BuildContext context) {
-    return [
-      'death of a family member',
-      'divorce',
-      'job loss',
-      'loss of insurance',
-      'medical expenses',
-      'natural disaster',
-      'severe illness',
-      'severe injury',
-      'unexpected bills',
-    ];
-  }
 }

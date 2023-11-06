@@ -50,6 +50,7 @@ class AmplifyAuthRepository implements AuthRepository {
   @override
   Future<bool> isUserSignedIn() async {
     final result = await auth.fetchAuthSession();
+    safePrint('isUserSignedIn: $result');
     return result.isSignedIn;
   }
 

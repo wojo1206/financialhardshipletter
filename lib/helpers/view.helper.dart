@@ -108,12 +108,31 @@ class ViewHelper {
     );
   }
 
-  static dynamic helpSheet(BuildContext context, String question) {
+  static dynamic helpSheet(BuildContext context, Widget child) {
     return showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
         showDragHandle: true,
         useSafeArea: true,
-        builder: (BuildContext context) => Container());
+        builder: (BuildContext context) => child);
+  }
+
+  static Route routeSlide(Widget nextScreen) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => nextScreen,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.easeIn;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
   }
 }

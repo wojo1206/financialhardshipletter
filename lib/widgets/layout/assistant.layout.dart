@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AssistantLayout extends StatelessWidget {
@@ -27,6 +28,8 @@ class AssistantLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> elements = [];
+
+    elements.add(const TokensInfo());
 
     if (helpText.isNotEmpty) {
       elements.add(ViewHelper.infoText(context, helpText));

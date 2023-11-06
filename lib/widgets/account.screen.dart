@@ -16,17 +16,18 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  List<AuthUserAttribute> authUserAttrs = [];
+
   @override
   void initState() {
     super.initState();
+
+    _onInit();
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    List<AuthUserAttribute> authUserAttrs =
-        BlocProvider.of<AppBloc>(context).state.authUserAttr;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Account', style: Theme.of(context).textTheme.bodyMedium),
@@ -45,7 +46,6 @@ class _AccountScreenState extends State<AccountScreen> {
                 // Convert each item into a widget based on the type of item it is.
                 itemBuilder: (context, index) {
                   final item = authUserAttrs[index];
-
                   return ListTile(
                     title: Text(item.userAttributeKey.key),
                     subtitle: Text(item.value),
@@ -57,5 +57,12 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
       ),
     );
+  }
+
+  _onInit() async {
+    final authRep = RepositoryProvider.of<AuthRepository>(context);
+    authUserAttrs = await authRep.fetchCurrentUserAttributes() ?? [];
+
+    setState(() {});
   }
 }

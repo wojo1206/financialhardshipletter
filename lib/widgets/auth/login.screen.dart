@@ -106,7 +106,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: SignInButton(
                           Buttons.Facebook,
                           onPressed: () {
-                            _socialSignIn(AuthProvider.facebook);
+                            _socialSignIn(AuthProvider.facebook).then((value) =>
+                                BlocProvider.of<AppBloc>(context)
+                                    .add(UserLogIn(value)));
                           },
                         ),
                       ),
@@ -115,7 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: SignInButton(
                           Buttons.Google,
                           onPressed: () {
-                            _socialSignIn(AuthProvider.google);
+                            _socialSignIn(AuthProvider.google).then((value) =>
+                                BlocProvider.of<AppBloc>(context)
+                                    .add(UserLogIn(value)));
                           },
                         ),
                       ),
@@ -126,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _socialSignIn(AuthProvider provider) async {
+  Future<bool> _socialSignIn(AuthProvider provider) async {
     try {
       final authRep = RepositoryProvider.of<AuthRepository>(context);
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
@@ -154,11 +158,11 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         throw Exception("User not created.");
       }
-
-      BlocProvider.of<AppBloc>(context).add(UserLogIn(res2));
     } on Exception catch (e) {
       safePrint(e.toString());
+      return false;
     }
+    return true;
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {

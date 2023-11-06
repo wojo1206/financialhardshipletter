@@ -19,10 +19,6 @@ abstract class Assistant {
 
   String getLabel(BuildContext context);
 
-  List<String> reasons(BuildContext context);
-
-  List<String> outcomes(BuildContext context);
-
   List<String> tones(BuildContext context) {
     return ['professional', 'friendly', 'kind', 'neutral', 'positive'];
   }

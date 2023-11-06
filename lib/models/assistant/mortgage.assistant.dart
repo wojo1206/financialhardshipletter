@@ -24,20 +24,4 @@ class MortgageAssistant extends Assistant {
   String getLabel(BuildContext context) {
     return AppLocalizations.of(context)!.letterTypeMortgage;
   }
-
-  @override
-  List<String> outcomes(BuildContext context) {
-    return ['debt forgiveness', 'debt settlement'];
-  }
-
-  @override
-  List<String> reasons(BuildContext context) {
-    return [
-      'death of a family member',
-      'layoff',
-      'loss of insurance',
-      'severe illness',
-      'severe injury',
-    ];
-  }
 }

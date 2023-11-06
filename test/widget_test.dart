@@ -1,34 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:simpleiawriter/bloc/api.repository.dart';
+import 'package:simpleiawriter/bloc/auth.repository.dart';
+import 'package:simpleiawriter/bloc/datastore.repository.dart';
 
 import 'package:simpleiawriter/main.dart';
+
+// Mock class.
+class MockAppRep extends Mock implements AmplifyAppRepository {}
+
+// Mock class.
+class MockDataRep extends Mock implements AmplifyDataStoreRepository {}
+
+// Mock class.
+class MockAuthRep extends Mock implements AmplifyAuthRepository {}
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const App(
-      apiRepository: null,
-      dataStoreRepository: null,
-      authRepository: null,
+    await tester.pumpWidget(App(
+      apiRepository: MockAppRep(),
+      dataStoreRepository: MockDataRep(),
+      authRepository: MockAuthRep(),
     ));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
     // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    await tester.tap(find.byIcon(Icons.login));
     await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
   });
 }

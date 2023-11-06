@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
 
 import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
@@ -54,20 +55,9 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    hardshipReasons = [];
     questionsAndSuggestions = [];
 
     MedicalAssistant assistant = MedicalAssistant();
-
-    assistant.reasons(context).forEach(
-          (e) => hardshipReasons.add(
-            FilterChip(
-              label: Text(e),
-              selected: true,
-              onSelected: (value) => {},
-            ),
-          ),
-        );
 
     assistant.questionsAndSuggestions(context).forEach((e) {
       List<Widget> suggestions = [];
@@ -147,7 +137,9 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           _sliderCtrl.sink.add(_sliderVal);
         } else {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const WritingScreen()),
+            ViewHelper.routeSlide(
+              const WritingScreen(),
+            ),
           );
         }
       },
