@@ -43,13 +43,15 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      width: 300,
+      height: 300,
       child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: products.length,
         itemBuilder: (context, index) {
           final item = products[index];
-
           return ListTile(
+            contentPadding: EdgeInsets.zero,
             title: Text(item.title),
             trailing: ElevatedButton(
               onPressed: () {

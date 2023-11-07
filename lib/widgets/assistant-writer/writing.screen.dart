@@ -26,8 +26,7 @@ class WritingScreen extends StatefulWidget {
 }
 
 class _WritingScreenState extends State<WritingScreen> {
-  // Create a text controller. Later, use it to retrieve the
-  // current value of the TextField.
+  final aiTextFocusNode = FocusNode();
   final aiTextController = TextEditingController();
   final aiScrollController = ScrollController();
 
@@ -53,6 +52,7 @@ class _WritingScreenState extends State<WritingScreen> {
   void dispose() {
     aiTextController.dispose();
     aiScrollController.dispose();
+    aiTextFocusNode.dispose();
 
     if (stream1 != null) stream1?.cancel();
 
@@ -80,8 +80,10 @@ class _WritingScreenState extends State<WritingScreen> {
                 controller: aiScrollController,
                 child: TextareaForm(
                   controller: aiTextController,
-                  scrollController: aiScrollController,
+                  focusNode: aiTextFocusNode,
                   readonly: true,
+                  scrollController: aiScrollController,
+                  showCursor: _isGenerating,
                 ),
               ),
             ),
@@ -115,6 +117,8 @@ class _WritingScreenState extends State<WritingScreen> {
 
   Future<void> _test() async {
     try {
+      aiTextFocusNode.requestFocus();
+
       String email = 'wszczurek@tbrelectronics.com';
 
       final appRep = RepositoryProvider.of<ApiRepository>(context);

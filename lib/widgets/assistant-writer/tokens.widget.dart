@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:simpleiawriter/bloc/app.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/widgets/auth/login.screen.dart';
-import 'package:simpleiawriter/widgets/purchase.screen.dart';
+import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
+import 'package:simpleiawriter/widgets/purchase.widget.dart';
 
 class TokensInfo extends StatefulWidget {
   const TokensInfo({super.key});
@@ -24,7 +24,8 @@ class _TokensInfoState extends State<TokensInfo> {
 
       Widget button = TextButton(
         onPressed: () {
-          ViewHelper.helpSheet(context, const LoginScreen());
+          ViewHelper.myDialog(context, AppLocalizations.of(context)!.logIn,
+              const SocialLogin());
         },
         child: Text(AppLocalizations.of(context)!.logIn),
       );
@@ -32,7 +33,8 @@ class _TokensInfoState extends State<TokensInfo> {
       if (state.isLoggedIn) {
         button = TextButton(
           onPressed: () {
-            ViewHelper.helpSheet(context, const PurchaseScreen());
+            ViewHelper.myDialog(context, AppLocalizations.of(context)!.addToken,
+                const PurchaseScreen());
           },
           child: Text(AppLocalizations.of(context)!.addToken),
         );

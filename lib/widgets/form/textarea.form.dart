@@ -1,39 +1,42 @@
 import 'package:flutter/material.dart';
 
 class TextareaForm extends StatelessWidget {
-  final String? hintText;
-  final String? helperText;
-  final TextEditingController? controller;
-  final FocusNode? focusNode;
-  final ScrollController? scrollController;
-  final bool readonly;
   final bool expands;
+  final bool readonly;
+  final bool showCursor;
+  final FocusNode? focusNode;
   final int? maxLines;
   final int? minLines;
+  final ScrollController? scrollController;
+  final String? helperText;
+  final String? hintText;
+  final TextEditingController? controller;
 
   const TextareaForm(
       {super.key,
-      this.hintText,
-      this.helperText,
       this.controller,
+      this.expands = true,
       this.focusNode,
-      this.scrollController,
+      this.helperText,
+      this.hintText,
       this.maxLines,
       this.minLines,
       this.readonly = false,
-      this.expands = true});
+      this.scrollController,
+      this.showCursor = false});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(8.0),
-        border: const OutlineInputBorder(gapPadding: 0),
-        hintText: hintText,
-        helperText: helperText,
         alignLabelWithHint: true,
+        border: const OutlineInputBorder(gapPadding: 0),
+        contentPadding: const EdgeInsets.all(8.0),
+        helperText: helperText,
+        hintText: hintText,
       ),
+      controller: controller,
       expands: expands,
       focusNode: focusNode,
       keyboardType: TextInputType.multiline,
@@ -41,9 +44,9 @@ class TextareaForm extends StatelessWidget {
       minLines: minLines,
       readOnly: readonly,
       scrollController: scrollController,
-      textAlignVertical: TextAlignVertical.top,
+      showCursor: showCursor,
       style: const TextStyle(fontSize: 18),
-      controller: controller,
+      textAlignVertical: TextAlignVertical.top,
     );
   }
 }

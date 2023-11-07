@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'package:rxdart/rxdart.dart';
-
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -21,21 +20,23 @@ class WriterAssistantStep3 extends StatefulWidget {
 }
 
 class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
-  final PageController controller = PageController(
+  final PageController ctrl = PageController(
     viewportFraction: 1.0,
   );
   double _sliderVal = 0;
-  final StreamController<double> _sliderCtrl = StreamController<double>();
+  final StreamController<double> sliderCtrl = StreamController<double>();
 
   List<Widget> hardshipReasons = [];
   List<Widget> questionsAndSuggestions = [];
 
+  MedicalAssistant assistant = MedicalAssistant();
+
   @override
   void initState() {
-    _sliderCtrl.stream
+    sliderCtrl.stream
         .debounceTime(const Duration(milliseconds: 200))
         .listen((event) {
-      controller
+      ctrl
           .animateToPage(
             event.toInt(),
             duration: const Duration(milliseconds: 400),
@@ -57,17 +58,22 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
   Widget build(BuildContext context) {
     questionsAndSuggestions = [];
 
-    MedicalAssistant assistant = MedicalAssistant();
-
     assistant.questionsAndSuggestions(context).forEach((e) {
       List<Widget> suggestions = [];
 
       e.suggestions.forEach((f) {
         suggestions.add(
           FilterChip(
-            label: Text(f),
-            selected: false,
-            onSelected: (value) => {},
+            label: Text(f.suggestion),
+            selected: e.filters.contains(f.suggestion),
+            onSelected: (bool selected) {
+              if (selected) {
+                e.filters.add(f.suggestion);
+              } else {
+                e.filters.remove(f.suggestion);
+              }
+              setState(() {});
+            },
           ),
         );
       });
@@ -110,7 +116,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
       children: [
         Expanded(
           child: PageView(
-            controller: controller,
+            controller: ctrl,
             clipBehavior: Clip.antiAlias,
             physics: const NeverScrollableScrollPhysics(),
             children: questionsAndSuggestions,
@@ -124,7 +130,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           onChanged: (double value) {
             setState(() {
               _sliderVal = value;
-              _sliderCtrl.sink.add(value);
+              sliderCtrl.sink.add(value);
             });
           },
         ),
@@ -134,7 +140,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           setState(() {
             _sliderVal += 1.0;
           });
-          _sliderCtrl.sink.add(_sliderVal);
+          sliderCtrl.sink.add(_sliderVal);
         } else {
           Navigator.of(context).push(
             ViewHelper.routeSlide(

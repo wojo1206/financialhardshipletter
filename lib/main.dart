@@ -21,7 +21,7 @@ import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
 import 'package:simpleiawriter/widgets/auth/login.screen.dart';
 import 'package:simpleiawriter/widgets/history.screen.dart';
 import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
-import 'package:simpleiawriter/widgets/purchase.screen.dart';
+import 'package:simpleiawriter/widgets/purchase.widget.dart';
 import 'package:simpleiawriter/widgets/settings.screen.dart';
 
 import 'amplifyconfiguration.dart';
@@ -182,18 +182,26 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () => Navigator.of(context).push(
-                                ViewHelper.routeSlide(
-                                  const WriterAssistantStep1(),
-                                ),
-                              ),
-                          child: Text(
-                              AppLocalizations.of(context)!.appStartButton)),
-                    ]),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).push(
+                        ViewHelper.routeSlide(
+                          const WriterAssistantStep1(),
+                        ),
+                      ),
+                      child: Text(AppLocalizations.of(context)!.appStart),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        AppLocalizations.of(context)!.appStartExplain,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           ],

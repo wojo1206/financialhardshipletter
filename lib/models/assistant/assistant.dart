@@ -3,13 +3,34 @@ import 'package:simpleiawriter/constants.dart';
 
 enum PERSON { first, third }
 
-class QuestionAndSuggestions {
-  final String question;
-  final List<String> suggestions;
+enum QUESTION {
+  reason,
+  lasting,
+  specific,
+  actionsTaken,
+  supportingDocuments,
+  highlightDetails,
+  outcome,
+}
 
+class Question {
+  final QUESTION questionEnum;
+  final bool isSingleAnswer;
   final focusNode = FocusNode();
+  final List<Suggestion> suggestions;
+  final String question;
 
-  QuestionAndSuggestions(this.question, this.suggestions);
+  Set filters = <String>{};
+
+  Question(this.questionEnum, this.question, this.suggestions,
+      {this.isSingleAnswer = true});
+}
+
+class Suggestion {
+  final String suggestion;
+  final bool isFollowUp;
+
+  Suggestion(this.suggestion, {this.isFollowUp = true});
 }
 
 abstract class Assistant {
@@ -23,42 +44,79 @@ abstract class Assistant {
     return ['professional', 'friendly', 'kind', 'neutral', 'positive'];
   }
 
-  List<QuestionAndSuggestions> questionsAndSuggestions(BuildContext context) {
+  List<Question> questionsAndSuggestions(BuildContext context) {
     return [
-      QuestionAndSuggestions('What is the reason for your hardship?', [
-        'job loss',
-        'medical expenses',
-        'unexpected bills',
-        'divorce',
-        'natural disaster',
-        'severe injury',
-        'severe illness',
-      ]),
-      QuestionAndSuggestions('How long have you been facing this hardship?', [
-        'for the past six months',
-        'since last year',
-      ]),
-      QuestionAndSuggestions(
-          'What specific financial difficulties are you experiencing?', [
-        'overdue bills',
-        'mounting debt',
-        'inability to make mortgage/rent payments',
-      ]),
-      QuestionAndSuggestions(
-          'Have you taken any actions to address your hardship?', [
-        'looking to find a new job',
-        'seeking financial assistance',
-        'negotiate with creditors',
-      ]),
-      QuestionAndSuggestions(
-          'Do you have any supporting documents for your hardship (e.g., medical bills, termination notice)?',
-          []),
-      QuestionAndSuggestions(
+      Question(
+        QUESTION.reason,
+        'What is the reason for your financial hardship?',
+        [
+          Suggestion('job loss'),
+          Suggestion('medical expenses'),
+          Suggestion('unexpected bills'),
+          Suggestion('divorce'),
+          Suggestion('natural disaster'),
+          Suggestion('severe injury'),
+          Suggestion('severe illness'),
+        ],
+        isSingleAnswer: false,
+      ),
+      Question(
+        QUESTION.lasting,
+        'How long have you been facing this hardship?',
+        [
+          Suggestion('for the past six months', isFollowUp: false),
+          Suggestion('since last year', isFollowUp: false),
+        ],
+        isSingleAnswer: true,
+      ),
+      Question(
+        QUESTION.specific,
+        'What specific financial difficulties are you experiencing?',
+        [
+          Suggestion('overdue bills'),
+          Suggestion('mounting debt'),
+          Suggestion('inability to make mortgage/rent payments'),
+        ],
+        isSingleAnswer: false,
+      ),
+      Question(
+        QUESTION.actionsTaken,
+        'Have you taken any actions to address your hardship?',
+        [
+          Suggestion('looking to find a new job'),
+          Suggestion('seeking financial assistance'),
+          Suggestion('negotiate with creditors'),
+        ],
+        isSingleAnswer: false,
+      ),
+      Question(
+        QUESTION.supportingDocuments,
+        'Do you have any supporting documents for your hardship?',
+        [
+          Suggestion('medical bills'),
+          Suggestion('job termination notice'),
+          Suggestion('health condition diagnosis'),
+        ],
+        isSingleAnswer: false,
+      ),
+      Question(
+          QUESTION.highlightDetails,
           'Are there any specific details or events related to your hardship that you want to highlight in the letter?',
-          ['medical diagnosis', 'job termination date', 'specific incident']),
-      QuestionAndSuggestions(
+          [
+            Suggestion('medical diagnosis'),
+            Suggestion('job termination date'),
+            Suggestion('specific incident')
+          ],
+          isSingleAnswer: true),
+      Question(
+          QUESTION.outcome,
           'Is there a specific outcome you hope to achieve through this hardship letter?',
-          ['loan modification', 'payment extension', 'financial assistance'])
+          [
+            Suggestion('loan modification'),
+            Suggestion('payment extension'),
+            Suggestion('financial assistance')
+          ],
+          isSingleAnswer: false)
     ];
   }
 }

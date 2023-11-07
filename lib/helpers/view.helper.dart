@@ -108,13 +108,25 @@ class ViewHelper {
     );
   }
 
-  static dynamic helpSheet(BuildContext context, Widget child) {
+  static dynamic myBottomSheet(BuildContext context, Widget child) {
     return showModalBottomSheet<String>(
         context: context,
         isScrollControlled: true,
         showDragHandle: true,
         useSafeArea: true,
         builder: (BuildContext context) => child);
+  }
+
+  static dynamic myDialog(BuildContext context, String title, Widget content) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: content,
+        );
+      },
+    );
   }
 
   static void goHome(BuildContext context) {
