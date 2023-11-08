@@ -3,8 +3,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/bloc/app.bloc.dart';
-import 'package:simpleiawriter/bloc/auth.repository.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/auth/login.screen.dart';
@@ -17,7 +17,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: BlocBuilder<AppBloc, AppState>(
+      child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           final authRep = RepositoryProvider.of<AuthRepository>(context);
 
@@ -30,7 +30,7 @@ class MyDrawer extends StatelessWidget {
             ),
           ];
 
-          if (state.isLoggedIn) {
+          if (state.status == AuthenticationStatus.authenticated) {
             children.addAll([
               ListTile(
                 title: Text(AppLocalizations.of(context)!.titleAccount),
@@ -38,25 +38,25 @@ class MyDrawer extends StatelessWidget {
                   _popAndPush(context, const AccountScreen());
                 },
               ),
-              ListTile(
-                title: Text(AppLocalizations.of(context)!.titleHistory),
-                onTap: () {
-                  _popAndPush(context, const HistoryScreen());
-                },
-              ),
-              ListTile(
-                title: Text(AppLocalizations.of(context)!.titleSettings),
-                onTap: () {
-                  _popAndPush(context, const SettingsScreen());
-                },
-              ),
+              // ListTile(
+              //   title: Text(AppLocalizations.of(context)!.titleHistory),
+              //   onTap: () {
+              //     _popAndPush(context, const HistoryScreen());
+              //   },
+              // ),
+              // ListTile(
+              //   title: Text(AppLocalizations.of(context)!.titleSettings),
+              //   onTap: () {
+              //     _popAndPush(context, const SettingsScreen());
+              //   },
+              // ),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logOut),
                 onTap: () async {
                   await authRep
                       .signOut()
-                      .then((value) => BlocProvider.of<AppBloc>(context)
-                          .add(UserLogIn(false)))
+                      .then((value) => BlocProvider.of<AuthBloc>(context)
+                          .add(SetStatus(AuthenticationStatus.unauthenticated)))
                       .then((value) => Navigator.pop(context));
                 },
               ),

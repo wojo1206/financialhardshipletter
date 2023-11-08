@@ -19,7 +19,7 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
     try {
       return await dataStore.query(
         GptSession.classType,
-        where: GptMessage.GPTSESSION.eq(user.id),
+        // where: GptMessage.GPTSESSION.eq(user.id),
       );
     } on DataStoreException catch (e) {
       safePrint(e.message);
@@ -29,7 +29,7 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
 
   @override
   Future<User> createUser({required String email}) async {
-    final user = User(email: email, settings: Setting(tokens: 1000));
+    final user = User(email: email, tokens: 1000);
 
     try {
       await dataStore.save(user);

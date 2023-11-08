@@ -2,27 +2,25 @@ import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:simpleiawriter/bloc/app.bloc.dart';
-import 'package:simpleiawriter/bloc/api.repository.dart';
-import 'package:simpleiawriter/bloc/auth.repository.dart';
-import 'package:simpleiawriter/bloc/datastore.repository.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/widgets/account.screen.dart';
+import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
+import 'package:simpleiawriter/repos/datastore.repository.dart';
+import 'package:simpleiawriter/repos/purchase.repository.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
-import 'package:simpleiawriter/widgets/auth/login.screen.dart';
-import 'package:simpleiawriter/widgets/history.screen.dart';
 import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
-import 'package:simpleiawriter/widgets/purchase.widget.dart';
-import 'package:simpleiawriter/widgets/settings.screen.dart';
 
 import 'amplifyconfiguration.dart';
 import 'models/ModelProvider.dart';
@@ -47,6 +45,8 @@ void main() async {
     apiRepository: AmplifyAppRepository(api: api),
     authRepository: AmplifyAuthRepository(auth: auth),
     dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
+    inAppPurchaseRepository:
+        InAppPurchaseRepository(instance: InAppPurchase.instance),
   ));
 }
 
@@ -55,15 +55,18 @@ class App extends StatelessWidget {
       {Key? key,
       required AmplifyAppRepository apiRepository,
       required AmplifyAuthRepository authRepository,
-      required AmplifyDataStoreRepository dataStoreRepository})
+      required AmplifyDataStoreRepository dataStoreRepository,
+      required InAppPurchaseRepository inAppPurchaseRepository})
       : _appRepository = apiRepository,
         _authRepository = authRepository,
         _dataStoreRepository = dataStoreRepository,
+        _inAppPurchaseRepository = inAppPurchaseRepository,
         super(key: key);
 
   final ApiRepository _appRepository;
   final AuthRepository _authRepository;
   final DataStoreRepository _dataStoreRepository;
+  final InAppPurchaseRepository _inAppPurchaseRepository;
 
   // This widget is the root of your application.
   @override
@@ -75,9 +78,18 @@ class App extends StatelessWidget {
             create: (context) => _authRepository),
         RepositoryProvider<DataStoreRepository>(
             create: (context) => _dataStoreRepository),
+        RepositoryProvider<InAppPurchaseRepository>(
+            create: (context) => _inAppPurchaseRepository),
       ],
-      child: BlocProvider(
-        create: (BuildContext context) => AppBloc(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AppBloc>(
+            create: (BuildContext context) => AppBloc(),
+          ),
+          BlocProvider<AuthBloc>(
+            create: (BuildContext context) => AuthBloc(),
+          ),
+        ],
         child: MaterialApp(
           theme: MAIN_THEME,
           home: const HomeScreen(),
@@ -124,8 +136,10 @@ class _HomeScreenState extends State<HomeScreen> {
       resumeCallBack: () async {
         safePrint("resumeCallBack");
 
-        BlocProvider.of<AppBloc>(context)
-            .add(UserLogIn(await authRep.isUserSignedIn()));
+        BlocProvider.of<AuthBloc>(context).add(SetStatus(
+            await authRep.isUserSignedIn()
+                ? AuthenticationStatus.authenticated
+                : AuthenticationStatus.unauthenticated));
       },
       suspendingCallBack: () async {
         safePrint("suspendingCallBack");

@@ -7,6 +7,9 @@ import 'package:simpleiawriter/graphql/mutations.graphql.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
 abstract class ApiRepository {
+  Future<GraphQLResponse<GptSession>> createGptSessionForUser(
+      {required User user});
+
   Future<GraphQLResponse<User>> createUser({required String email});
 
   Future<GraphQLResponse<String>> initGptQuery(
@@ -15,11 +18,10 @@ abstract class ApiRepository {
   Future<GraphQLResponse<PaginatedResult<User>>> usersByEmail(
       {required String email});
 
-  Future<GraphQLResponse<GptSession>> createGptSessionForUser(
-      {required User user});
-
   Stream<GraphQLResponse<GptMessage>> subscribeToChat(
       {required GptSession session});
+
+  Stream<GraphQLResponse<User>> subscribeToUser({required User user});
 }
 
 class AmplifyAppRepository implements ApiRepository {
@@ -28,8 +30,17 @@ class AmplifyAppRepository implements ApiRepository {
   final AmplifyAPI api;
 
   @override
+  Future<GraphQLResponse<GptSession>> createGptSessionForUser(
+      {required User user}) {
+    final session = GptSession(user: user);
+
+    final request = ModelMutations.create(session);
+    return api.mutate(request: request).response;
+  }
+
+  @override
   Future<GraphQLResponse<User>> createUser({required String email}) {
-    final user = User(email: email);
+    final user = User(email: email, tokens: 1000);
 
     final request = ModelMutations.create(user);
     return api.mutate(request: request).response;
@@ -67,21 +78,23 @@ class AmplifyAppRepository implements ApiRepository {
   }
 
   @override
-  Future<GraphQLResponse<GptSession>> createGptSessionForUser(
-      {required User user}) {
-    final session = GptSession(user: user);
-
-    final request = ModelMutations.create(session);
-    return api.mutate(request: request).response;
-  }
-
-  @override
   Stream<GraphQLResponse<GptMessage>> subscribeToChat(
       {required GptSession session}) {
     final subscriptionRequest = ModelSubscriptions.onCreate(
       GptMessage.classType,
-      where: GptMessage.GPTSESSION.eq(session.id),
+      // where: GptMessage.GPTSESSION.eq(session.id),
     );
+
+    return api.subscribe(
+      subscriptionRequest,
+      onEstablished: () => safePrint('Subscription established'),
+    );
+  }
+
+  @override
+  Stream<GraphQLResponse<User>> subscribeToUser({required User user}) {
+    final subscriptionRequest =
+        ModelSubscriptions.onUpdate(User.classType, where: User.ID.eq(user.id));
 
     return api.subscribe(
       subscriptionRequest,

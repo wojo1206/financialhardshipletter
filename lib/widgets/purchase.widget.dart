@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:simpleiawriter/repos/purchase.repository.dart';
 
 class PurchaseScreen extends StatefulWidget {
   const PurchaseScreen({super.key});
@@ -19,18 +21,21 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     'tokens_5000',
     'tokens_10000'
   };
-  late StreamSubscription<List<PurchaseDetails>> _subscription;
+  late InAppPurchaseRepository purchaseRep;
+  late StreamSubscription<List<PurchaseDetails>> appSub;
 
   @override
   void initState() {
-    final Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchase.instance.purchaseStream;
+    purchaseRep = RepositoryProvider.of<InAppPurchaseRepository>(context);
 
-    _subscription =
+    final Stream<List<PurchaseDetails>> purchaseUpdated =
+        purchaseRep.getPurchaseStream();
+
+    appSub =
         purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
-      _subscription.cancel();
+      appSub.cancel();
     }, onError: (Object error) {
       // handle error here.
     });
@@ -67,10 +72,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   }
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+    safePrint(purchaseDetailsList);
     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
       if (purchaseDetails.status == PurchaseStatus.pending) {
         // _showPendingUI();
       } else {
+        safePrint(purchaseDetails);
         if (purchaseDetails.status == PurchaseStatus.error) {
           safePrint(purchaseDetails.error);
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
@@ -94,12 +101,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     final PurchaseParam purchaseParam =
         PurchaseParam(productDetails: productDetails);
 
-    InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
+    purchaseRep.buyConsumable(purchaseParam);
     // InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   void _loadProducts() async {
-    available = await InAppPurchase.instance.isAvailable();
+    available = await purchaseRep.isAvailable();
 
     if (!available) {
       // The store cannot be reached or accessed. Update the UI accordingly.
@@ -111,7 +118,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     // `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 
     final ProductDetailsResponse response =
-        await InAppPurchase.instance.queryProductDetails(consumables);
+        await purchaseRep.queryProductDetails(consumables);
     if (response.notFoundIDs.isNotEmpty) {
       // Handle the error.
     }

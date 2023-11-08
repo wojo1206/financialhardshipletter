@@ -56,10 +56,12 @@ export async function handler(event) {
       .replace(/[\n]/g, "\\n")
       .replace(/[\r]/g, "\\r")
       .replace(/[\t]/g, "\\t");
+    const createAtTimestamp = Math.floor(Date.now() / 1000);
 
-    const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", gptSessionGptMessagesId: "${gptSessionIdStr}" }) { 
+    const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createAtTimestamp: ${createAtTimestamp}, gptSessionGptMessagesId: "${gptSessionIdStr}"}) { 
         id
         chunk
+        createAtTimestamp
         gptSessionGptMessagesId
         createdAt
         updatedAt

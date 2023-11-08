@@ -6,13 +6,14 @@ input AMPLIFY {
 type User @model {
   id: ID!
   email: AWSEmail! @index
+  tokens: Int
   gptSessions: [GptSession] @hasMany
-  settings: Setting @hasOne
 }
 
 type GptMessage @model {
   id: ID!
   chunk: AWSJSON!
+  createAtTimestamp: Int!
   gptSession: GptSession @belongsTo
 }
 
@@ -23,12 +24,6 @@ type GptSession @model {
   original: String
   modified: String
   gptMessages: [GptMessage] @hasMany
-}
-
-type Setting @model {
-  id: ID!
-  tokens: Int
-  user: User @belongsTo
 }
 
 type Mutation {

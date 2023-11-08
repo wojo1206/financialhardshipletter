@@ -4,7 +4,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:simpleiawriter/bloc/app.bloc.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
 import 'package:simpleiawriter/widgets/purchase.widget.dart';
@@ -19,8 +20,8 @@ class TokensInfo extends StatefulWidget {
 class _TokensInfoState extends State<TokensInfo> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-      safePrint("TokensInfoState");
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      safePrint("TokensInfo");
 
       Widget button = TextButton(
         onPressed: () {
@@ -30,7 +31,7 @@ class _TokensInfoState extends State<TokensInfo> {
         child: Text(AppLocalizations.of(context)!.logIn),
       );
 
-      if (state.isLoggedIn) {
+      if (state.status == AuthenticationStatus.authenticated) {
         button = TextButton(
           onPressed: () {
             ViewHelper.myDialog(context, AppLocalizations.of(context)!.addToken,
@@ -44,7 +45,11 @@ class _TokensInfoState extends State<TokensInfo> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('Tokens: ${state.tokens}'), button],
+          children: [
+            BlocBuilder<AppBloc, AppState>(
+                builder: (context, state) => Text('Tokens: ${state.tokens}')),
+            button
+          ],
         ),
       );
     });

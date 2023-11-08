@@ -29,11 +29,10 @@ class User extends amplify_core.Model {
   static const classType = const _UserModelType();
   final String id;
   final String? _email;
+  final int? _tokens;
   final List<GptSession>? _gptSessions;
-  final Setting? _settings;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
-  final String? _userSettingsId;
 
   @override
   getInstanceType() => classType;
@@ -61,12 +60,12 @@ class User extends amplify_core.Model {
     }
   }
   
-  List<GptSession>? get gptSessions {
-    return _gptSessions;
+  int? get tokens {
+    return _tokens;
   }
   
-  Setting? get settings {
-    return _settings;
+  List<GptSession>? get gptSessions {
+    return _gptSessions;
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -77,19 +76,14 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  String? get userSettingsId {
-    return _userSettingsId;
-  }
+  const User._internal({required this.id, required email, tokens, gptSessions, createdAt, updatedAt}): _email = email, _tokens = tokens, _gptSessions = gptSessions, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  const User._internal({required this.id, required email, gptSessions, settings, createdAt, updatedAt, userSettingsId}): _email = email, _gptSessions = gptSessions, _settings = settings, _createdAt = createdAt, _updatedAt = updatedAt, _userSettingsId = userSettingsId;
-  
-  factory User({String? id, required String email, List<GptSession>? gptSessions, Setting? settings, String? userSettingsId}) {
+  factory User({String? id, required String email, int? tokens, List<GptSession>? gptSessions}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       email: email,
-      gptSessions: gptSessions != null ? List<GptSession>.unmodifiable(gptSessions) : gptSessions,
-      settings: settings,
-      userSettingsId: userSettingsId);
+      tokens: tokens,
+      gptSessions: gptSessions != null ? List<GptSession>.unmodifiable(gptSessions) : gptSessions);
   }
   
   bool equals(Object other) {
@@ -102,9 +96,8 @@ class User extends amplify_core.Model {
     return other is User &&
       id == other.id &&
       _email == other._email &&
-      DeepCollectionEquality().equals(_gptSessions, other._gptSessions) &&
-      _settings == other._settings &&
-      _userSettingsId == other._userSettingsId;
+      _tokens == other._tokens &&
+      DeepCollectionEquality().equals(_gptSessions, other._gptSessions);
   }
   
   @override
@@ -117,78 +110,68 @@ class User extends amplify_core.Model {
     buffer.write("User {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("email=" + "$_email" + ", ");
+    buffer.write("tokens=" + (_tokens != null ? _tokens!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
-    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null") + ", ");
-    buffer.write("userSettingsId=" + "$_userSettingsId");
+    buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
     
     return buffer.toString();
   }
   
-  User copyWith({String? email, List<GptSession>? gptSessions, Setting? settings, String? userSettingsId}) {
+  User copyWith({String? email, int? tokens, List<GptSession>? gptSessions}) {
     return User._internal(
       id: id,
       email: email ?? this.email,
-      gptSessions: gptSessions ?? this.gptSessions,
-      settings: settings ?? this.settings,
-      userSettingsId: userSettingsId ?? this.userSettingsId);
+      tokens: tokens ?? this.tokens,
+      gptSessions: gptSessions ?? this.gptSessions);
   }
   
   User copyWithModelFieldValues({
     ModelFieldValue<String>? email,
-    ModelFieldValue<List<GptSession>?>? gptSessions,
-    ModelFieldValue<Setting?>? settings,
-    ModelFieldValue<String?>? userSettingsId
+    ModelFieldValue<int?>? tokens,
+    ModelFieldValue<List<GptSession>?>? gptSessions
   }) {
     return User._internal(
       id: id,
       email: email == null ? this.email : email.value,
-      gptSessions: gptSessions == null ? this.gptSessions : gptSessions.value,
-      settings: settings == null ? this.settings : settings.value,
-      userSettingsId: userSettingsId == null ? this.userSettingsId : userSettingsId.value
+      tokens: tokens == null ? this.tokens : tokens.value,
+      gptSessions: gptSessions == null ? this.gptSessions : gptSessions.value
     );
   }
   
   User.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _email = json['email'],
+      _tokens = (json['tokens'] as num?)?.toInt(),
       _gptSessions = json['gptSessions'] is List
         ? (json['gptSessions'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => GptSession.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
-      _settings = json['settings']?['serializedData'] != null
-        ? Setting.fromJson(new Map<String, dynamic>.from(json['settings']['serializedData']))
-        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
-      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null,
-      _userSettingsId = json['userSettingsId'];
+      _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'email': _email, 'gptSessions': _gptSessions?.map((GptSession? e) => e?.toJson()).toList(), 'settings': _settings?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format(), 'userSettingsId': _userSettingsId
+    'id': id, 'email': _email, 'tokens': _tokens, 'gptSessions': _gptSessions?.map((GptSession? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'email': _email,
+    'tokens': _tokens,
     'gptSessions': _gptSessions,
-    'settings': _settings,
     'createdAt': _createdAt,
-    'updatedAt': _updatedAt,
-    'userSettingsId': _userSettingsId
+    'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<UserModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<UserModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final EMAIL = amplify_core.QueryField(fieldName: "email");
+  static final TOKENS = amplify_core.QueryField(fieldName: "tokens");
   static final GPTSESSIONS = amplify_core.QueryField(
     fieldName: "gptSessions",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'GptSession'));
-  static final SETTINGS = amplify_core.QueryField(
-    fieldName: "settings",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'Setting'));
-  static final USERSETTINGSID = amplify_core.QueryField(fieldName: "userSettingsId");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "User";
     modelSchemaDefinition.pluralName = "Users";
@@ -205,18 +188,17 @@ class User extends amplify_core.Model {
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: User.TOKENS,
+      isRequired: false,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+    ));
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
       key: User.GPTSESSIONS,
       isRequired: false,
       ofModelName: 'GptSession',
       associatedKey: GptSession.USER
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasOne(
-      key: User.SETTINGS,
-      isRequired: false,
-      ofModelName: 'Setting',
-      associatedKey: Setting.USER
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -231,12 +213,6 @@ class User extends amplify_core.Model {
       isRequired: false,
       isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: User.USERSETTINGSID,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
   });
 }

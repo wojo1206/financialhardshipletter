@@ -6,10 +6,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
 
-import 'package:simpleiawriter/bloc/api.repository.dart';
-import 'package:simpleiawriter/bloc/app.bloc.dart';
-import 'package:simpleiawriter/bloc/auth.repository.dart';
+import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
 
 class SocialLogin extends StatefulWidget {
   const SocialLogin({super.key});
@@ -36,13 +37,8 @@ class _SocialLoginState extends State<SocialLogin> {
                   child: SignInButton(
                     Buttons.Facebook,
                     onPressed: () async {
-                      await _socialSignIn(AuthProvider.facebook).then((value) {
-                        if (value) {
-                          Navigator.pop(context, true);
-                          BlocProvider.of<AppBloc>(context)
-                              .add(UserLogIn(value));
-                        }
-                      });
+                      await _socialSignIn(AuthProvider.facebook)
+                          .then((value) => _processResult(value));
                     },
                   ),
                 ),
@@ -51,13 +47,8 @@ class _SocialLoginState extends State<SocialLogin> {
                   child: SignInButton(
                     Buttons.Google,
                     onPressed: () async {
-                      await _socialSignIn(AuthProvider.google).then((value) {
-                        if (value) {
-                          Navigator.pop(context, true);
-                          BlocProvider.of<AppBloc>(context)
-                              .add(UserLogIn(value));
-                        }
-                      });
+                      await _socialSignIn(AuthProvider.google)
+                          .then((value) => _processResult(value));
                     },
                   ),
                 ),
@@ -66,6 +57,18 @@ class _SocialLoginState extends State<SocialLogin> {
             Text(AppLocalizations.of(context)!.signInExplain)
           ]),
     );
+  }
+
+  void _processResult(bool value) {
+    BlocProvider.of<AuthBloc>(context).add(SetStatus(value
+        ? AuthenticationStatus.authenticated
+        : AuthenticationStatus.unauthenticated));
+
+    if (value) {
+      Navigator.pop(context, true);
+    } else {
+      // @TODO Show error.
+    }
   }
 
   Future<bool> _socialSignIn(AuthProvider provider) async {

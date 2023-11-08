@@ -7,13 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/bloc/api.repository.dart';
-import 'package:simpleiawriter/bloc/app.bloc.dart';
+import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
 
 import '../form/textarea.form.dart';
@@ -45,7 +46,7 @@ class _WritingScreenState extends State<WritingScreen> {
       _isGenerating = true;
     });
 
-    _test();
+    _startWriting();
   }
 
   @override
@@ -97,11 +98,7 @@ class _WritingScreenState extends State<WritingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextButton.icon(
-                  icon: const Icon(Icons.stop),
-                  label: const Text("Stop"),
-                  onPressed: _isGenerating ? () => _stop(context) : null,
-                ),
+                Container(),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.chevron_right),
                   label: const Text("Fill the blanks"),
@@ -115,38 +112,37 @@ class _WritingScreenState extends State<WritingScreen> {
     );
   }
 
-  Future<void> _test() async {
+  Future<void> _startWriting() async {
     try {
-      aiTextFocusNode.requestFocus();
-
-      String email = 'wszczurek@tbrelectronics.com';
-
       final appRep = RepositoryProvider.of<ApiRepository>(context);
+      final authRep = RepositoryProvider.of<AuthRepository>(context);
+
       final stopwatch = Stopwatch();
       stopwatch.start();
 
-      final res1 = await appRep.usersByEmail(email: email);
-      safePrint(res1);
+      aiTextFocusNode.requestFocus();
+
+      final auth1 = await authRep.fetchCurrentUserAttributes();
+      if (auth1!.isEmpty) throw Exception("Empty auth user attributes.");
       safePrint(stopwatch.elapsedMilliseconds / 1000);
 
-      User? user;
-      if (res1.data!.items.isEmpty) {
-        final res2 = await appRep.createUser(email: email);
-        safePrint(res2);
+      var attr1 =
+          auth1.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
+      if (attr1 == null) throw Exception("No email attribute.");
 
-        user = res2.data;
-      } else {
-        user = res1.data!.items.first;
-      }
+      final res1 = await appRep.usersByEmail(email: attr1.value);
+      safePrint(stopwatch.elapsedMilliseconds / 1000);
+
+      if (res1.data!.items.isEmpty) throw Exception("No user with that email.");
+      User? user = res1.data!.items.first;
 
       if (user != null) {
-        final res3 = await appRep.createGptSessionForUser(user: user);
-        safePrint(res3);
+        final res2 = await appRep.createGptSessionForUser(user: user);
         safePrint(stopwatch.elapsedMilliseconds / 1000);
 
-        final sessionUuid = res3.data!.id;
+        final sessionUuid = res2.data!.id;
 
-        stream1 = appRep.subscribeToChat(session: res3.data!).listen(
+        stream1 = appRep.subscribeToChat(session: res2.data!).listen(
           (event) {
             GptMessage? msg = event.data;
 
@@ -163,8 +159,6 @@ class _WritingScreenState extends State<WritingScreen> {
                 setState(() {
                   _cntToken += 1;
                 });
-
-                context.read<AppBloc>().add(SetTokens(1));
 
                 if (choice.finishReason == 'stop') {
                   _sortText();
@@ -207,7 +201,7 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   _stop(BuildContext context) async {
-    if (stream1 != null) stream1?.cancel();
+    stream1?.cancel();
 
     setState(() {
       _isGenerating = false;

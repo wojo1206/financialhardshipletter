@@ -1,10 +1,5 @@
-import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-
-import 'package:simpleiawriter/graphql/queries.graphql.dart';
-import 'package:simpleiawriter/graphql/mutations.graphql.dart';
-import 'package:simpleiawriter/models/ModelProvider.dart';
 
 abstract class AuthRepository {
   Future<bool> isUserSignedIn();
@@ -13,7 +8,7 @@ abstract class AuthRepository {
 
   Future<AuthUser> getCurrentUser();
 
-  Future<SignInResult?> signInWithWebUI({required AuthProvider provider});
+  Future<CognitoSignInResult> signInWithWebUI({required AuthProvider provider});
 
   Future<CognitoSignInResult?> signIn(
       {required String username, required String password});
@@ -43,8 +38,9 @@ class AmplifyAuthRepository implements AuthRepository {
 
   @override
   Future<AuthUser> getCurrentUser() async {
-    final user = await auth.getCurrentUser();
-    return user;
+    final result = await auth.getCurrentUser();
+    safePrint('getCurrentUser: $result');
+    return result;
   }
 
   @override
@@ -55,21 +51,18 @@ class AmplifyAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<SignInResult?> signInWithWebUI(
+  Future<CognitoSignInResult> signInWithWebUI(
       {required AuthProvider provider}) async {
-    try {
-      const pluginOptions = CognitoSignInWithWebUIPluginOptions(
-        isPreferPrivateSession: true,
-      );
+    const pluginOptions = CognitoSignInWithWebUIPluginOptions(
+      isPreferPrivateSession: true,
+    );
 
-      return await auth.signInWithWebUI(
-        provider: provider,
-        options: const SignInWithWebUIOptions(pluginOptions: pluginOptions),
-      );
-    } on AuthException catch (e) {
-      safePrint('Error signing in: ${e.message}');
-    }
-    return null;
+    final result = await auth.signInWithWebUI(
+      provider: provider,
+      options: const SignInWithWebUIOptions(pluginOptions: pluginOptions),
+    );
+
+    return result;
   }
 
   /// Returns
