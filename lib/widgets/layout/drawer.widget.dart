@@ -1,15 +1,12 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
-import 'package:simpleiawriter/widgets/auth/login.screen.dart';
-import 'package:simpleiawriter/widgets/history.screen.dart';
-import 'package:simpleiawriter/widgets/settings.screen.dart';
+import 'package:simpleiawriter/widgets/auth/login.flutter.screen.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -66,7 +63,7 @@ class MyDrawer extends StatelessWidget {
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logIn),
                 onTap: () {
-                  _popAndPush(context, const LoginScreen());
+                  _popAndPush(context, const LoginFlutterScreen());
                 },
               ),
             ]);

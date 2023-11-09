@@ -4,6 +4,7 @@ String USERS_BY_EMAIL() {
         items {
           id
           email
+          tokens
         }
       }
     }''';

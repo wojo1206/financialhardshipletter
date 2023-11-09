@@ -175,13 +175,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        AppLocalizations.of(context)!.appName,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 48,
-                            fontWeight: FontWeight.bold,
-                            height: 1),
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          AppLocalizations.of(context)!
+                              .appName
+                              .replaceAll(" ", "\n"),
+                          style: const TextStyle(
+                              fontSize: 100,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              height: 1),
+                        ),
                       ),
                       Text(
                         AppLocalizations.of(context)!.appCatchyPhrase,

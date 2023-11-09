@@ -17,7 +17,6 @@ class WriterAssistantStep1 extends StatefulWidget {
 class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
   HardshipLetterType? _letterType = HardshipLetterType.medical;
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     List<Widget> letterTypes = [];
@@ -48,7 +47,16 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
                     Expanded(
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [icon, Text(e.getLabel(context))]),
+                          children: [
+                            const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Text here",
+                                style: TextStyle(fontSize: 100),
+                              ),
+                            ),
+                            Text(e.getLabel(context))
+                          ]),
                     ),
                   ],
                 ),

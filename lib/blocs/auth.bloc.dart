@@ -1,17 +1,22 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum AuthenticationStatus { unknown, authenticated, unauthenticated }
 
-class AuthState extends Equatable {
-  AuthenticationStatus status = AuthenticationStatus.unknown;
+class AuthState {
+  const AuthState({required this.authUserAttributes, required this.status});
 
-  @override
-  List<Object> get props => [status];
+  final AuthenticationStatus status;
+  final List<AuthUserAttribute> authUserAttributes;
 }
 
 sealed class AuthEvent {}
+
+final class SetAuthUserAttributes extends AuthEvent {
+  final List<AuthUserAttribute> authUserAttributes;
+
+  SetAuthUserAttributes(this.authUserAttributes);
+}
 
 final class SetStatus extends AuthEvent {
   final AuthenticationStatus status;
@@ -20,10 +25,23 @@ final class SetStatus extends AuthEvent {
 }
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthState()) {
+  AuthBloc()
+      : super(
+          const AuthState(
+              authUserAttributes: [], status: AuthenticationStatus.unknown),
+        ) {
+    on<SetAuthUserAttributes>((event, emit) {
+      emit(
+        AuthState(
+            authUserAttributes: event.authUserAttributes, status: state.status),
+      );
+    });
+
     on<SetStatus>((event, emit) {
-      state.status = event.status;
-      emit(state);
+      emit(
+        AuthState(
+            authUserAttributes: state.authUserAttributes, status: event.status),
+      );
     });
   }
 }

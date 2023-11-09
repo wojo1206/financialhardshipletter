@@ -4,6 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/app.bloc.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 
@@ -18,13 +19,9 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  List<AuthUserAttribute> authUserAttrs = [];
-
   @override
   void initState() {
     super.initState();
-
-    _onInit();
   }
 
   // This widget is the root of your application.
@@ -42,30 +39,26 @@ class _AccountScreenState extends State<AccountScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Expanded(
-              child: ListView.builder(
-                // Let the ListView know how many items it needs to build.
-                itemCount: authUserAttrs.length,
-                // Provide a builder function. This is where the magic happens.
-                // Convert each item into a widget based on the type of item it is.
-                itemBuilder: (context, index) {
-                  final item = authUserAttrs[index];
-                  return ListTile(
-                    title: Text(item.userAttributeKey.key),
-                    subtitle: Text(item.value),
-                  );
-                },
-              ),
+              child:
+                  BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+                return ListView.builder(
+                  // Let the ListView know how many items it needs to build.
+                  itemCount: state.authUserAttributes.length,
+                  // Provide a builder function. This is where the magic happens.
+                  // Convert each item into a widget based on the type of item it is.
+                  itemBuilder: (context, index) {
+                    final item = state.authUserAttributes[index];
+                    return ListTile(
+                      title: Text(item.userAttributeKey.key),
+                      subtitle: Text(item.value),
+                    );
+                  },
+                );
+              }),
             )
           ],
         ),
       ),
     );
-  }
-
-  _onInit() async {
-    final authRep = RepositoryProvider.of<AuthRepository>(context);
-    authUserAttrs = await authRep.fetchCurrentUserAttributes() ?? [];
-
-    setState(() {});
   }
 }

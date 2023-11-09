@@ -23,17 +23,11 @@ class AmplifyAuthRepository implements AuthRepository {
 
   @override
   Future<List<AuthUserAttribute>?> fetchCurrentUserAttributes() async {
-    try {
-      final result = await auth.fetchUserAttributes();
-      for (final element in result) {
-        safePrint('key: ${element.userAttributeKey}; value: ${element.value}');
-      }
-
-      return result;
-    } on AuthException catch (e) {
-      safePrint('Error fetching user attributes: ${e.message}');
+    final result = await auth.fetchUserAttributes();
+    for (final element in result) {
+      safePrint('key: ${element.userAttributeKey}; value: ${element.value}');
     }
-    return null;
+    return result;
   }
 
   @override
@@ -80,24 +74,14 @@ class AmplifyAuthRepository implements AuthRepository {
   @override
   Future<CognitoSignInResult?> signIn(
       {required String username, required String password}) async {
-    try {
-      return await auth.signIn(
-        username: username,
-        password: password,
-      );
-    } on AuthException catch (e) {
-      safePrint('Error signing in: ${e.message}');
-    }
-    return null;
+    return await auth.signIn(
+      username: username,
+      password: password,
+    );
   }
 
   @override
   Future<CognitoSignOutResult?> signOut() async {
-    try {
-      return await auth.signOut();
-    } on AuthException catch (e) {
-      safePrint('Error signing out: ${e.message}');
-    }
-    return null;
+    return await auth.signOut();
   }
 }

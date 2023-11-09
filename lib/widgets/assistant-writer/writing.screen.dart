@@ -8,14 +8,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
-import 'package:simpleiawriter/blocs/app.bloc.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
 
 import '../form/textarea.form.dart';
 
@@ -137,6 +135,13 @@ class _WritingScreenState extends State<WritingScreen> {
       User? user = res1.data!.items.first;
 
       if (user != null) {
+        if (user.tokens! <= 0) {
+          ViewHelper.myError(
+              context, 'Error', const Text('Not enought credits'));
+          Navigator.pop(context);
+          return;
+        }
+
         final res2 = await appRep.createGptSessionForUser(user: user);
         safePrint(stopwatch.elapsedMilliseconds / 1000);
 
@@ -175,8 +180,9 @@ class _WritingScreenState extends State<WritingScreen> {
 
         appRep.initGptQuery(prompt: "", gptSessionId: sessionUuid);
       }
-    } on ApiException catch (e) {
+    } catch (e) {
       safePrint('ERROR: $e');
+      ViewHelper.myError(context, 'Problem', Text(e.toString()));
     }
   }
 

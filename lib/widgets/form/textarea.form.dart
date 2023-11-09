@@ -23,7 +23,7 @@ class TextareaForm extends StatelessWidget {
       this.minLines,
       this.readonly = false,
       this.scrollController,
-      this.showCursor = false});
+      this.showCursor = true});
 
   // This widget is the root of your application.
   @override

@@ -4,7 +4,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
@@ -45,11 +44,7 @@ class _TokensInfoState extends State<TokensInfo> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BlocBuilder<AppBloc, AppState>(
-                builder: (context, state) => Text('Tokens: ${state.tokens}')),
-            button
-          ],
+          children: [Text('Tokens: @TODO'), button],
         ),
       );
     });

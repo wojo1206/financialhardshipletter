@@ -35,7 +35,7 @@ class _SocialLoginState extends State<SocialLogin> {
                 SizedBox(
                   width: double.infinity,
                   child: SignInButton(
-                    Buttons.Facebook,
+                    Buttons.FacebookNew,
                     onPressed: () async {
                       await _socialSignIn(AuthProvider.facebook)
                           .then((value) => _processResult(value));
@@ -48,6 +48,16 @@ class _SocialLoginState extends State<SocialLogin> {
                     Buttons.Google,
                     onPressed: () async {
                       await _socialSignIn(AuthProvider.google)
+                          .then((value) => _processResult(value));
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: SignInButton(
+                    Buttons.Apple,
+                    onPressed: () async {
+                      await _socialSignIn(AuthProvider.apple)
                           .then((value) => _processResult(value));
                     },
                   ),
@@ -75,7 +85,6 @@ class _SocialLoginState extends State<SocialLogin> {
     try {
       final authRep = RepositoryProvider.of<AuthRepository>(context);
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
-      // final dataRep = RepositoryProvider.of<DataStoreRepository>(context);
 
       final res1 = await authRep.signInWithWebUI(provider: provider);
       safePrint(res1);

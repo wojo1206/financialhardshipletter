@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class ViewHelper {
   static dynamic promptDialog(BuildContext context, String question) {
@@ -121,12 +124,46 @@ class ViewHelper {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: content,
-        );
+        return AlertDialog(title: Text(title), content: content);
       },
     );
+  }
+
+  static dynamic myError(BuildContext context, String title, Widget content) {
+    return Platform.isAndroid
+        ? showDialog<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(title),
+                content: content,
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Close'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          )
+        : showCupertinoModalPopup<void>(
+            context: context,
+            builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text(title),
+              content: content,
+              actions: <CupertinoDialogAction>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
   }
 
   static void goHome(BuildContext context) {

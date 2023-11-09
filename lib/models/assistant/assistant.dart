@@ -4,6 +4,8 @@ import 'package:simpleiawriter/constants.dart';
 enum PERSON { first, third }
 
 enum QUESTION {
+  type,
+  perpective,
   reason,
   lasting,
   specific,
@@ -46,6 +48,25 @@ abstract class Assistant {
 
   List<Question> questionsAndSuggestions(BuildContext context) {
     return [
+      Question(
+        QUESTION.type,
+        'Select your hardship area:',
+        [
+          Suggestion('medical'),
+          Suggestion('mortgage'),
+          Suggestion('credit card'),
+        ],
+        isSingleAnswer: true,
+      ),
+      Question(
+        QUESTION.perpective,
+        'Choose you writing perspective:',
+        [
+          Suggestion('first person'),
+          Suggestion('third person'),
+        ],
+        isSingleAnswer: true,
+      ),
       Question(
         QUESTION.reason,
         'What is the reason for your financial hardship?',
@@ -100,23 +121,25 @@ abstract class Assistant {
         isSingleAnswer: false,
       ),
       Question(
-          QUESTION.highlightDetails,
-          'Are there any specific details or events related to your hardship that you want to highlight in the letter?',
-          [
-            Suggestion('medical diagnosis'),
-            Suggestion('job termination date'),
-            Suggestion('specific incident')
-          ],
-          isSingleAnswer: true),
+        QUESTION.highlightDetails,
+        'Are there any specific details or events related to your hardship that you want to highlight in the letter?',
+        [
+          Suggestion('medical diagnosis'),
+          Suggestion('job termination date'),
+          Suggestion('specific incident')
+        ],
+        isSingleAnswer: true,
+      ),
       Question(
-          QUESTION.outcome,
-          'Is there a specific outcome you hope to achieve through this hardship letter?',
-          [
-            Suggestion('loan modification'),
-            Suggestion('payment extension'),
-            Suggestion('financial assistance')
-          ],
-          isSingleAnswer: false)
+        QUESTION.outcome,
+        'Is there a specific outcome you hope to achieve through this hardship letter?',
+        [
+          Suggestion('loan modification'),
+          Suggestion('payment extension'),
+          Suggestion('financial assistance')
+        ],
+        isSingleAnswer: false,
+      )
     ];
   }
 }
