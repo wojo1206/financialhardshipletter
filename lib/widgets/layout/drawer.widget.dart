@@ -27,7 +27,7 @@ class MyDrawer extends StatelessWidget {
             ),
           ];
 
-          if (state.status == AuthenticationStatus.authenticated) {
+          if (state.status == AuthenticationState.authenticated) {
             children.addAll([
               ListTile(
                 title: Text(AppLocalizations.of(context)!.titleAccount),
@@ -52,8 +52,8 @@ class MyDrawer extends StatelessWidget {
                 onTap: () async {
                   await authRep
                       .signOut()
-                      .then((value) => BlocProvider.of<AuthBloc>(context)
-                          .add(SetStatus(AuthenticationStatus.unauthenticated)))
+                      .then((value) => BlocProvider.of<AuthBloc>(context).add(
+                          StatusChanged(AuthenticationState.unauthenticated)))
                       .then((value) => Navigator.pop(context));
                 },
               ),

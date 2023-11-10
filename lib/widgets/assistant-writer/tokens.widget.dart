@@ -30,7 +30,7 @@ class _TokensInfoState extends State<TokensInfo> {
         child: Text(AppLocalizations.of(context)!.logIn),
       );
 
-      if (state.status == AuthenticationStatus.authenticated) {
+      if (state.status == AuthenticationState.authenticated) {
         button = TextButton(
           onPressed: () {
             ViewHelper.myDialog(context, AppLocalizations.of(context)!.addToken,

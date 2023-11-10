@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
@@ -20,11 +21,11 @@ class WriterAssistantStep3 extends StatefulWidget {
 }
 
 class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
-  final PageController ctrl = PageController(
+  final PageController ctrlPage = PageController(
     viewportFraction: 1.0,
   );
   double _sliderVal = 0;
-  final StreamController<double> sliderCtrl = StreamController<double>();
+  final StreamController<double> ctrlSlider = StreamController<double>();
 
   List<Widget> hardshipReasons = [];
   List<Widget> questionsAndSuggestions = [];
@@ -33,10 +34,10 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
 
   @override
   void initState() {
-    sliderCtrl.stream
+    ctrlSlider.stream
         .debounceTime(const Duration(milliseconds: 200))
         .listen((event) {
-      ctrl
+      ctrlPage
           .animateToPage(
             event.toInt(),
             duration: const Duration(milliseconds: 400),
@@ -53,7 +54,6 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
     super.dispose();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     questionsAndSuggestions = [];
@@ -61,22 +61,37 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
     assistant.questionsAndSuggestions(context).forEach((e) {
       List<Widget> suggestions = [];
 
-      e.suggestions.forEach((f) {
-        suggestions.add(
-          FilterChip(
-            label: Text(f.suggestion),
-            selected: e.filters.contains(f.suggestion),
-            onSelected: (bool selected) {
-              if (selected) {
-                e.filters.add(f.suggestion);
-              } else {
-                e.filters.remove(f.suggestion);
-              }
-              setState(() {});
-            },
-          ),
-        );
-      });
+      for (var f in e.suggestions) {
+        suggestions.add(switch (e.enumInput) {
+          INPUT.checkbox => CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text(f.suggestion),
+              value: false,
+              onChanged: (bool? value) {},
+            ),
+          INPUT.radio => RadioListTile<String>(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text(f.suggestion),
+              value: '',
+              groupValue: '',
+              onChanged: (String? value) {},
+            ),
+          INPUT.text => CheckboxListTile(
+              controlAffinity: ListTileControlAffinity.leading,
+              title: Text(f.suggestion),
+              value: false,
+              onChanged: (bool? value) {},
+            ),
+        });
+      }
+
+      suggestions.add(
+        TextareaForm(
+          hintText: 'Other ...',
+          expands: false,
+          focusNode: e.focusNode,
+        ),
+      );
 
       questionsAndSuggestions.add(
         Container(
@@ -85,17 +100,20 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                e.question,
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              Expanded(
-                child: TextareaForm(
-                  expands: true,
-                  focusNode: e.focusNode,
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  e.question,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
                 ),
               ),
+              // Expanded(
+              //   child: TextareaForm(
+              //     expands: true,
+              //     focusNode: e.focusNode,
+              //   ),
+              // ),
               Expanded(
                 child: Wrap(
                   spacing: 8.0,
@@ -110,13 +128,12 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
 
     return AssistantLayout(
       title: AppLocalizations.of(context)!.assistant,
-      helpText:
-          'These ${questionsAndSuggestions.length} questions help to produce a letter specific to you needs.',
+      helpText: '',
       helpUrl: '',
       children: [
         Expanded(
           child: PageView(
-            controller: ctrl,
+            controller: ctrlPage,
             clipBehavior: Clip.antiAlias,
             physics: const NeverScrollableScrollPhysics(),
             children: questionsAndSuggestions,
@@ -130,7 +147,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           onChanged: (double value) {
             setState(() {
               _sliderVal = value;
-              sliderCtrl.sink.add(value);
+              ctrlSlider.sink.add(value);
             });
           },
         ),
@@ -140,7 +157,7 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
           setState(() {
             _sliderVal += 1.0;
           });
-          sliderCtrl.sink.add(_sliderVal);
+          ctrlSlider.sink.add(_sliderVal);
         } else {
           Navigator.of(context).push(
             ViewHelper.routeSlide(

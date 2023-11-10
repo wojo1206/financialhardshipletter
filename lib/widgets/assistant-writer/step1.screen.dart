@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step2.screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step3.screen.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
 class WriterAssistantStep1 extends StatefulWidget {
@@ -48,14 +48,18 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const FittedBox(
+                            FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: Text(
-                                "Text here",
-                                style: TextStyle(fontSize: 100),
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    0, 16.0, 16.0, 16.0),
+                                child: Text(
+                                  e.getLabel(context).replaceAll(" ", "\n"),
+                                  style: const TextStyle(fontSize: 24),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             ),
-                            Text(e.getLabel(context))
                           ]),
                     ),
                   ],
@@ -73,7 +77,7 @@ class _WriterAssistantStep1 extends State<WriterAssistantStep1> {
       children: letterTypes,
       onNext: () => Navigator.of(context).push(
         ViewHelper.routeSlide(
-          const WriterAssistantStep2(),
+          const WriterAssistantStep3(),
         ),
       ),
     );

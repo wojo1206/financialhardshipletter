@@ -22,6 +22,21 @@ class FormHelper {
     return assistants;
   }
 
+  static Widget listTileWithCheckBox(
+    BuildContext context, {
+    required bool isChecked,
+    required Function(bool?) onChanged,
+    required Widget title,
+  }) {
+    return ListTile(
+      leading: Checkbox(
+        value: isChecked,
+        onChanged: onChanged,
+      ),
+      title: title,
+    );
+  }
+
   static Widget wrapperBody(BuildContext context, Widget child) {
     return SafeArea(
       child: SingleChildScrollView(

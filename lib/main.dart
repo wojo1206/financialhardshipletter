@@ -19,7 +19,7 @@ import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/repos/datastore.repository.dart';
 import 'package:simpleiawriter/repos/purchase.repository.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step1.screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/step3.screen.dart';
 import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
 
 import 'amplifyconfiguration.dart';
@@ -72,6 +72,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
+      // @deprecated
       providers: [
         RepositoryProvider<ApiRepository>(create: (context) => _appRepository),
         RepositoryProvider<AuthRepository>(
@@ -87,7 +88,8 @@ class App extends StatelessWidget {
             create: (BuildContext context) => AppBloc(),
           ),
           BlocProvider<AuthBloc>(
-            create: (BuildContext context) => AuthBloc(),
+            create: (BuildContext context) =>
+                AuthBloc(apiRep: _appRepository, authRep: _authRepository),
           ),
         ],
         child: MaterialApp(
@@ -136,10 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
       resumeCallBack: () async {
         safePrint("resumeCallBack");
 
-        BlocProvider.of<AuthBloc>(context).add(SetStatus(
+        BlocProvider.of<AuthBloc>(context).add(StatusChanged(
             await authRep.isUserSignedIn()
-                ? AuthenticationStatus.authenticated
-                : AuthenticationStatus.unauthenticated));
+                ? AuthenticationState.authenticated
+                : AuthenticationState.unauthenticated));
       },
       suspendingCallBack: () async {
         safePrint("suspendingCallBack");
@@ -207,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                       onPressed: () => Navigator.of(context).push(
                         ViewHelper.routeSlide(
-                          const WriterAssistantStep1(),
+                          const WriterAssistantStep3(),
                         ),
                       ),
                       child: Text(AppLocalizations.of(context)!.appStart),

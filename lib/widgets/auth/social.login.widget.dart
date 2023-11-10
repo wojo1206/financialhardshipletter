@@ -7,6 +7,7 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/models/User.dart';
 
 import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/blocs/app.bloc.dart';
@@ -70,9 +71,9 @@ class _SocialLoginState extends State<SocialLogin> {
   }
 
   void _processResult(bool value) {
-    BlocProvider.of<AuthBloc>(context).add(SetStatus(value
-        ? AuthenticationStatus.authenticated
-        : AuthenticationStatus.unauthenticated));
+    BlocProvider.of<AuthBloc>(context).add(StatusChanged(value
+        ? AuthenticationState.authenticated
+        : AuthenticationState.unauthenticated));
 
     if (value) {
       Navigator.pop(context, true);

@@ -15,8 +15,15 @@ enum QUESTION {
   outcome,
 }
 
+enum INPUT {
+  radio,
+  checkbox,
+  text,
+}
+
 class Question {
-  final QUESTION questionEnum;
+  final QUESTION enumQuestion;
+  final INPUT enumInput;
   final bool isSingleAnswer;
   final focusNode = FocusNode();
   final List<Suggestion> suggestions;
@@ -24,15 +31,16 @@ class Question {
 
   Set filters = <String>{};
 
-  Question(this.questionEnum, this.question, this.suggestions,
+  Question(this.enumQuestion, this.enumInput, this.question, this.suggestions,
       {this.isSingleAnswer = true});
 }
 
 class Suggestion {
   final String suggestion;
   final bool isFollowUp;
+  final String explain;
 
-  Suggestion(this.suggestion, {this.isFollowUp = true});
+  Suggestion(this.suggestion, {this.isFollowUp = true, this.explain = ""});
 }
 
 abstract class Assistant {
@@ -50,93 +58,108 @@ abstract class Assistant {
     return [
       Question(
         QUESTION.type,
+        INPUT.radio,
         'Select your hardship area:',
         [
-          Suggestion('medical'),
-          Suggestion('mortgage'),
-          Suggestion('credit card'),
+          Suggestion('Medical',
+              explain:
+                  'If your hardship is related to medical expenses, bills, or healthcare costs.'),
+          Suggestion('Mortgage',
+              explain:
+                  'If your financial difficulties are connected to your home mortgage or rent.'),
+          Suggestion('Credit Card',
+              explain:
+                  'If your hardship revolves around credit card debt and related financial struggles.'),
         ],
         isSingleAnswer: true,
       ),
       Question(
         QUESTION.perpective,
+        INPUT.radio,
         'Choose you writing perspective:',
         [
-          Suggestion('first person'),
-          Suggestion('third person'),
+          Suggestion('First Person'),
+          Suggestion('Third Person'),
         ],
         isSingleAnswer: true,
       ),
       Question(
         QUESTION.reason,
+        INPUT.checkbox,
         'What is the reason for your financial hardship?',
         [
-          Suggestion('job loss'),
-          Suggestion('medical expenses'),
-          Suggestion('unexpected bills'),
-          Suggestion('divorce'),
-          Suggestion('natural disaster'),
-          Suggestion('severe injury'),
-          Suggestion('severe illness'),
+          Suggestion('Job Loss'),
+          Suggestion('Medical Expenses'),
+          Suggestion('Enexpected Bills'),
+          Suggestion('Divorce'),
+          Suggestion('Natural disaster'),
+          Suggestion('Severe Injury'),
+          Suggestion('Severe Illness'),
         ],
         isSingleAnswer: false,
       ),
       Question(
         QUESTION.lasting,
+        INPUT.checkbox,
         'How long have you been facing this hardship?',
         [
-          Suggestion('for the past six months', isFollowUp: false),
-          Suggestion('since last year', isFollowUp: false),
+          Suggestion('For the Past Six Months', isFollowUp: false),
+          Suggestion('Since Last Year', isFollowUp: false),
         ],
         isSingleAnswer: true,
       ),
       Question(
         QUESTION.specific,
+        INPUT.checkbox,
         'What specific financial difficulties are you experiencing?',
         [
-          Suggestion('overdue bills'),
-          Suggestion('mounting debt'),
-          Suggestion('inability to make mortgage/rent payments'),
+          Suggestion('Overdue Bills'),
+          Suggestion('Mounting Debt'),
+          Suggestion('Inability to Make Mortgage/Rent Payments'),
         ],
         isSingleAnswer: false,
       ),
       Question(
         QUESTION.actionsTaken,
+        INPUT.checkbox,
         'Have you taken any actions to address your hardship?',
         [
-          Suggestion('looking to find a new job'),
-          Suggestion('seeking financial assistance'),
-          Suggestion('negotiate with creditors'),
+          Suggestion('Looking to Find a new Job'),
+          Suggestion('Seeking Financial Assistance'),
+          Suggestion('Negotiate with Creditors'),
         ],
         isSingleAnswer: false,
       ),
       Question(
         QUESTION.supportingDocuments,
+        INPUT.checkbox,
         'Do you have any supporting documents for your hardship?',
         [
-          Suggestion('medical bills'),
-          Suggestion('job termination notice'),
-          Suggestion('health condition diagnosis'),
+          Suggestion('Medical Bills'),
+          Suggestion('Job Termination Notice'),
+          Suggestion('Health Condition Diagnosis'),
         ],
         isSingleAnswer: false,
       ),
       Question(
         QUESTION.highlightDetails,
+        INPUT.text,
         'Are there any specific details or events related to your hardship that you want to highlight in the letter?',
         [
-          Suggestion('medical diagnosis'),
-          Suggestion('job termination date'),
-          Suggestion('specific incident')
+          Suggestion('Medical Diagnosis'),
+          Suggestion('Job Termination Date'),
+          Suggestion('Specific Incident')
         ],
         isSingleAnswer: true,
       ),
       Question(
         QUESTION.outcome,
+        INPUT.radio,
         'Is there a specific outcome you hope to achieve through this hardship letter?',
         [
-          Suggestion('loan modification'),
-          Suggestion('payment extension'),
-          Suggestion('financial assistance')
+          Suggestion('Loan Modification'),
+          Suggestion('Payment Extension'),
+          Suggestion('Financial Assistance')
         ],
         isSingleAnswer: false,
       )
