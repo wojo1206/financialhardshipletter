@@ -19,7 +19,7 @@ import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/repos/datastore.repository.dart';
 import 'package:simpleiawriter/repos/purchase.repository.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/step3.screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/questions.screen.dart';
 import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
 
 import 'amplifyconfiguration.dart';
@@ -138,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
       resumeCallBack: () async {
         safePrint("resumeCallBack");
 
-        BlocProvider.of<AuthBloc>(context).add(StatusChanged(
+        BlocProvider.of<AuthBloc>(context).add(AuthChanged(
             await authRep.isUserSignedIn()
                 ? AuthenticationState.authenticated
                 : AuthenticationState.unauthenticated));
@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                       onPressed: () => Navigator.of(context).push(
                         ViewHelper.routeSlide(
-                          const WriterAssistantStep3(),
+                          const QuestionsScreen(),
                         ),
                       ),
                       child: Text(AppLocalizations.of(context)!.appStart),

@@ -1,6 +1,6 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/constants.dart';
+
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 class MortgageAssistant extends Assistant {
@@ -16,9 +16,6 @@ class MortgageAssistant extends Assistant {
       begin: Alignment.bottomCenter,
       end: Alignment.topCenter,
       colors: [Color(0xFF23408E), Color(0xFF385399), Color(0xFF3A4CB4)]);
-
-  @override
-  HardshipLetterType get letterType => HardshipLetterType.mortgage;
 
   @override
   String getLabel(BuildContext context) {

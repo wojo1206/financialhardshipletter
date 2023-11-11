@@ -1,17 +1,19 @@
+import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:simpleiawriter/models/User.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
+import 'package:simpleiawriter/models/ModelProvider.dart';
 
 import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 
 enum AuthenticationState { unknown, authenticated, unauthenticated }
 
-const String EMPTY = "";
-
 class AuthState {
-  const AuthState(
-      {this.status = AuthenticationState.unauthenticated,
-      this.user = User(email: "")});
+  const AuthState({
+    this.status = AuthenticationState.unauthenticated,
+    required this.user,
+  });
 
   final AuthenticationState status;
   final User user;
@@ -19,10 +21,10 @@ class AuthState {
 
 sealed class AuthEvent {}
 
-final class StatusChanged extends AuthEvent {
+final class AuthChanged extends AuthEvent {
   final AuthenticationState status;
 
-  StatusChanged(this.status);
+  AuthChanged(this.status);
 }
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -35,54 +37,66 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _authRep = authRep,
         _apiRep = apiRep,
         super(
-          const AuthState(status: AuthenticationState.unknown),
+          AuthState(status: AuthenticationState.unknown, user: User(email: '')),
         ) {
-    on<StatusChanged>((event, emit) {
-      emit(
-        AuthState(status: event.status),
-      );
-    });
+    on<AuthChanged>(_onAuthenticationStatusChanged);
   }
 
   Future<void> _onAuthenticationStatusChanged(
-    StatusChanged event,
+    AuthChanged event,
     Emitter<AuthState> emit,
   ) async {
     switch (event.status) {
       case AuthenticationState.unauthenticated:
-        emit(const AuthState(status: AuthenticationState.unauthenticated));
+        return emit(AuthState(
+          status: AuthenticationState.unauthenticated,
+          user: User(email: ''),
+        ));
       case AuthenticationState.authenticated:
-        // final user = await _tryGetUser();
-        final res1 = await _authRep.fetchCurrentUserAttributes();
+        try {
+          final stopwatch = Stopwatch();
+          stopwatch.start();
 
-        if (res1!.isEmpty) throw Exception("Empty auth user attributes.");
+          final res1 = await _authRep.fetchCurrentUserAttributes();
+          safePrint(stopwatch.elapsedMilliseconds / 1000);
 
-        var attr1 =
-            res1.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
+          if (res1!.isEmpty) throw Exception("Empty auth user attributes.");
 
-        if (attr1 == null) throw Exception("Email attribute non exists.");
+          var attr1 =
+              res1.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
 
-        final res3 = await apiRep.usersByEmail(email: attr1.value);
-        safePrint(res3);
+          if (attr1 == null) throw Exception("Email attribute non exists.");
 
-        if (res3.hasErrors) {
-          throw Exception(res3.errors.join(', '));
-        } else {
+          final res3 = await _apiRep.usersByEmail(email: attr1.value);
+          safePrint(stopwatch.elapsedMilliseconds / 1000);
+
+          if (res3.hasErrors) throw Exception(res3.errors.join(', '));
+
           if (res3.data!.items.isEmpty) {
-            final res4 = await apiRep.createUser(email: attr1.value);
-            safePrint(res4);
+            final res4 = await _apiRep.createUser(email: attr1.value);
+            safePrint(stopwatch.elapsedMilliseconds / 1000);
 
             if (res4.hasErrors) {
               throw Exception(res4.errors.join(', '));
             }
           }
-        }
 
-        return emit(user != null
-            ? const AuthState(status: AuthenticationState.authenticated)
-            : const AuthState(status: AuthenticationState.unauthenticated));
+          User user = res3.data!.items.first ?? User(email: '');
+
+          return emit(
+              AuthState(status: AuthenticationState.authenticated, user: user));
+        } catch (e) {}
+
+        return emit(AuthState(
+          status: AuthenticationState.unknown,
+          user: User(email: ''),
+        ));
+
       case AuthenticationState.unknown:
-        return emit(const AuthState(status: AuthenticationState.unknown));
+        return emit(AuthState(
+          status: AuthenticationState.unknown,
+          user: User(email: ''),
+        ));
     }
   }
 }

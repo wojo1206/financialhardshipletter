@@ -71,7 +71,7 @@ class _SocialLoginState extends State<SocialLogin> {
   }
 
   void _processResult(bool value) {
-    BlocProvider.of<AuthBloc>(context).add(StatusChanged(value
+    BlocProvider.of<AuthBloc>(context).add(AuthChanged(value
         ? AuthenticationState.authenticated
         : AuthenticationState.unauthenticated));
 
@@ -83,43 +83,10 @@ class _SocialLoginState extends State<SocialLogin> {
   }
 
   Future<bool> _socialSignIn(AuthProvider provider) async {
-    try {
-      final authRep = RepositoryProvider.of<AuthRepository>(context);
-      final apiRep = RepositoryProvider.of<ApiRepository>(context);
+    final authRep = RepositoryProvider.of<AuthRepository>(context);
 
-      final res1 = await authRep.signInWithWebUI(provider: provider);
-      safePrint(res1);
-
-      final res2 = await authRep.fetchCurrentUserAttributes();
-      safePrint(res2);
-
-      if (res2!.isEmpty) throw Exception("Empty auth user attributes.");
-
-      var attr1 =
-          res2.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
-
-      if (attr1 == null) throw Exception("Email attribute non exists.");
-
-      final res3 = await apiRep.usersByEmail(email: attr1.value);
-      safePrint(res3);
-
-      if (res3.hasErrors) {
-        throw Exception(res3.errors.join(', '));
-      } else {
-        if (res3.data!.items.isEmpty) {
-          final res4 = await apiRep.createUser(email: attr1.value);
-          safePrint(res4);
-
-          if (res4.hasErrors) {
-            throw Exception(res4.errors.join(', '));
-          }
-        }
-      }
-    } on Exception catch (e) {
-      safePrint(e.toString());
-      return false;
-    }
-    return true;
+    final res1 = await authRep.signInWithWebUI(provider: provider);
+    return res1.isSignedIn;
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {

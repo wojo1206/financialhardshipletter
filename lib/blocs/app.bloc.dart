@@ -1,25 +1,25 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppState {
-  const AppState({required this.tokens});
+  const AppState({this.error});
 
-  final int tokens;
+  final String? error;
 }
 
 sealed class AppEvent {}
 
-final class SetTokens extends AppEvent {
-  final int tokens;
+final class SetError extends AppEvent {
+  final String error;
 
-  SetTokens(this.tokens);
+  SetError(this.error);
 }
 
 final class UserLogOut extends AppEvent {}
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc() : super(const AppState(tokens: 0)) {
-    on<SetTokens>((event, emit) {
-      emit(AppState(tokens: event.tokens));
+  AppBloc() : super(const AppState()) {
+    on<SetError>((event, emit) {
+      emit(AppState(error: event.error));
     });
   }
 }

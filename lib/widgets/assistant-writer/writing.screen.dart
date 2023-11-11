@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +12,6 @@ import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
-import 'package:simpleiawriter/repos/auth.repository.dart';
 
 import '../form/textarea.form.dart';
 
@@ -29,8 +27,12 @@ class _WritingScreenState extends State<WritingScreen> {
   final aiTextController = TextEditingController();
   final aiScrollController = ScrollController();
 
-  var _isGenerating = false;
-  var _cntToken = 0;
+  late Timer timer;
+  late int elapsed = 0;
+  final Stopwatch stopwatch = Stopwatch();
+
+  var cntToken = 0;
+  var isGenerating = false;
 
   List<GptMessage> gptMessages = [];
 
@@ -39,10 +41,6 @@ class _WritingScreenState extends State<WritingScreen> {
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      _isGenerating = true;
-    });
 
     _startWriting();
   }
@@ -82,7 +80,7 @@ class _WritingScreenState extends State<WritingScreen> {
                   focusNode: aiTextFocusNode,
                   readonly: true,
                   scrollController: aiScrollController,
-                  showCursor: _isGenerating,
+                  showCursor: isGenerating,
                 ),
               ),
             ),
@@ -90,7 +88,8 @@ class _WritingScreenState extends State<WritingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text('Tokens used: $_cntToken'),
+                  Text(AppLocalizations.of(context)!.tokensUsed(cntToken)),
+                  Text(AppLocalizations.of(context)!.timeElapsed(elapsed)),
                 ]),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,8 +98,10 @@ class _WritingScreenState extends State<WritingScreen> {
                 Container(),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.chevron_right),
-                  label: const Text("Fill the blanks"),
-                  onPressed: () => _fillTheBlanks(context),
+                  label: Text(AppLocalizations.of(context)!.next),
+                  onPressed: () => {
+                    if (isGenerating == false) {_fillTheBlanks(context)}
+                  },
                 ),
               ],
             )
@@ -111,79 +112,60 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   Future<void> _startWriting() async {
+    Stopwatch stopwatch = Stopwatch();
+
     try {
-      final appRep = RepositoryProvider.of<ApiRepository>(context);
-      final authRep = RepositoryProvider.of<AuthRepository>(context);
-
-      final stopwatch = Stopwatch();
-      stopwatch.start();
-
       aiTextFocusNode.requestFocus();
 
-      final auth1 = await authRep.fetchCurrentUserAttributes();
-      if (auth1!.isEmpty) throw Exception("Empty auth user attributes.");
-      safePrint(stopwatch.elapsedMilliseconds / 1000);
+      stopwatch.start();
+      timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          elapsed = stopwatch.elapsed.inSeconds;
+          safePrint('elapsed: $elapsed');
+        });
+      });
 
-      var attr1 =
-          auth1.where((e) => e.userAttributeKey.key == 'email').firstOrNull;
-      if (attr1 == null) throw Exception("No email attribute.");
+      setState(() {
+        isGenerating = true;
+      });
 
-      final res1 = await appRep.usersByEmail(email: attr1.value);
-      safePrint(stopwatch.elapsedMilliseconds / 1000);
+      final apiRep = RepositoryProvider.of<ApiRepository>(context);
 
-      if (res1.data!.items.isEmpty) throw Exception("No user with that email.");
-      User? user = res1.data!.items.first;
+      stream1 = apiRep.subscribeToChat(session: GptSession(id: 'TODO')).listen(
+        (event) {
+          GptMessage? msg = event.data;
 
-      if (user != null) {
-        if (user.tokens! <= 0) {
-          ViewHelper.myError(
-              context, 'Error', const Text('Not enought credits'));
-          Navigator.pop(context);
-          return;
-        }
+          if (msg is GptMessage) {
+            gptMessages.add(msg);
 
-        final res2 = await appRep.createGptSessionForUser(user: user);
-        safePrint(stopwatch.elapsedMilliseconds / 1000);
+            final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
 
-        final sessionUuid = res2.data!.id;
+            if (chunk.choices is List) {
+              final choice = chunk.choices?.first;
 
-        stream1 = appRep.subscribeToChat(session: res2.data!).listen(
-          (event) {
-            GptMessage? msg = event.data;
+              aiTextController.text += choice!.message!.content;
 
-            if (msg is GptMessage) {
-              gptMessages.add(msg);
+              setState(() {
+                cntToken += 1;
+              });
 
-              final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
-
-              if (chunk.choices is List) {
-                final choice = chunk.choices?.first;
-
-                aiTextController.text += choice!.message!.content;
-
-                setState(() {
-                  _cntToken += 1;
-                });
-
-                if (choice.finishReason == 'stop') {
-                  _sortText();
-                  _stop(context);
-                }
-
-                _scrollDown(context);
+              if (choice.finishReason == 'stop') {
+                _stop(context);
               }
-            }
-          },
-          onError: (Object e) => safePrint('Error: $e'),
-          onDone: () => safePrint('Done'),
-        );
 
-        appRep.initGptQuery(prompt: "", gptSessionId: sessionUuid);
-      }
+              _sortText();
+              _scrollDown(context);
+            }
+          }
+        },
+        onError: (Object e) => safePrint('Error: $e'),
+        onDone: () => safePrint('Done'),
+      );
+
+      apiRep.initGptQuery(prompt: "", gptSessionId: "TODO");
     } catch (e) {
-      safePrint('ERROR: $e');
-      ViewHelper.myError(context, 'Problem', Text(e.toString()));
-    }
+      safePrint('Error: $e');
+    } finally {}
   }
 
   _sortText() {
@@ -210,14 +192,17 @@ class _WritingScreenState extends State<WritingScreen> {
     stream1?.cancel();
 
     setState(() {
-      _isGenerating = false;
+      isGenerating = false;
     });
+
+    timer.cancel();
+    stopwatch.stop();
   }
 
   _fillTheBlanks(BuildContext context) {
     _stop(context);
 
-    ViewHelper.promptDialog(context, "TEST");
+    ViewHelper.promptDialog(context, "TODO");
 
     RegExp exp = RegExp(r'\[(.*?)\]');
     String str = aiTextController.text;
@@ -225,7 +210,7 @@ class _WritingScreenState extends State<WritingScreen> {
     Iterable<RegExpMatch> matches = exp.allMatches(str);
     for (final m in matches) {
       print(m[0]);
-      str = str.replaceAll(m[0]!, "[CHANGED]");
+      str = str.replaceAll(m[0]!, "[TODO]");
     }
 
     aiTextController.text = str;

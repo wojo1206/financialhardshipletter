@@ -13,14 +13,14 @@ import 'package:simpleiawriter/widgets/assistant-writer/writing.screen.dart';
 
 import '../form/textarea.form.dart';
 
-class WriterAssistantStep3 extends StatefulWidget {
-  const WriterAssistantStep3({super.key});
+class QuestionsScreen extends StatefulWidget {
+  const QuestionsScreen({super.key});
 
   @override
-  State<WriterAssistantStep3> createState() => _WriterAssistantStep3State();
+  State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
-class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
+class _QuestionsScreenState extends State<QuestionsScreen> {
   final PageController ctrlPage = PageController(
     viewportFraction: 1.0,
   );
@@ -85,13 +85,15 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
         });
       }
 
-      suggestions.add(
-        TextareaForm(
-          hintText: 'Other ...',
-          expands: false,
-          focusNode: e.focusNode,
-        ),
-      );
+      if (e.hasOther) {
+        suggestions.add(
+          TextareaForm(
+            hintText: 'Other ...',
+            expands: false,
+            focusNode: e.focusNode,
+          ),
+        );
+      }
 
       questionsAndSuggestions.add(
         Container(
@@ -115,9 +117,13 @@ class _WriterAssistantStep3State extends State<WriterAssistantStep3> {
               //   ),
               // ),
               Expanded(
-                child: Wrap(
-                  spacing: 8.0,
-                  children: suggestions,
+                child: RawScrollbar(
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 8.0,
+                      children: suggestions,
+                    ),
+                  ),
                 ),
               ),
             ],

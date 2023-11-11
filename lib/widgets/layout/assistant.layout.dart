@@ -1,9 +1,8 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:simpleiawriter/constants.dart';
 
-import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,7 +83,7 @@ class AssistantLayout extends StatelessWidget {
   }
 
   _showHelp(BuildContext context) async {
-    if (!await launchUrl(Uri.https('tocojest.com', helpUrl),
+    if (!await launchUrl(Uri.https(APP_URL, helpUrl),
         mode: LaunchMode.inAppWebView)) {
       throw Exception('Could not launch');
     }

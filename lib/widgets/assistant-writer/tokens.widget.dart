@@ -20,7 +20,7 @@ class _TokensInfoState extends State<TokensInfo> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-      safePrint("TokensInfo");
+      safePrint("TokensInfoState");
 
       Widget button = TextButton(
         onPressed: () {
@@ -44,7 +44,7 @@ class _TokensInfoState extends State<TokensInfo> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('Tokens: @TODO'), button],
+          children: [Text('Tokens: ${state.user.tokens ?? '0'}'), button],
         ),
       );
     });

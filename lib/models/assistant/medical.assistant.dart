@@ -1,6 +1,6 @@
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/constants.dart';
+
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 class MedicalAssistant extends Assistant {
@@ -26,9 +26,6 @@ class MedicalAssistant extends Assistant {
         ], // Gradient from https://learnui.design/tools/gradient-generator.html
         tileMode: TileMode.mirror,
       );
-
-  @override
-  HardshipLetterType get letterType => HardshipLetterType.medical;
 
   @override
   String getLabel(BuildContext context) {

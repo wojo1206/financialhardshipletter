@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:simpleiawriter/constants.dart';
 
 enum PERSON { first, third }
 
@@ -25,6 +24,7 @@ class Question {
   final QUESTION enumQuestion;
   final INPUT enumInput;
   final bool isSingleAnswer;
+  final bool hasOther;
   final focusNode = FocusNode();
   final List<Suggestion> suggestions;
   final String question;
@@ -32,7 +32,7 @@ class Question {
   Set filters = <String>{};
 
   Question(this.enumQuestion, this.enumInput, this.question, this.suggestions,
-      {this.isSingleAnswer = true});
+      {this.isSingleAnswer = true, this.hasOther = true});
 }
 
 class Suggestion {
@@ -46,7 +46,6 @@ class Suggestion {
 abstract class Assistant {
   late Gradient gradient;
   late Icon icon;
-  late HardshipLetterType letterType;
 
   String getLabel(BuildContext context);
 
@@ -82,6 +81,7 @@ abstract class Assistant {
           Suggestion('Third Person'),
         ],
         isSingleAnswer: true,
+        hasOther: false,
       ),
       Question(
         QUESTION.reason,
@@ -90,7 +90,7 @@ abstract class Assistant {
         [
           Suggestion('Job Loss'),
           Suggestion('Medical Expenses'),
-          Suggestion('Enexpected Bills'),
+          Suggestion('Unexpected Bills'),
           Suggestion('Divorce'),
           Suggestion('Natural disaster'),
           Suggestion('Severe Injury'),

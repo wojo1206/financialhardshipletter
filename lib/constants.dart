@@ -1,1 +1,1 @@
-enum HardshipLetterType { medical, mortgage, creditCard }
+const String APP_URL = "tocojest.com";

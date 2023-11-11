@@ -6,7 +6,7 @@ import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
-import 'package:simpleiawriter/widgets/auth/login.flutter.screen.dart';
+import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -53,7 +53,7 @@ class MyDrawer extends StatelessWidget {
                   await authRep
                       .signOut()
                       .then((value) => BlocProvider.of<AuthBloc>(context).add(
-                          StatusChanged(AuthenticationState.unauthenticated)))
+                          AuthChanged(AuthenticationState.unauthenticated)))
                       .then((value) => Navigator.pop(context));
                 },
               ),
@@ -63,7 +63,8 @@ class MyDrawer extends StatelessWidget {
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logIn),
                 onTap: () {
-                  _popAndPush(context, const LoginFlutterScreen());
+                  ViewHelper.myDialog(context,
+                      AppLocalizations.of(context)!.logIn, const SocialLogin());
                 },
               ),
             ]);
