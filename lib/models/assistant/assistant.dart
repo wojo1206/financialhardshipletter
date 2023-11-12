@@ -39,6 +39,13 @@ class Question {
   String getFirstValue() {
     return values.isEmpty ? '' : values.first;
   }
+
+  // Includes
+  String getValue() {
+    var tmp = values;
+    tmp.add(otherController.text);
+    return tmp.join(', ');
+  }
 }
 
 class Suggestion {

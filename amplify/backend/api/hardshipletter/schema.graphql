@@ -13,7 +13,7 @@ type User @model {
 type GptMessage @model {
   id: ID!
   chunk: AWSJSON!
-  createAtTimestamp: Int!
+  createdAtTimestamp: Int!
   gptSession: GptSession @belongsTo
 }
 

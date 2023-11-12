@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import OpenAI from "openai";
 
-import { encodeChat } from "gpt-tokenizer";
+// import { encodeChat } from "gpt-tokenizer";
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
@@ -42,9 +42,9 @@ export async function handler(event) {
     stream: true,
   });
 
-  const tokens = encodeChat(messages, MODEL);
+  // const tokens = encodeChat(messages, MODEL);
 
-  var cost = tokens.length;
+  var cost = 0; //  tokens.length;
   for await (const part of chat) {
     const uuid = uuidv4();
     const chunk = JSON.stringify(part)
@@ -56,12 +56,12 @@ export async function handler(event) {
       .replace(/[\n]/g, "\\n")
       .replace(/[\r]/g, "\\r")
       .replace(/[\t]/g, "\\t");
-    const createAtTimestamp = Math.floor(Date.now() / 1000);
+    const createdAtTimestamp = Math.floor(Date.now() / 1000);
 
-    const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createAtTimestamp: ${createAtTimestamp}, gptSessionGptMessagesId: "${gptSessionIdStr}"}) { 
+    const mutation = `mutation MyMutation { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createdAtTimestamp: ${createdAtTimestamp}, gptSessionGptMessagesId: "${gptSessionIdStr}"}) { 
         id
         chunk
-        createAtTimestamp
+        createdAtTimestamp
         gptSessionGptMessagesId
         createdAt
         updatedAt

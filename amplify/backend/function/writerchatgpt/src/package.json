@@ -9,7 +9,6 @@
     "@types/aws-lambda": "8.10.92"
   },
   "dependencies": {
-    "gpt-tokenizer": "2.1.2",
     "openai": "4.13.0",
     "uuid": "9.0.1"
   }

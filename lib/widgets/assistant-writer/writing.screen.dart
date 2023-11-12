@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/models/assistant/assistant.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
@@ -41,6 +42,10 @@ class _WritingScreenState extends State<WritingScreen> {
   @override
   void initState() {
     super.initState();
+
+    Assistant.getQuestions(context).forEach((element) {
+      safePrint('${element.enumQuestion} -> ${element.getValue()}');
+    });
 
     _startWriting();
   }
@@ -111,8 +116,6 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   Future<void> _startWriting() async {
-    Stopwatch stopwatch = Stopwatch();
-
     try {
       aiTextFocusNode.requestFocus();
 
@@ -128,6 +131,7 @@ class _WritingScreenState extends State<WritingScreen> {
       });
 
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
+      // apiRep.createGptSessionForUser(user: user)
 
       stream1 = apiRep.subscribeToChat(session: GptSession(id: 'TODO')).listen(
         (event) {
@@ -141,13 +145,11 @@ class _WritingScreenState extends State<WritingScreen> {
             if (chunk.choices is List) {
               final choice = chunk.choices?.first;
 
-              aiTextController.text += choice!.message!.content;
-
               setState(() {
                 cntToken += 1;
               });
 
-              if (choice.finishReason == 'stop') {
+              if (choice?.finishReason == 'stop') {
                 _stop(context);
               }
 
