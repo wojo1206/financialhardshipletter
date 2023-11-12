@@ -1,27 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:simpleiawriter/models/assistant/assistant.dart';
-import 'package:simpleiawriter/models/assistant/credit-card.assistant.dart';
-import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
-import 'package:simpleiawriter/models/assistant/mortgage.assistant.dart';
-
 class FormHelper {
-  static List<Assistant>? assistants;
-
-  static List<Assistant>? getAssistants() {
-    if (assistants != null) {
-      return assistants;
-    }
-
-    assistants = [
-      MedicalAssistant(),
-      CreditCardAssistant(),
-      MortgageAssistant(),
-    ];
-
-    return assistants;
-  }
-
   static Widget listTileWithCheckBox(
     BuildContext context, {
     required bool isChecked,

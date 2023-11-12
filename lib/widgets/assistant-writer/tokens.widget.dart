@@ -41,10 +41,14 @@ class _TokensInfoState extends State<TokensInfo> {
       }
 
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 0.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('Tokens: ${state.user.tokens ?? '0'}'), button],
+          children: [
+            Text(AppLocalizations.of(context)!
+                .tokensOwned(state.user.tokens ?? 0)),
+            button
+          ],
         ),
       );
     });

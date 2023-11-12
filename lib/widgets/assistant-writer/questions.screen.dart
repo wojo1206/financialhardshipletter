@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
-import 'package:simpleiawriter/models/assistant/medical.assistant.dart';
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/writing.screen.dart';
 
@@ -24,13 +22,11 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   final PageController ctrlPage = PageController(
     viewportFraction: 1.0,
   );
-  double _sliderVal = 0;
+  double sliderVal = 0;
   final StreamController<double> ctrlSlider = StreamController<double>();
 
   List<Widget> hardshipReasons = [];
   List<Widget> questionsAndSuggestions = [];
-
-  MedicalAssistant assistant = MedicalAssistant();
 
   @override
   void initState() {
@@ -58,7 +54,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   Widget build(BuildContext context) {
     questionsAndSuggestions = [];
 
-    assistant.questionsAndSuggestions(context).forEach((e) {
+    Assistant.getQuestions(context).forEach((e) {
       List<Widget> suggestions = [];
 
       for (var f in e.suggestions) {
@@ -66,15 +62,32 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           INPUT.checkbox => CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(f.suggestion),
-              value: false,
-              onChanged: (bool? value) {},
+              value: e.values.contains(f.suggestion),
+              onChanged: (bool? value) {
+                setState(() {
+                  if (value == null) {
+                    // Intentionally empty
+                  } else if (value == true) {
+                    e.values.add(f.suggestion);
+                  } else if (value == false) {
+                    e.values.removeWhere((i) => i == f.suggestion);
+                  }
+                });
+              },
             ),
           INPUT.radio => RadioListTile<String>(
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(f.suggestion),
-              value: '',
-              groupValue: '',
-              onChanged: (String? value) {},
+              value: f.suggestion,
+              groupValue: e.getFirstValue(),
+              onChanged: (String? value) {
+                setState(() {
+                  if (value != null) {
+                    e.values.clear();
+                    e.values.add(f.suggestion);
+                  }
+                });
+              },
             ),
           INPUT.text => CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
@@ -88,9 +101,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       if (e.hasOther) {
         suggestions.add(
           TextareaForm(
-            hintText: 'Other ...',
+            hintText: AppLocalizations.of(context)!.other,
             expands: false,
             focusNode: e.focusNode,
+            controller: e.otherController,
           ),
         );
       }
@@ -117,8 +131,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               //   ),
               // ),
               Expanded(
-                child: RawScrollbar(
+                child: Scrollbar(
+                  controller: e.scrollController,
                   child: SingleChildScrollView(
+                    controller: e.scrollController,
                     child: Wrap(
                       spacing: 8.0,
                       children: suggestions,
@@ -146,24 +162,24 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           ),
         ),
         Slider(
-          value: _sliderVal,
+          value: sliderVal,
           min: 0,
           max: (questionsAndSuggestions.length - 1).toDouble(),
           divisions: questionsAndSuggestions.length - 1,
           onChanged: (double value) {
             setState(() {
-              _sliderVal = value;
+              sliderVal = value;
               ctrlSlider.sink.add(value);
             });
           },
         ),
       ],
       onNext: () {
-        if ((_sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
+        if ((sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
           setState(() {
-            _sliderVal += 1.0;
+            sliderVal += 1.0;
           });
-          ctrlSlider.sink.add(_sliderVal);
+          ctrlSlider.sink.add(sliderVal);
         } else {
           Navigator.of(context).push(
             ViewHelper.routeSlide(

@@ -74,7 +74,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Version'),
             onTap: () {},
             enabled: false,
-            subtitle: Text('@TODO'),
+            subtitle: Text('TODO'),
           ));
 
           return ListView(

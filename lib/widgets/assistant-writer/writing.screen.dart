@@ -56,7 +56,6 @@ class _WritingScreenState extends State<WritingScreen> {
     super.dispose();
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +120,6 @@ class _WritingScreenState extends State<WritingScreen> {
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           elapsed = stopwatch.elapsed.inSeconds;
-          safePrint('elapsed: $elapsed');
         });
       });
 

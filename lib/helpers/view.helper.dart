@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -139,7 +140,7 @@ class ViewHelper {
                 content: content,
                 actions: <Widget>[
                   TextButton(
-                    child: const Text('Close'),
+                    child: Text(AppLocalizations.of(context)!.close),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -159,7 +160,7 @@ class ViewHelper {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Close'),
+                  child: Text(AppLocalizations.of(context)!.close),
                 ),
               ],
             ),

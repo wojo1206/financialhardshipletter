@@ -4,7 +4,7 @@ enum PERSON { first, third }
 
 enum QUESTION {
   type,
-  perpective,
+  perspective,
   reason,
   lasting,
   specific,
@@ -23,16 +23,22 @@ enum INPUT {
 class Question {
   final QUESTION enumQuestion;
   final INPUT enumInput;
-  final bool isSingleAnswer;
   final bool hasOther;
   final focusNode = FocusNode();
+  final List<String> values = [];
   final List<Suggestion> suggestions;
+  final ScrollController scrollController = ScrollController();
+  final TextEditingController otherController = TextEditingController();
   final String question;
 
   Set filters = <String>{};
 
   Question(this.enumQuestion, this.enumInput, this.question, this.suggestions,
-      {this.isSingleAnswer = true, this.hasOther = true});
+      {this.hasOther = true});
+
+  String getFirstValue() {
+    return values.isEmpty ? '' : values.first;
+  }
 }
 
 class Suggestion {
@@ -40,20 +46,32 @@ class Suggestion {
   final bool isFollowUp;
   final String explain;
 
-  Suggestion(this.suggestion, {this.isFollowUp = true, this.explain = ""});
+  Suggestion(this.suggestion, {this.isFollowUp = true, this.explain = ''});
 }
 
-abstract class Assistant {
-  late Gradient gradient;
-  late Icon icon;
+class Assistant {
+  static List<Question> _questionsAndSuggestions = [];
+  static List<String> _tones = [];
 
-  String getLabel(BuildContext context);
+  static List<Question> getQuestions(BuildContext context) {
+    if (_questionsAndSuggestions.isEmpty) {
+      _questionsAndSuggestions = Assistant.questionsAndSuggestions(context);
+    }
+    return _questionsAndSuggestions;
+  }
 
-  List<String> tones(BuildContext context) {
+  static List<String> getTones(BuildContext context) {
+    if (_tones.isEmpty) {
+      _tones = Assistant.tones(context);
+    }
+    return _tones;
+  }
+
+  static List<String> tones(BuildContext context) {
     return ['professional', 'friendly', 'kind', 'neutral', 'positive'];
   }
 
-  List<Question> questionsAndSuggestions(BuildContext context) {
+  static List<Question> questionsAndSuggestions(BuildContext context) {
     return [
       Question(
         QUESTION.type,
@@ -70,17 +88,15 @@ abstract class Assistant {
               explain:
                   'If your hardship revolves around credit card debt and related financial struggles.'),
         ],
-        isSingleAnswer: true,
       ),
       Question(
-        QUESTION.perpective,
+        QUESTION.perspective,
         INPUT.radio,
         'Choose you writing perspective:',
         [
           Suggestion('First Person'),
           Suggestion('Third Person'),
         ],
-        isSingleAnswer: true,
         hasOther: false,
       ),
       Question(
@@ -92,21 +108,19 @@ abstract class Assistant {
           Suggestion('Medical Expenses'),
           Suggestion('Unexpected Bills'),
           Suggestion('Divorce'),
-          Suggestion('Natural disaster'),
+          Suggestion('Natural Disaster'),
           Suggestion('Severe Injury'),
           Suggestion('Severe Illness'),
         ],
-        isSingleAnswer: false,
       ),
       Question(
         QUESTION.lasting,
-        INPUT.checkbox,
+        INPUT.radio,
         'How long have you been facing this hardship?',
         [
           Suggestion('For the Past Six Months', isFollowUp: false),
           Suggestion('Since Last Year', isFollowUp: false),
         ],
-        isSingleAnswer: true,
       ),
       Question(
         QUESTION.specific,
@@ -117,7 +131,6 @@ abstract class Assistant {
           Suggestion('Mounting Debt'),
           Suggestion('Inability to Make Mortgage/Rent Payments'),
         ],
-        isSingleAnswer: false,
       ),
       Question(
         QUESTION.actionsTaken,
@@ -128,7 +141,6 @@ abstract class Assistant {
           Suggestion('Seeking Financial Assistance'),
           Suggestion('Negotiate with Creditors'),
         ],
-        isSingleAnswer: false,
       ),
       Question(
         QUESTION.supportingDocuments,
@@ -139,7 +151,6 @@ abstract class Assistant {
           Suggestion('Job Termination Notice'),
           Suggestion('Health Condition Diagnosis'),
         ],
-        isSingleAnswer: false,
       ),
       Question(
         QUESTION.highlightDetails,
@@ -150,7 +161,6 @@ abstract class Assistant {
           Suggestion('Job Termination Date'),
           Suggestion('Specific Incident')
         ],
-        isSingleAnswer: true,
       ),
       Question(
         QUESTION.outcome,
@@ -161,7 +171,6 @@ abstract class Assistant {
           Suggestion('Payment Extension'),
           Suggestion('Financial Assistance')
         ],
-        isSingleAnswer: false,
       )
     ];
   }
