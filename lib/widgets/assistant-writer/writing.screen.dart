@@ -131,7 +131,7 @@ class _WritingScreenState extends State<WritingScreen> {
       });
 
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
-      // apiRep.createGptSessionForUser(user: user)
+      // final session = apiRep.createGptSessionForUser(user: user)
 
       stream1 = apiRep.subscribeToChat(session: GptSession(id: 'TODO')).listen(
         (event) {

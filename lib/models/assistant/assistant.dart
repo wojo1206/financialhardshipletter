@@ -161,7 +161,7 @@ class Assistant {
       ),
       Question(
         QUESTION.highlightDetails,
-        INPUT.text,
+        INPUT.checkbox,
         'Are there any specific details or events related to your hardship that you want to highlight in the letter?',
         [
           Suggestion('Medical Diagnosis'),
