@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
@@ -175,17 +177,30 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         ),
       ],
       onNext: () {
-        if ((sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
-          setState(() {
-            sliderVal += 1.0;
-          });
-          ctrlSlider.sink.add(sliderVal);
-        } else {
-          Navigator.of(context).push(
-            ViewHelper.routeSlide(
-              const WritingScreen(),
-            ),
-          );
+        try {
+          if ((sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
+            setState(() {
+              sliderVal += 1.0;
+            });
+            ctrlSlider.sink.add(sliderVal);
+          } else {
+            final blocAuth = BlocProvider.of<AuthBloc>(context);
+
+            if (blocAuth.state.status == AuthenticationState.unauthenticated) {
+              throw Exception('Please sign-in.');
+            }
+            if (blocAuth.state.user.tokens == null ||
+                blocAuth.state.user.tokens! <= 0) {
+              throw Exception('Please purchase more tokens.');
+            }
+            Navigator.of(context).push(
+              ViewHelper.routeSlide(
+                const WritingScreen(),
+              ),
+            );
+          }
+        } on Exception catch (e) {
+          ViewHelper.myError(context, 'Problem', Text(e.toString()));
         }
       },
     );

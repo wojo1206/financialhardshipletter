@@ -15,6 +15,7 @@ type GptMessage @model {
   chunk: AWSJSON!
   createdAtTimestamp: Int!
   gptSession: GptSession @belongsTo
+  gptSessionGptMessagesId: ID! # Required for subscription!
 }
 
 type GptSession @model {

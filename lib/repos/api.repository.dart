@@ -82,7 +82,7 @@ class AmplifyAppRepository implements ApiRepository {
       {required GptSession session}) {
     final subscriptionRequest = ModelSubscriptions.onCreate(
       GptMessage.classType,
-      // where: GptMessage.GPTSESSION.eq(session.id),
+      where: GptMessage.GPTSESSION.eq(session.id),
     );
 
     return api.subscribe(

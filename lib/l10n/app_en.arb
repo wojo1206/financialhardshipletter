@@ -54,6 +54,7 @@
     }
   },
   "username": "Username",
+  "writer": "Writer",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."
 }

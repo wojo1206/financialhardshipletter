@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/blocs/writing.bloc.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 
@@ -63,56 +65,57 @@ class _WritingScreenState extends State<WritingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('New Letter - Writing',
-            style: Theme.of(context).textTheme.bodyMedium),
-      ),
-      body: FormHelper.wrapperBody(
-        context,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ViewHelper.infoText(
-                context, AppLocalizations.of(context)!.hintPage4),
-            Expanded(
-              child: Scrollbar(
-                controller: aiScrollController,
-                child: TextareaForm(
-                  controller: aiTextController,
-                  focusNode: aiTextFocusNode,
-                  readonly: true,
-                  scrollController: aiScrollController,
-                  showCursor: isGenerating,
+    return BlocBuilder<WritingBloc, WritingState>(builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.writer,
+              style: Theme.of(context).textTheme.bodyMedium),
+        ),
+        body: FormHelper.wrapperBody(
+          context,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ViewHelper.infoText(
+                  context, AppLocalizations.of(context)!.hintPage4),
+              Expanded(
+                child: Scrollbar(
+                  controller: aiScrollController,
+                  child: TextareaForm(
+                    controller: aiTextController,
+                    focusNode: aiTextFocusNode,
+                    readonly: true,
+                    scrollController: aiScrollController,
+                    showCursor: isGenerating,
+                  ),
                 ),
               ),
-            ),
-            Row(
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(AppLocalizations.of(context)!.tokensUsed(cntToken)),
+                    Text(AppLocalizations.of(context)!.timeElapsed(elapsed)),
+                  ]),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(AppLocalizations.of(context)!.tokensUsed(cntToken)),
-                  Text(AppLocalizations.of(context)!.timeElapsed(elapsed)),
-                ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.chevron_right),
-                  label: Text(AppLocalizations.of(context)!.next),
-                  onPressed: () => {
-                    if (isGenerating == false) {_fillTheBlanks(context)}
-                  },
-                ),
-              ],
-            )
-          ],
+                  Container(),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.chevron_right),
+                    label: Text(AppLocalizations.of(context)!.next),
+                    onPressed: () =>
+                        {if (isGenerating == false) _fillTheBlanks(context)},
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _startWriting() async {
@@ -130,10 +133,17 @@ class _WritingScreenState extends State<WritingScreen> {
         isGenerating = true;
       });
 
+      final blocWriter = BlocProvider.of<WritingBloc>(context);
+      final blocAuth = BlocProvider.of<AuthBloc>(context);
+
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
       // final session = apiRep.createGptSessionForUser(user: user)
 
-      stream1 = apiRep.subscribeToChat(session: GptSession(id: 'TODO')).listen(
+      blocWriter.add(StartNew(blocAuth.state.user));
+      safePrint(blocWriter.state.gptSession);
+
+      stream1 =
+          apiRep.subscribeToChat(session: blocWriter.state.gptSession).listen(
         (event) {
           GptMessage? msg = event.data;
 
@@ -162,7 +172,8 @@ class _WritingScreenState extends State<WritingScreen> {
         onDone: () => safePrint('Done'),
       );
 
-      apiRep.initGptQuery(prompt: "", gptSessionId: "TODO");
+      apiRep.initGptQuery(
+          prompt: "", gptSessionId: blocWriter.state.gptSession.id);
     } catch (e) {
       safePrint('Error: $e');
     } finally {}

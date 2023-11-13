@@ -14,6 +14,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/blocs/writing.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
@@ -90,6 +91,10 @@ class App extends StatelessWidget {
           BlocProvider<AuthBloc>(
             create: (BuildContext context) =>
                 AuthBloc(apiRep: _appRepository, authRep: _authRepository),
+          ),
+          BlocProvider<WritingBloc>(
+            create: (BuildContext context) =>
+                WritingBloc(apiRep: _appRepository),
           ),
         ],
         child: MaterialApp(

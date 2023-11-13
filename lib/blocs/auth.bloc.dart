@@ -1,7 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
 import 'package:simpleiawriter/repos/api.repository.dart';
