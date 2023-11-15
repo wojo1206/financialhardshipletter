@@ -8,6 +8,8 @@ const client = new LambdaClient({
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export async function handler(event) {
+  console.log(event, process.env);
+
   const command = new InvokeCommand({
     FunctionName: `writerchatgpt-${process.env.ENV}`,
     InvocationType: "Event",

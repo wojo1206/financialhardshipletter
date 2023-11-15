@@ -142,11 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
       resumeCallBack: () async {
         safePrint("resumeCallBack");
-
-        BlocProvider.of<AuthBloc>(context).add(AuthChanged(
-            await authRep.isUserSignedIn()
-                ? AuthenticationState.authenticated
-                : AuthenticationState.unauthenticated));
       },
       suspendingCallBack: () async {
         safePrint("suspendingCallBack");
@@ -235,10 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initPackageInfo() async {
-    final info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    PackageInfo info = await PackageInfo.fromPlatform();
+    BlocProvider.of<AppBloc>(context).add(SetPackageInfo(info));
   }
 }
 

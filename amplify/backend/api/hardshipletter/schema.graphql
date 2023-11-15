@@ -6,7 +6,7 @@ input AMPLIFY {
 type User @model {
   id: ID!
   email: AWSEmail! @index
-  tokens: Int
+  tokens: Int!
   gptSessions: [GptSession] @hasMany
 }
 
@@ -15,7 +15,7 @@ type GptMessage @model {
   chunk: AWSJSON!
   createdAtTimestamp: Int!
   gptSession: GptSession @belongsTo
-  gptSessionGptMessagesId: ID! # Required for subscription!
+  gptSessionGptMessagesId: ID!
 }
 
 type GptSession @model {
@@ -28,7 +28,7 @@ type GptSession @model {
 }
 
 type Mutation {
-  initGptQuery(prompt: String!, gptSessionId: ID!): String!
+  initGptQuery(message: AWSJSON!, gptSessionId: ID!): String!
     @function(name: "hardshipletter3653312c-${env}")
 }
 

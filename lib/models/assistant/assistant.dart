@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:simpleiawriter/models/chatgtp.types.dart';
 
 enum PERSON { first, third }
 
@@ -36,15 +37,15 @@ class Question {
   Question(this.enumQuestion, this.enumInput, this.question, this.suggestions,
       {this.hasOther = true});
 
-  String getFirstValue() {
+  String getSingleValue() {
     return values.isEmpty ? '' : values.first;
   }
 
   // Includes
-  String getValue() {
-    var tmp = values;
+  String getAllValues() {
+    var tmp = List.from(values);
     tmp.add(otherController.text);
-    return tmp.join(', ');
+    return tmp.where((e) => e.isNotEmpty).join(', ');
   }
 }
 
@@ -95,14 +96,16 @@ class Assistant {
               explain:
                   'If your hardship revolves around credit card debt and related financial struggles.'),
         ],
+        hasOther: false,
       ),
       Question(
         QUESTION.perspective,
         INPUT.radio,
         'Choose you writing perspective:',
         [
-          Suggestion('First Person'),
-          Suggestion('Third Person'),
+          Suggestion('First Person', explain: 'You write the letter as you.'),
+          Suggestion('Third Person',
+              explain: 'You write the letter on behalf of someone else.'),
         ],
         hasOther: false,
       ),
@@ -181,4 +184,68 @@ class Assistant {
       )
     ];
   }
+
+  static MyMessage getPrompt(context) {
+    String type = Assistant.getQuestions(context)
+        .firstWhere((element) => element.enumQuestion == QUESTION.type)
+        .getSingleValue()
+        .toLowerCase();
+
+    String q1 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere((element) => element.enumQuestion == QUESTION.reason));
+
+    String q2 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere((element) => element.enumQuestion == QUESTION.lasting));
+
+    String q3 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere((element) => element.enumQuestion == QUESTION.specific));
+
+    String q4 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere(
+            (element) => element.enumQuestion == QUESTION.actionsTaken));
+
+    String q5 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere(
+            (element) => element.enumQuestion == QUESTION.supportingDocuments));
+
+    String q6 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere(
+            (element) => element.enumQuestion == QUESTION.highlightDetails));
+
+    String q7 = Assistant.prepareQuestion(Assistant.getQuestions(context)
+        .firstWhere((element) => element.enumQuestion == QUESTION.outcome));
+
+    String details = [q1, q2, q3, q4, q5, q6, q7]
+        .where((element) => element.isNotEmpty)
+        .join('. ');
+
+    return MyMessage(
+        role: 'system',
+        content:
+            """You are a letter writer, your task to write a ${type} hardship letter to ${type} institution explaining my financial hardship. 
+          The main objective is to explain my situation clearly, and write the letter with a "Subject:" statement at the very top 
+          with the body of the letter following the subject. Please keep any placeholder information between brackets. My name is 
+          Joe Doe and my contact info is joe.doe@gmail.com. ${details} Keep the letter short.""");
+  }
+
+  static String prepareQuestion(Question question) {
+    String answers = '';
+    if (question.enumInput == INPUT.radio) {
+      if (question.getSingleValue().isEmpty) return '';
+      answers = 'My answer is: ${question.getSingleValue()}';
+    } else {
+      if (question.getAllValues().isEmpty) return '';
+      answers = 'My answers are: ${question.getAllValues()}';
+    }
+    return 'For the question: ${question.question} ${answers}';
+  }
+}
+
+class MyMessage {
+  String role;
+  String content;
+
+  MyMessage({required this.role, required this.content});
+
+  Map toJson() => {'role': role, 'content': content};
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -64,6 +65,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           INPUT.checkbox => CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(f.suggestion),
+              subtitle: f.explain.isEmpty ? null : Text(f.explain),
               value: e.values.contains(f.suggestion),
               onChanged: (bool? value) {
                 setState(() {
@@ -80,8 +82,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           INPUT.radio => RadioListTile<String>(
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(f.suggestion),
+              subtitle: f.explain.isEmpty ? null : Text(f.explain),
               value: f.suggestion,
-              groupValue: e.getFirstValue(),
+              groupValue: e.getSingleValue(),
               onChanged: (String? value) {
                 setState(() {
                   if (value != null) {
@@ -112,40 +115,37 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       }
 
       questionsAndSuggestions.add(
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  e.question,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                e.question,
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
               ),
-              // Expanded(
-              //   child: TextareaForm(
-              //     expands: true,
-              //     focusNode: e.focusNode,
-              //   ),
-              // ),
-              Expanded(
-                child: Scrollbar(
+            ),
+            // Expanded(
+            //   child: TextareaForm(
+            //     expands: true,
+            //     focusNode: e.focusNode,
+            //   ),
+            // ),
+            Expanded(
+              child: Scrollbar(
+                controller: e.scrollController,
+                child: SingleChildScrollView(
                   controller: e.scrollController,
-                  child: SingleChildScrollView(
-                    controller: e.scrollController,
-                    child: Wrap(
-                      spacing: 8.0,
-                      children: suggestions,
-                    ),
+                  child: Wrap(
+                    // spacing: 8.0,
+                    children: suggestions,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     });
@@ -163,17 +163,24 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             children: questionsAndSuggestions,
           ),
         ),
-        Slider(
-          value: sliderVal,
-          min: 0,
-          max: (questionsAndSuggestions.length - 1).toDouble(),
-          divisions: questionsAndSuggestions.length - 1,
-          onChanged: (double value) {
-            setState(() {
-              sliderVal = value;
-              ctrlSlider.sink.add(value);
-            });
-          },
+        Row(
+          children: [
+            Text(AppLocalizations.of(context)!.progress + ':'),
+            Expanded(
+              child: Slider(
+                value: sliderVal,
+                min: 0,
+                max: (questionsAndSuggestions.length - 1).toDouble(),
+                divisions: questionsAndSuggestions.length - 1,
+                onChanged: (double value) {
+                  setState(() {
+                    sliderVal = value;
+                    ctrlSlider.sink.add(value);
+                  });
+                },
+              ),
+            ),
+          ],
         ),
       ],
       onNext: () {
@@ -186,12 +193,16 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           } else {
             final blocAuth = BlocProvider.of<AuthBloc>(context);
 
-            if (blocAuth.state.status == AuthenticationState.unauthenticated) {
-              throw Exception('Please sign-in.');
+            safePrint(Assistant.getPrompt(context).toJson());
+
+            if (blocAuth.state.status != AuthenticationState.authenticated) {
+              throw Exception(
+                AppLocalizations.of(context)!.pleaseSignIn,
+              );
             }
             if (blocAuth.state.user.tokens == null ||
                 blocAuth.state.user.tokens! <= 0) {
-              throw Exception('Please purchase more tokens.');
+              throw Exception(AppLocalizations.of(context)!.pleasePurchaseMore);
             }
             Navigator.of(context).push(
               ViewHelper.routeSlide(
@@ -200,7 +211,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             );
           }
         } on Exception catch (e) {
-          ViewHelper.myError(context, 'Problem', Text(e.toString()));
+          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
+              Text(e.toString()));
         }
       },
     );

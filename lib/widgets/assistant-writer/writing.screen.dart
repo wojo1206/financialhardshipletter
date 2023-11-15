@@ -46,7 +46,7 @@ class _WritingScreenState extends State<WritingScreen> {
     super.initState();
 
     Assistant.getQuestions(context).forEach((element) {
-      safePrint('${element.enumQuestion} -> ${element.getValue()}');
+      safePrint('${element.enumQuestion} -> ${element.getAllValues()}');
     });
 
     _startWriting();
@@ -153,7 +153,7 @@ class _WritingScreenState extends State<WritingScreen> {
             final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
 
             if (chunk.choices is List) {
-              final choice = chunk.choices?.first;
+              ChatChoiceSSE? choice = chunk.choices?.first;
 
               setState(() {
                 cntToken += 1;
@@ -173,7 +173,8 @@ class _WritingScreenState extends State<WritingScreen> {
       );
 
       apiRep.initGptQuery(
-          prompt: "", gptSessionId: blocWriter.state.gptSession.id);
+          message: const JsonEncoder().convert(Assistant.getPrompt(context)),
+          gptSessionId: blocWriter.state.gptSession.id);
     } catch (e) {
       safePrint('Error: $e');
     } finally {}

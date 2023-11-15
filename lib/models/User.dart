@@ -60,8 +60,17 @@ class User extends amplify_core.Model {
     }
   }
   
-  int? get tokens {
-    return _tokens;
+  int get tokens {
+    try {
+      return _tokens!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   List<GptSession>? get gptSessions {
@@ -76,9 +85,9 @@ class User extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const User._internal({required this.id, required email, tokens, gptSessions, createdAt, updatedAt}): _email = email, _tokens = tokens, _gptSessions = gptSessions, _createdAt = createdAt, _updatedAt = updatedAt;
+  const User._internal({required this.id, required email, required tokens, gptSessions, createdAt, updatedAt}): _email = email, _tokens = tokens, _gptSessions = gptSessions, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory User({String? id, required String email, int? tokens, List<GptSession>? gptSessions}) {
+  factory User({String? id, required String email, required int tokens, List<GptSession>? gptSessions}) {
     return User._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       email: email,
@@ -128,7 +137,7 @@ class User extends amplify_core.Model {
   
   User copyWithModelFieldValues({
     ModelFieldValue<String>? email,
-    ModelFieldValue<int?>? tokens,
+    ModelFieldValue<int>? tokens,
     ModelFieldValue<List<GptSession>?>? gptSessions
   }) {
     return User._internal(
@@ -190,7 +199,7 @@ class User extends amplify_core.Model {
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
       key: User.TOKENS,
-      isRequired: false,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     

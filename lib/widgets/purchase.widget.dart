@@ -102,7 +102,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         PurchaseParam(productDetails: productDetails);
 
     purchaseRep.buyConsumable(purchaseParam);
-    // InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
   }
 
   void _loadProducts() async {

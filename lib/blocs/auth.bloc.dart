@@ -36,7 +36,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _authRep = authRep,
         _apiRep = apiRep,
         super(
-          AuthState(status: AuthenticationState.unknown, user: User(email: '')),
+          AuthState(
+              status: AuthenticationState.unknown,
+              user: User(email: '', tokens: 0)),
         ) {
     on<AuthChanged>(_onAuthenticationStatusChanged);
   }
@@ -49,7 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       case AuthenticationState.unauthenticated:
         return emit(AuthState(
           status: AuthenticationState.unauthenticated,
-          user: User(email: ''),
+          user: User(email: '', tokens: 0),
         ));
       case AuthenticationState.authenticated:
         try {
@@ -80,7 +82,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             }
           }
 
-          User user = res3.data!.items.first ?? User(email: '');
+          User user = res3.data!.items.first ?? User(email: '', tokens: 0);
 
           return emit(
               AuthState(status: AuthenticationState.authenticated, user: user));
@@ -90,13 +92,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         return emit(AuthState(
           status: AuthenticationState.unknown,
-          user: User(email: ''),
+          user: User(email: '', tokens: 0),
         ));
 
       case AuthenticationState.unknown:
         return emit(AuthState(
           status: AuthenticationState.unknown,
-          user: User(email: ''),
+          user: User(email: '', tokens: 0),
         ));
     }
   }

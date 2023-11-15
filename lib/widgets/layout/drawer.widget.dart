@@ -2,10 +2,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
+import 'package:simpleiawriter/widgets/assistant-writer/version.widget.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -74,7 +76,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Version'),
             onTap: () {},
             enabled: false,
-            subtitle: Text('TODO'),
+            subtitle: const VersionInfo(),
           ));
 
           return ListView(
