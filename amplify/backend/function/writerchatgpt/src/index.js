@@ -7,8 +7,6 @@ import OpenAI from "openai";
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export async function handler(event) {
-  console.log(event, process.env);
-
   const openai = new OpenAI({
     apiKey: await getSecret(process.env.OPENAI_API_KEY),
   });

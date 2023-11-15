@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:simpleiawriter/models/chatgtp.types.dart';
 
 enum PERSON { first, third }
 
@@ -38,6 +37,9 @@ class Question {
       {this.hasOther = true});
 
   String getSingleValue() {
+    if (otherController.text.isNotEmpty) {
+      return otherController.text;
+    }
     return values.isEmpty ? '' : values.first;
   }
 
@@ -46,6 +48,12 @@ class Question {
     var tmp = List.from(values);
     tmp.add(otherController.text);
     return tmp.where((e) => e.isNotEmpty).join(', ');
+  }
+
+  int countValues() {
+    var tmp = List.from(values);
+    tmp.add(otherController.text);
+    return tmp.where((e) => e.isNotEmpty).length;
   }
 }
 
@@ -224,18 +232,19 @@ class Assistant {
         content:
             """You are a letter writer, your task to write a ${type} hardship letter to ${type} institution explaining my financial hardship. 
           The main objective is to explain my situation clearly, and write the letter with a "Subject:" statement at the very top 
-          with the body of the letter following the subject. Please keep any placeholder information between brackets. My name is 
+          with the body of the letter following the subject. Please keep any placeholder information between brackets characters. My name is 
           Joe Doe and my contact info is joe.doe@gmail.com. ${details} Keep the letter short.""");
   }
 
   static String prepareQuestion(Question question) {
     String answers = '';
-    if (question.enumInput == INPUT.radio) {
-      if (question.getSingleValue().isEmpty) return '';
+    int cnt = question.countValues();
+    if (cnt == 1) {
       answers = 'My answer is: ${question.getSingleValue()}';
-    } else {
-      if (question.getAllValues().isEmpty) return '';
+    } else if (cnt > 1) {
       answers = 'My answers are: ${question.getAllValues()}';
+    } else {
+      return '';
     }
     return 'For the question: ${question.question} ${answers}';
   }
