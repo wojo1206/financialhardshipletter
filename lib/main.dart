@@ -14,6 +14,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/blocs/purchase.bloc.dart';
 import 'package:simpleiawriter/blocs/writing.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
@@ -46,8 +47,8 @@ void main() async {
     apiRepository: AmplifyAppRepository(api: api),
     authRepository: AmplifyAuthRepository(auth: auth),
     dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
-    inAppPurchaseRepository:
-        InAppPurchaseRepository(instance: InAppPurchase.instance),
+    inAppPurchaseRepository: InAppPurchaseRepository(
+        instance: InAppPurchase.instance, dataStore: dataStore),
   ));
 }
 
@@ -91,6 +92,11 @@ class App extends StatelessWidget {
           BlocProvider<AuthBloc>(
             create: (BuildContext context) =>
                 AuthBloc(apiRep: _appRepository, authRep: _authRepository),
+          ),
+          BlocProvider<PurchaseBloc>(
+            create: (BuildContext context) => PurchaseBloc(
+                purchaseRepository: _inAppPurchaseRepository,
+                dataStoreRepository: _dataStoreRepository),
           ),
           BlocProvider<WritingBloc>(
             create: (BuildContext context) =>

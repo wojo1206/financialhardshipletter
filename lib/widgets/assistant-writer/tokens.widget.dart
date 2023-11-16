@@ -45,8 +45,7 @@ class _TokensInfoState extends State<TokensInfo> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(AppLocalizations.of(context)!
-                .tokensOwned(state.user.tokens ?? 0)),
+            Text(AppLocalizations.of(context)!.tokensOwned(state.user.tokens)),
             button
           ],
         ),
