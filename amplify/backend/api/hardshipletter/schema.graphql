@@ -28,7 +28,7 @@ type GptSession @model {
 }
 
 type Mutation {
-  initGptQuery(message: AWSJSON!, gptSessionId: ID!): String!
+  initGptQuery(message: AWSJSON!, userId: ID!, gptSessionId: ID!): String!
     @function(name: "hardshipletter3653312c-${env}")
 }
 

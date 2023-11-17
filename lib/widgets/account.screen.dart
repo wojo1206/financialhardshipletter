@@ -36,7 +36,10 @@ class _AccountScreenState extends State<AccountScreen> {
             Expanded(
               child:
                   BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-                List<String> items = [state.user.email];
+                List<KeyVal> items = [
+                  KeyVal("Email", state.user.email),
+                  KeyVal("Tokens", state.user.tokens.toString())
+                ];
                 return ListView.builder(
                   // Let the ListView know how many items it needs to build.
                   itemCount: items.length,
@@ -44,8 +47,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   // Convert each item into a widget based on the type of item it is.
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(items[index]),
-                      subtitle: Text(items[index]),
+                      title: Text(items[index].key),
+                      subtitle: Text(items[index].val),
                     );
                   },
                 );
@@ -56,4 +59,11 @@ class _AccountScreenState extends State<AccountScreen> {
       ),
     );
   }
+}
+
+class KeyVal {
+  final String key;
+  final String val;
+
+  KeyVal(this.key, this.val);
 }

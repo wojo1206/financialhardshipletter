@@ -174,6 +174,7 @@ class _WritingScreenState extends State<WritingScreen> {
 
       apiRep.initGptQuery(
           message: const JsonEncoder().convert(Assistant.getPrompt(context)),
+          userId: blocAuth.state.user.id,
           gptSessionId: blocWriter.state.gptSession.id);
     } catch (e) {
       safePrint('Error: $e');

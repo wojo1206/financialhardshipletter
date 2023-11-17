@@ -51,6 +51,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   @override
   void dispose() {
     super.dispose();
+
+    ctrlSlider.close();
   }
 
   @override

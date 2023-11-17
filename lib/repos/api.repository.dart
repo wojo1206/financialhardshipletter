@@ -13,7 +13,9 @@ abstract class ApiRepository {
   Future<GraphQLResponse<User>> createUser({required String email});
 
   Future<GraphQLResponse<String>> initGptQuery(
-      {required String message, required String gptSessionId});
+      {required String message,
+      required String userId,
+      required String gptSessionId});
 
   Future<GraphQLResponse<PaginatedResult<User>>> usersByEmail(
       {required String email});
@@ -48,14 +50,17 @@ class AmplifyAppRepository implements ApiRepository {
 
   @override
   Future<GraphQLResponse<String>> initGptQuery(
-      {required String message, required String gptSessionId}) async {
+      {required String message,
+      required String userId,
+      required String gptSessionId}) async {
     return await api
         .query(
           request: GraphQLRequest<String>(
             document: INIT_GPT_QUERY(),
             variables: <String, String>{
               'message': message,
-              'gptSessionId': gptSessionId
+              'userId': userId,
+              'gptSessionId': gptSessionId,
             },
           ),
         )

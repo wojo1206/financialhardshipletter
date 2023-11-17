@@ -7,10 +7,7 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
-import 'package:simpleiawriter/models/User.dart';
 
-import 'package:simpleiawriter/repos/api.repository.dart';
-import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 
 class SocialLogin extends StatefulWidget {

@@ -137,4 +137,9 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
           products: products, stateLoading: StateLoading.notLoading));
     });
   }
+
+  Future<bool> _verifyPurchase(purchaseDetails) async {
+    try {} catch (ex) {}
+    return false;
+  }
 }

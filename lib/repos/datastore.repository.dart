@@ -6,6 +6,8 @@ import 'package:simpleiawriter/models/ModelProvider.dart';
 abstract class DataStoreRepository {
   Future<User> createUser({required String email});
 
+  Future<User> updateUser({required String email});
+
   Future<List<GptSession>> fetchGptSessions({required User user});
 }
 
@@ -38,5 +40,24 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
     }
 
     return user;
+  }
+
+  @override
+  Future<User> updateUser({required String email}) async {
+    User oldUser = (await dataStore.query(
+      User.classType,
+      where: User.EMAIL.eq(email),
+    ))
+        .first;
+
+    User newUser = oldUser.copyWith(tokens: 1000);
+
+    try {
+      await dataStore.save(newUser);
+    } on DataStoreException catch (e) {
+      safePrint(e.message);
+    }
+
+    return newUser;
   }
 }

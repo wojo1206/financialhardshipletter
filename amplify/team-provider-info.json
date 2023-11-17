@@ -40,13 +40,13 @@
       "function": {
         "writerchatgpt": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-4a747a44326d6f547630-build.zip",
+          "s3Key": "amplify-builds/writerchatgpt-694f552f5857502b4b62-build.zip",
           "secretsPathAmplifyAppId": "d35nmn688a6cyy"
         },
         "hardshipletteraskai": {},
         "hardshipletter3653312c": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/hardshipletter3653312c-384f666f563156635842-build.zip"
+          "s3Key": "amplify-builds/hardshipletter3653312c-52452b36422b364f347a-build.zip"
         }
       },
       "api": {
