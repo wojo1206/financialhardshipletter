@@ -3,7 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:simpleiawriter/models/ModelProvider.dart';
-import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/repos/datastore.repository.dart';
 
 class WritingState {
   const WritingState({required this.gptSession});
@@ -20,20 +20,20 @@ final class StartNew extends WriteEvent {
 }
 
 class WritingBloc extends Bloc<WriteEvent, WritingState> {
-  final ApiRepository _apiRep;
+  final DataStoreRepository _dataStoreRep;
 
   WritingBloc({
-    required ApiRepository apiRep,
-  })  : _apiRep = apiRep,
+    required DataStoreRepository dataStoreRep,
+  })  : _dataStoreRep = dataStoreRep,
         super(WritingState(gptSession: GptSession())) {
     on<StartNew>((event, emit) async {
       final stopwatch = Stopwatch();
       stopwatch.start();
 
-      final res1 = await _apiRep.createGptSessionForUser(user: event.user);
+      final session = await _dataStoreRep.gptSessionCreate();
       safePrint(stopwatch.elapsedMilliseconds / 1000);
 
-      return emit(WritingState(gptSession: res1.data ?? GptSession()));
+      return emit(WritingState(gptSession: session));
     });
   }
 }

@@ -15,6 +15,7 @@ import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
+import 'package:simpleiawriter/repos/datastore.repository.dart';
 
 import '../form/textarea.form.dart';
 
@@ -92,12 +93,13 @@ class _WritingScreenState extends State<WritingScreen> {
                 ),
               ),
               Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(AppLocalizations.of(context)!.tokensUsed(cntToken)),
-                    Text(AppLocalizations.of(context)!.timeElapsed(elapsed)),
-                  ]),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(AppLocalizations.of(context)!.tokensUsed(cntToken)),
+                  Text(AppLocalizations.of(context)!.timeElapsed(elapsed)),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -123,6 +125,7 @@ class _WritingScreenState extends State<WritingScreen> {
       aiTextFocusNode.requestFocus();
 
       stopwatch.start();
+
       timer = Timer.periodic(const Duration(seconds: 1), (timer) {
         setState(() {
           elapsed = stopwatch.elapsed.inSeconds;
@@ -137,6 +140,7 @@ class _WritingScreenState extends State<WritingScreen> {
       final blocAuth = BlocProvider.of<AuthBloc>(context);
 
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
+      final dataRep = RepositoryProvider.of<DataStoreRepository>(context);
       // final session = apiRep.createGptSessionForUser(user: user)
 
       blocWriter.add(StartNew(blocAuth.state.user));
@@ -173,9 +177,10 @@ class _WritingScreenState extends State<WritingScreen> {
       );
 
       apiRep.initGptQuery(
-          message: const JsonEncoder().convert(Assistant.getPrompt(context)),
-          userId: blocAuth.state.user.id,
-          gptSessionId: blocWriter.state.gptSession.id);
+        message: const JsonEncoder().convert(Assistant.getPrompt(context)),
+        userId: blocAuth.state.user.id,
+        gptSessionId: blocWriter.state.gptSession.id,
+      );
     } catch (e) {
       safePrint('Error: $e');
     } finally {}
@@ -222,7 +227,7 @@ class _WritingScreenState extends State<WritingScreen> {
 
     Iterable<RegExpMatch> matches = exp.allMatches(str);
     for (final m in matches) {
-      print(m[0]);
+      safePrint(m[0]);
       str = str.replaceAll(m[0]!, "[TODO]");
     }
 

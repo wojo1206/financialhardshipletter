@@ -16,7 +16,7 @@ export async function handler(event) {
   const MODEL = "gpt-4";
 
   const userId = event["arguments"]["userId"];
-  const gptSessionIdStr = event["arguments"]["gptSessionId"];
+  const gptSessionId = event["arguments"]["gptSessionId"];
   const messages = [event["arguments"]["message"]];
 
   // 1. Query user info.
@@ -66,7 +66,7 @@ export async function handler(event) {
       .replace(/[\t]/g, "\\t");
     const createdAtTimestamp = Math.floor(Date.now() / 1000);
 
-    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createdAtTimestamp: ${createdAtTimestamp}, gptSessionGptMessagesId: "${gptSessionIdStr}"}) { 
+    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createdAtTimestamp: ${createdAtTimestamp}, gptSessionGptMessagesId: "${gptSessionId}"}) { 
         id
         chunk
         createdAtTimestamp
@@ -89,7 +89,7 @@ export async function handler(event) {
 
   // 3. Update user info with token cost.
 
-  const newTokens = tokens - cost;
+  var newTokens = tokens - cost;
   if (newTokens < 0) newTokens = 0;
 
   const mut2 = `mutation MyMut2 {

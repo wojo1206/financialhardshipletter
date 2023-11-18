@@ -4,11 +4,13 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
 abstract class DataStoreRepository {
-  Future<User> createUser({required String email});
+  Future<User> userCreate({required String email});
 
-  Future<User> updateUser({required String email});
+  Future<User> userUpdate({required String email});
 
-  Future<List<GptSession>> fetchGptSessions({required User user});
+  Future<GptSession> gptSessionCreate();
+
+  Future<List<GptSession>> gptSessionFetch({required User user});
 }
 
 class AmplifyDataStoreRepository implements DataStoreRepository {
@@ -17,33 +19,18 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
   final AmplifyDataStore dataStore;
 
   @override
-  Future<List<GptSession>> fetchGptSessions({required User user}) async {
-    try {
-      return await dataStore.query(
-        GptSession.classType,
-        // where: GptMessage.GPTSESSION.eq(user.id),
-      );
-    } on DataStoreException catch (e) {
-      safePrint(e.message);
-    }
-    return [];
-  }
-
-  @override
-  Future<User> createUser({required String email}) async {
+  Future<User> userCreate({required String email}) async {
     final user = User(email: email, tokens: 1000);
-
     try {
       await dataStore.save(user);
     } on DataStoreException catch (e) {
       safePrint(e.message);
     }
-
     return user;
   }
 
   @override
-  Future<User> updateUser({required String email}) async {
+  Future<User> userUpdate({required String email}) async {
     User oldUser = (await dataStore.query(
       User.classType,
       where: User.EMAIL.eq(email),
@@ -59,5 +46,28 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
     }
 
     return newUser;
+  }
+
+  @override
+  Future<GptSession> gptSessionCreate() async {
+    final newSession = GptSession(original: "TEST");
+    try {
+      await dataStore.save(newSession);
+    } on DataStoreException catch (e) {
+      safePrint(e.message);
+    }
+    return newSession;
+  }
+
+  @override
+  Future<List<GptSession>> gptSessionFetch({required User user}) async {
+    try {
+      return await dataStore.query(
+        GptSession.classType,
+      );
+    } on DataStoreException catch (e) {
+      safePrint(e.message);
+    }
+    return [];
   }
 }

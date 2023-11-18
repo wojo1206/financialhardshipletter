@@ -44,7 +44,7 @@ void main() async {
   }
 
   runApp(App(
-    apiRepository: AmplifyAppRepository(api: api),
+    apiRepository: AmplifyAppRepository(api: api, auth: auth),
     authRepository: AmplifyAuthRepository(auth: auth),
     dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
     inAppPurchaseRepository: InAppPurchaseRepository(
@@ -74,7 +74,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
-      // @deprecated
       providers: [
         RepositoryProvider<ApiRepository>(create: (context) => _appRepository),
         RepositoryProvider<AuthRepository>(
@@ -90,8 +89,8 @@ class App extends StatelessWidget {
             create: (BuildContext context) => AppBloc(),
           ),
           BlocProvider<AuthBloc>(
-            create: (BuildContext context) =>
-                AuthBloc(apiRep: _appRepository, authRep: _authRepository),
+            create: (BuildContext context) => AuthBloc(
+                apiRep: _appRepository, dataStoreRep: _dataStoreRepository),
           ),
           BlocProvider<PurchaseBloc>(
             create: (BuildContext context) => PurchaseBloc(
@@ -100,7 +99,7 @@ class App extends StatelessWidget {
           ),
           BlocProvider<WritingBloc>(
             create: (BuildContext context) =>
-                WritingBloc(apiRep: _appRepository),
+                WritingBloc(dataStoreRep: _dataStoreRepository),
           ),
         ],
         child: MaterialApp(
@@ -129,21 +128,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _test = false;
-  PackageInfo _packageInfo = PackageInfo(
-    appName: '',
-    packageName: '',
-    version: '',
-    buildNumber: '',
-    buildSignature: '',
-    installerStore: '',
-  );
-
   @override
   void initState() {
     super.initState();
-
-    final authRep = RepositoryProvider.of<AuthRepository>(context);
 
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
       resumeCallBack: () async {

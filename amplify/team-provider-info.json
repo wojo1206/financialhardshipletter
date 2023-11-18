@@ -40,7 +40,7 @@
       "function": {
         "writerchatgpt": {
           "deploymentBucketName": "amplify-hardshipletter-dev-95726-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-694f552f5857502b4b62-build.zip",
+          "s3Key": "amplify-builds/writerchatgpt-7273593748744b7a756c-build.zip",
           "secretsPathAmplifyAppId": "d35nmn688a6cyy"
         },
         "hardshipletteraskai": {},

@@ -1,16 +1,17 @@
 # This "input" configures a global authorization rule to enable public access to
 # all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY {
-  globalAuthRule: AuthRule = { allow: public }
-} # FOR TESTING ONLY!
-type User @model {
+# input AMPLIFY {
+#   globalAuthRule: AuthRule = { allow: public }
+# } # FOR TESTING ONLY!
+
+type User @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   email: AWSEmail! @index
   tokens: Int!
   gptSessions: [GptSession] @hasMany
 }
 
-type GptMessage @model {
+type GptMessage @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   chunk: AWSJSON!
   createdAtTimestamp: Int!
@@ -18,13 +19,19 @@ type GptMessage @model {
   gptSessionGptMessagesId: ID!
 }
 
-type GptSession @model {
+type GptSession @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   user: User @belongsTo
   subject: String
   original: String
   modified: String
   gptMessages: [GptMessage] @hasMany
+}
+
+type Attribute @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  key: String!
+  val: String!
 }
 
 type Mutation {
