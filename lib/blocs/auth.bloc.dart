@@ -16,8 +16,8 @@ class AuthState {
   });
 
   final AuthenticationState status;
-  final String email;
   final int tokens;
+  final String email;
 }
 
 sealed class AuthEvent {}
@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   })  : _authRep = authRep,
         _dataStoreRep = dataStoreRep,
         super(
-          AuthState(status: AuthenticationState.unknown),
+          const AuthState(status: AuthenticationState.unknown),
         ) {
     on<AuthChanged>(_onAuthenticationStatusChanged);
   }
@@ -57,10 +57,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             .firstWhere((element) => element.userAttributeKey.key == 'email')
             .value;
 
+        Setting? setting = await _dataStoreRep.settingFetch(email);
+        safePrint(setting);
+
+        setting ??= await _dataStoreRep.settingCreate(email, 1000);
+        safePrint(setting);
+
         return emit(AuthState(
           status: AuthenticationState.authenticated,
           email: email,
-          tokens: 999,
+          tokens: setting.tokens,
         ));
 
       case AuthenticationState.unknown:

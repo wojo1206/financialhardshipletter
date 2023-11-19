@@ -20,7 +20,7 @@ String CREATE_GPT_SESSION_FOR_USER_BY_EMAIL() {
 }
 
 String INIT_GPT_QUERY() {
-  return '''mutation InitGptQuery(\$message: AWSJSON!, \$userId: ID!, \$gptSessionId: ID!) {
-      initGptQuery(message: \$message, userId: \$userId, gptSessionId: \$gptSessionId)
+  return '''mutation InitGptQuery(\$message: AWSJSON!, \$email: AWSEmail!, \$gptSessionId: ID!) {
+      initGptQuery(message: \$message, email: \$email, gptSessionId: \$gptSessionId)
     }''';
 }

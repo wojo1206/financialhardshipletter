@@ -16,6 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/blocs/history.bloc.dart';
 import 'package:simpleiawriter/blocs/purchase.bloc.dart';
 import 'package:simpleiawriter/blocs/writing.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
@@ -94,6 +95,10 @@ class App extends StatelessWidget {
             create: (BuildContext context) => AuthBloc(
                 authRep: _authRepository, dataStoreRep: _dataStoreRepository),
           ),
+          BlocProvider<HistoryBloc>(
+            create: (BuildContext context) =>
+                HistoryBloc(dataStoreRep: _dataStoreRepository),
+          ),
           BlocProvider<PurchaseBloc>(
             create: (BuildContext context) => PurchaseBloc(
                 purchaseRepository: _inAppPurchaseRepository,
@@ -149,6 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
     sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) {
       switch (event.type) {
         case AuthHubEventType.signedIn:
+          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
+              const Text('User is signed in.'));
+
           safePrint('User is signed in.');
           break;
         case AuthHubEventType.signedOut:

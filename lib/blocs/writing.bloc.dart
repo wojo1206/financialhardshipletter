@@ -13,8 +13,14 @@ class WritingState {
 
 sealed class WriteEvent {}
 
-final class StartNew extends WriteEvent {
-  StartNew();
+final class SessionNew extends WriteEvent {
+  SessionNew();
+}
+
+final class SessionUpdate extends WriteEvent {
+  SessionUpdate(this.gptSession);
+
+  final GptSession gptSession;
 }
 
 class WritingBloc extends Bloc<WriteEvent, WritingState> {
@@ -24,8 +30,12 @@ class WritingBloc extends Bloc<WriteEvent, WritingState> {
     required DataStoreRepository dataStoreRep,
   })  : _dataStoreRep = dataStoreRep,
         super(WritingState(gptSession: GptSession())) {
-    on<StartNew>((event, emit) async {
+    on<SessionNew>((event, emit) async {
       final session = await _dataStoreRep.gptSessionCreate();
+      return emit(WritingState(gptSession: session));
+    });
+    on<SessionUpdate>((event, emit) async {
+      final session = await _dataStoreRep.gptSessionUpdate(event.gptSession);
       return emit(WritingState(gptSession: session));
     });
   }

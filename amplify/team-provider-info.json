@@ -81,7 +81,7 @@
         "writerchatgpt": {
           "secretsPathAmplifyAppId": "d35nmn688a6cyy",
           "deploymentBucketName": "amplify-hardshipletter-stage-163807-deployment",
-          "s3Key": "amplify-builds/writerchatgpt-654d355135724f35512f-build.zip"
+          "s3Key": "amplify-builds/writerchatgpt-7346397a614475384e6f-build.zip"
         }
       },
       "api": {

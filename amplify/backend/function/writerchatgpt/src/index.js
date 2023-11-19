@@ -30,9 +30,39 @@ export async function handler(event) {
 
   const MODEL = "gpt-4";
 
-  const userId = event["arguments"]["userId"];
+  const email = event["arguments"]["email"];
   const gptSessionId = event["arguments"]["gptSessionId"];
   const messages = [event["arguments"]["message"]];
+
+  // 1. Query user info.
+
+  const q1 = `query Query1 {
+        settingsByEmail(email: "${email}") {
+          items {
+            tokens
+          }
+        }
+      }`;
+
+  const res1 = await myFetch(
+    event,
+    JSON.stringify({
+      query: q1,
+      operationName: "Query1",
+    })
+  );
+  const json1 = await res1.json();
+
+  const tokens = parseInt(
+    json1["data"]["settingsByEmail"]["items"][0]["tokens"]
+  );
+
+  if (tokens <= 0) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "No tokens." }),
+    };
+  }
 
   const chat = await openai.chat.completions.create({
     model: MODEL,
@@ -56,14 +86,15 @@ export async function handler(event) {
     const createdAtTimestamp = Math.floor(Date.now() / 1000);
 
     const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createdAtTimestamp: ${createdAtTimestamp}, gptSessionGptMessagesId: "${gptSessionId}"}) { 
-        id
-        chunk
-        createdAtTimestamp
-        gptSessionGptMessagesId
-        createdAt
-        updatedAt
-      }
-    }`;
+          id
+          owner
+          chunk
+          createdAtTimestamp
+          gptSessionGptMessagesId
+          createdAt
+          updatedAt
+        }
+      }`;
 
     await myFetch(
       event,
@@ -75,11 +106,6 @@ export async function handler(event) {
 
     cost++;
   }
-
-  return {
-    statusCode: 200,
-    body: "",
-  };
 }
 
 async function myFetch(event, body) {

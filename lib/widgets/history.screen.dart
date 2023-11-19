@@ -1,11 +1,11 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:simpleiawriter/repos/datastore.repository.dart';
+import 'package:simpleiawriter/blocs/history.bloc.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
-import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/models/GptSession.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -15,44 +15,49 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  @override
+  void initState() {
+    BlocProvider.of<HistoryBloc>(context).add(Fetch());
+
+    super.initState();
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.titleHistory,
-            style: Theme.of(context).textTheme.bodyMedium),
-      ),
-      body: FormHelper.wrapperBody(
-        context,
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Expanded(
-            //   child: ListView.builder(
-            //     // Let the ListView know how many items it needs to build.
-            //     itemCount: authUserAttrs.length,
-            //     // Provide a builder function. This is where the magic happens.
-            //     // Convert each item into a widget based on the type of item it is.
-            //     itemBuilder: (context, index) {
-            //       final item = authUserAttrs[index];
-
-            //       return ListTile(
-            //         title: Text(item.userAttributeKey.key),
-            //         subtitle: Text(item.value),
-            //       );
-            //     },
-            //   ),
-            // )
-          ],
+    return BlocBuilder<HistoryBloc, HistoryState>(builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.titleHistory,
+              style: Theme.of(context).textTheme.bodyMedium),
         ),
-      ),
-    );
-  }
-
-  _test() {
-    // final appRep = RepositoryProvider.of<DataStoreRepository>(context)
-    //     .fetchGptSessions(user: user);
+        body: FormHelper.wrapperBody(
+          context,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: ListView.builder(
+                  itemCount: state.gptSessions.length,
+                  itemBuilder: (context, index) {
+                    GptSession session = state.gptSessions[index];
+                    return ListTile(
+                      title: Text(
+                        session.original ?? '',
+                        maxLines: 1,
+                        softWrap: false,
+                      ),
+                      subtitle:
+                          Text(session.createdAt.toString().substring(0, 10)),
+                    );
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

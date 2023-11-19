@@ -4,12 +4,6 @@
 #   globalAuthRule: AuthRule = { allow: public }
 # } # FOR TESTING ONLY!
 
-type CustomAttribute @model @auth(rules: [{ allow: owner }]) {
-  id: ID!
-  key: String!
-  val: String!
-}
-
 type GptMessage @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   chunk: AWSJSON!
@@ -24,10 +18,18 @@ type GptSession @model @auth(rules: [{ allow: owner }]) {
   original: String
   modified: String
   gptMessages: [GptMessage] @hasMany
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
+}
+
+type Setting @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  email: AWSEmail! @index
+  tokens: Int!
 }
 
 type Mutation {
-  initGptQuery(message: AWSJSON!, userId: ID!, gptSessionId: ID!): String!
+  initGptQuery(message: AWSJSON!, email: AWSEmail!, gptSessionId: ID!): String!
     @function(name: "hardshipletter3653312c-${env}")
 }
 

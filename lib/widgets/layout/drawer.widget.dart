@@ -9,6 +9,7 @@ import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/assistant-writer/version.widget.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
+import 'package:simpleiawriter/widgets/history.screen.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -37,12 +38,12 @@ class MyDrawer extends StatelessWidget {
                   _popAndPush(context, const AccountScreen());
                 },
               ),
-              // ListTile(
-              //   title: Text(AppLocalizations.of(context)!.titleHistory),
-              //   onTap: () {
-              //     _popAndPush(context, const HistoryScreen());
-              //   },
-              // ),
+              ListTile(
+                title: Text(AppLocalizations.of(context)!.titleHistory),
+                onTap: () {
+                  _popAndPush(context, const HistoryScreen());
+                },
+              ),
               // ListTile(
               //   title: Text(AppLocalizations.of(context)!.titleSettings),
               //   onTap: () {
