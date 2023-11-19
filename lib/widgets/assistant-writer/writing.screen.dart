@@ -40,7 +40,7 @@ class _WritingScreenState extends State<WritingScreen> {
 
   List<GptMessage> gptMessages = [];
 
-  StreamSubscription<GraphQLResponse<GptMessage>>? stream1;
+  StreamSubscription<SubscriptionEvent<GptMessage>>? stream1;
 
   @override
   void initState() {
@@ -58,6 +58,8 @@ class _WritingScreenState extends State<WritingScreen> {
     aiTextController.dispose();
     aiScrollController.dispose();
     aiTextFocusNode.dispose();
+
+    timer.cancel();
 
     if (stream1 != null) stream1?.cancel();
 
@@ -137,39 +139,35 @@ class _WritingScreenState extends State<WritingScreen> {
       });
 
       final blocWriter = BlocProvider.of<WritingBloc>(context);
-      final blocAuth = BlocProvider.of<AuthBloc>(context);
 
       final apiRep = RepositoryProvider.of<ApiRepository>(context);
       final dataRep = RepositoryProvider.of<DataStoreRepository>(context);
       // final session = apiRep.createGptSessionForUser(user: user)
 
-      blocWriter.add(StartNew(blocAuth.state.user));
+      blocWriter.add(StartNew());
       safePrint(blocWriter.state.gptSession);
 
-      stream1 =
-          apiRep.subscribeToChat(session: blocWriter.state.gptSession).listen(
+      stream1 = dataRep
+          .gptMessageSubscribe(session: blocWriter.state.gptSession)
+          .listen(
         (event) {
-          GptMessage? msg = event.data;
+          gptMessages.add(event.item);
 
-          if (msg is GptMessage) {
-            gptMessages.add(msg);
+          final chunk = ChatResponseSSE.fromJson(json.decode(event.item.chunk));
 
-            final chunk = ChatResponseSSE.fromJson(json.decode(msg.chunk));
+          if (chunk.choices is List) {
+            ChatChoiceSSE? choice = chunk.choices?.first;
 
-            if (chunk.choices is List) {
-              ChatChoiceSSE? choice = chunk.choices?.first;
+            setState(() {
+              cntToken += 1;
+            });
 
-              setState(() {
-                cntToken += 1;
-              });
-
-              if (choice?.finishReason == 'stop') {
-                _stop(context);
-              }
-
-              _sortText();
-              _scrollDown(context);
+            if (choice?.finishReason == 'stop') {
+              _stop(context);
             }
+
+            _sortText();
+            _scrollDown(context);
           }
         },
         onError: (Object e) => safePrint('Error: $e'),
@@ -178,7 +176,7 @@ class _WritingScreenState extends State<WritingScreen> {
 
       apiRep.initGptQuery(
         message: const JsonEncoder().convert(Assistant.getPrompt(context)),
-        userId: blocAuth.state.user.id,
+        userId: '@TODO',
         gptSessionId: blocWriter.state.gptSession.id,
       );
     } catch (e) {

@@ -14,9 +14,7 @@ class WritingState {
 sealed class WriteEvent {}
 
 final class StartNew extends WriteEvent {
-  final User user;
-
-  StartNew(this.user);
+  StartNew();
 }
 
 class WritingBloc extends Bloc<WriteEvent, WritingState> {
@@ -27,12 +25,7 @@ class WritingBloc extends Bloc<WriteEvent, WritingState> {
   })  : _dataStoreRep = dataStoreRep,
         super(WritingState(gptSession: GptSession())) {
     on<StartNew>((event, emit) async {
-      final stopwatch = Stopwatch();
-      stopwatch.start();
-
       final session = await _dataStoreRep.gptSessionCreate();
-      safePrint(stopwatch.elapsedMilliseconds / 1000);
-
       return emit(WritingState(gptSession: session));
     });
   }

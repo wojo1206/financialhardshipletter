@@ -4,11 +4,10 @@
 #   globalAuthRule: AuthRule = { allow: public }
 # } # FOR TESTING ONLY!
 
-type User @model @auth(rules: [{ allow: owner }]) {
+type CustomAttribute @model @auth(rules: [{ allow: owner }]) {
   id: ID!
-  email: AWSEmail! @index
-  tokens: Int!
-  gptSessions: [GptSession] @hasMany
+  key: String!
+  val: String!
 }
 
 type GptMessage @model @auth(rules: [{ allow: owner }]) {
@@ -21,17 +20,10 @@ type GptMessage @model @auth(rules: [{ allow: owner }]) {
 
 type GptSession @model @auth(rules: [{ allow: owner }]) {
   id: ID!
-  user: User @belongsTo
   subject: String
   original: String
   modified: String
   gptMessages: [GptMessage] @hasMany
-}
-
-type Attribute @model @auth(rules: [{ allow: owner }]) {
-  id: ID!
-  key: String!
-  val: String!
 }
 
 type Mutation {

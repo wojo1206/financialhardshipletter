@@ -4,15 +4,10 @@
     "apiName": "hardshipletter",
     "serviceName": "AppSync",
     "defaultAuthType": {
-      "mode": "API_KEY",
-      "expirationTime": 7
+      "mode": "AMAZON_COGNITO_USER_POOLS",
+      "cognitoUserPoolId": "authhardshiplettere564321c"
     },
-    "additionalAuthTypes": [
-      {
-        "mode": "AMAZON_COGNITO_USER_POOLS",
-        "cognitoUserPoolId": "authhardshiplettere564321c"
-      }
-    ],
+    "additionalAuthTypes": [],
     "conflictResolution": {
       "defaultResolutionStrategy": {
         "type": "AUTOMERGE"

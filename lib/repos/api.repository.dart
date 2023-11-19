@@ -1,5 +1,4 @@
 import 'package:amplify_api/amplify_api.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 
 import 'package:simpleiawriter/graphql/mutations.graphql.dart';
 
@@ -11,8 +10,7 @@ abstract class ApiRepository {
 }
 
 class AmplifyAppRepository implements ApiRepository {
-  AmplifyAppRepository({required this.api, required this.auth});
-  final AmplifyAuthCognito auth;
+  AmplifyAppRepository({required this.api});
   final AmplifyAPI api;
 
   @override

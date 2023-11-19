@@ -3,7 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
-import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/repos/datastore.repository.dart';
 
 enum AuthenticationState { unknown, authenticated, unauthenticated }
@@ -11,11 +11,13 @@ enum AuthenticationState { unknown, authenticated, unauthenticated }
 class AuthState {
   const AuthState({
     this.status = AuthenticationState.unauthenticated,
-    required this.user,
+    this.email = '',
+    this.tokens = 0,
   });
 
   final AuthenticationState status;
-  final User user;
+  final String email;
+  final int tokens;
 }
 
 sealed class AuthEvent {}
@@ -27,18 +29,16 @@ final class AuthChanged extends AuthEvent {
 }
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final ApiRepository _apiRep;
+  final AuthRepository _authRep;
   final DataStoreRepository _dataStoreRep;
 
   AuthBloc({
-    required ApiRepository apiRep,
+    required AuthRepository authRep,
     required DataStoreRepository dataStoreRep,
-  })  : _apiRep = apiRep,
+  })  : _authRep = authRep,
         _dataStoreRep = dataStoreRep,
         super(
-          AuthState(
-              status: AuthenticationState.unknown,
-              user: User(email: '', tokens: 0)),
+          AuthState(status: AuthenticationState.unknown),
         ) {
     on<AuthChanged>(_onAuthenticationStatusChanged);
   }
@@ -49,22 +49,22 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     switch (event.status) {
       case AuthenticationState.unauthenticated:
-        return emit(AuthState(
-          status: AuthenticationState.unauthenticated,
-          user: User(email: '', tokens: 0),
-        ));
+        return emit(
+            const AuthState(status: AuthenticationState.unauthenticated));
       case AuthenticationState.authenticated:
-        // @TODO Get email
+        var attr = await _authRep.userAttributesFetchCurrent();
+        var email = attr
+            .firstWhere((element) => element.userAttributeKey.key == 'email')
+            .value;
+
         return emit(AuthState(
           status: AuthenticationState.authenticated,
-          user: User(email: 'TODO', tokens: 999),
+          email: email,
+          tokens: 999,
         ));
 
       case AuthenticationState.unknown:
-        return emit(AuthState(
-          status: AuthenticationState.unknown,
-          user: User(email: '', tokens: 0),
-        ));
+        return emit(const AuthState(status: AuthenticationState.unknown));
     }
   }
 }

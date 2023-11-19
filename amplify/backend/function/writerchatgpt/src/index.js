@@ -1,3 +1,18 @@
+/*
+Use the following code to retrieve configured secrets from SSM:
+
+const aws = require('aws-sdk');
+
+const { Parameters } = await (new aws.SSM())
+  .getParameters({
+    Names: ["OPENAI_API_KEY"].map(secretName => process.env[secretName]),
+    WithDecryption: true,
+  })
+  .promise();
+
+Parameters will be of the form { Name: 'secretName', Value: 'secretValue', ... }[]
+*/
+
 import { v4 as uuidv4 } from "uuid";
 import OpenAI from "openai";
 
@@ -7,7 +22,7 @@ import OpenAI from "openai";
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export async function handler(event) {
-  // console.log(event);
+  console.log(event);
 
   const openai = new OpenAI({
     apiKey: await getSecret(process.env.OPENAI_API_KEY),
@@ -18,32 +33,6 @@ export async function handler(event) {
   const userId = event["arguments"]["userId"];
   const gptSessionId = event["arguments"]["gptSessionId"];
   const messages = [event["arguments"]["message"]];
-
-  // 1. Query user info.
-
-  const q1 = `query MyQuery1 {
-      getUser(id: "${userId}") {
-        tokens
-      }
-    }`;
-
-  const res1 = await myFetch(
-    event,
-    JSON.stringify({
-      query: q1,
-      operationName: "MyQuery1",
-    })
-  );
-  const json1 = await res1.json();
-
-  const tokens = parseInt(json1["data"]["getUser"]["tokens"]);
-
-  if (tokens <= 0) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "No tokens." }),
-    };
-  }
 
   const chat = await openai.chat.completions.create({
     model: MODEL,
@@ -87,30 +76,6 @@ export async function handler(event) {
     cost++;
   }
 
-  // 3. Update user info with token cost.
-
-  var newTokens = tokens - cost;
-  if (newTokens < 0) newTokens = 0;
-
-  const mut2 = `mutation MyMut2 {
-    updateUser(input: {id: "${userId}", tokens: ${newTokens}}) {
-      id
-      tokens
-      createdAt
-      updatedAt
-    }
-  }`;
-
-  const res2 = await myFetch(
-    event,
-    JSON.stringify({
-      query: mut2,
-      operationName: "MyMut2",
-    })
-  );
-  const json2 = await res2.json();
-  // console.log(json2);
-
   return {
     statusCode: 200,
     body: "",
@@ -126,7 +91,8 @@ async function myFetch(event, body) {
         body: body,
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": event["request"]["headers"]["x-api-key"],
+          Authorization:
+            "Bearer " + event["request"]["headers"]["authorization"],
         },
       }
     );

@@ -21,17 +21,14 @@
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart' as amplify_core;
-import 'package:collection/collection.dart';
 
 
-/** This is an auto generated class representing the GptSession type in your schema. */
-class GptSession extends amplify_core.Model {
-  static const classType = const _GptSessionModelType();
+/** This is an auto generated class representing the CustomAttribute type in your schema. */
+class CustomAttribute extends amplify_core.Model {
+  static const classType = const _CustomAttributeModelType();
   final String id;
-  final String? _subject;
-  final String? _original;
-  final String? _modified;
-  final List<GptMessage>? _gptMessages;
+  final String? _key;
+  final String? _val;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -42,26 +39,36 @@ class GptSession extends amplify_core.Model {
   @override
   String getId() => id;
   
-  GptSessionModelIdentifier get modelIdentifier {
-      return GptSessionModelIdentifier(
+  CustomAttributeModelIdentifier get modelIdentifier {
+      return CustomAttributeModelIdentifier(
         id: id
       );
   }
   
-  String? get subject {
-    return _subject;
+  String get key {
+    try {
+      return _key!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  String? get original {
-    return _original;
-  }
-  
-  String? get modified {
-    return _modified;
-  }
-  
-  List<GptMessage>? get gptMessages {
-    return _gptMessages;
+  String get val {
+    try {
+      return _val!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -72,15 +79,13 @@ class GptSession extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const GptSession._internal({required this.id, subject, original, modified, gptMessages, createdAt, updatedAt}): _subject = subject, _original = original, _modified = modified, _gptMessages = gptMessages, _createdAt = createdAt, _updatedAt = updatedAt;
+  const CustomAttribute._internal({required this.id, required key, required val, createdAt, updatedAt}): _key = key, _val = val, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory GptSession({String? id, String? subject, String? original, String? modified, List<GptMessage>? gptMessages}) {
-    return GptSession._internal(
+  factory CustomAttribute({String? id, required String key, required String val}) {
+    return CustomAttribute._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      subject: subject,
-      original: original,
-      modified: modified,
-      gptMessages: gptMessages != null ? List<GptMessage>.unmodifiable(gptMessages) : gptMessages);
+      key: key,
+      val: val);
   }
   
   bool equals(Object other) {
@@ -90,12 +95,10 @@ class GptSession extends amplify_core.Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is GptSession &&
+    return other is CustomAttribute &&
       id == other.id &&
-      _subject == other._subject &&
-      _original == other._original &&
-      _modified == other._modified &&
-      DeepCollectionEquality().equals(_gptMessages, other._gptMessages);
+      _key == other._key &&
+      _val == other._val;
   }
   
   @override
@@ -105,11 +108,10 @@ class GptSession extends amplify_core.Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("GptSession {");
+    buffer.write("CustomAttribute {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("subject=" + "$_subject" + ", ");
-    buffer.write("original=" + "$_original" + ", ");
-    buffer.write("modified=" + "$_modified" + ", ");
+    buffer.write("key=" + "$_key" + ", ");
+    buffer.write("val=" + "$_val" + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -117,69 +119,50 @@ class GptSession extends amplify_core.Model {
     return buffer.toString();
   }
   
-  GptSession copyWith({String? subject, String? original, String? modified, List<GptMessage>? gptMessages}) {
-    return GptSession._internal(
+  CustomAttribute copyWith({String? key, String? val}) {
+    return CustomAttribute._internal(
       id: id,
-      subject: subject ?? this.subject,
-      original: original ?? this.original,
-      modified: modified ?? this.modified,
-      gptMessages: gptMessages ?? this.gptMessages);
+      key: key ?? this.key,
+      val: val ?? this.val);
   }
   
-  GptSession copyWithModelFieldValues({
-    ModelFieldValue<String?>? subject,
-    ModelFieldValue<String?>? original,
-    ModelFieldValue<String?>? modified,
-    ModelFieldValue<List<GptMessage>?>? gptMessages
+  CustomAttribute copyWithModelFieldValues({
+    ModelFieldValue<String>? key,
+    ModelFieldValue<String>? val
   }) {
-    return GptSession._internal(
+    return CustomAttribute._internal(
       id: id,
-      subject: subject == null ? this.subject : subject.value,
-      original: original == null ? this.original : original.value,
-      modified: modified == null ? this.modified : modified.value,
-      gptMessages: gptMessages == null ? this.gptMessages : gptMessages.value
+      key: key == null ? this.key : key.value,
+      val: val == null ? this.val : val.value
     );
   }
   
-  GptSession.fromJson(Map<String, dynamic> json)  
+  CustomAttribute.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _subject = json['subject'],
-      _original = json['original'],
-      _modified = json['modified'],
-      _gptMessages = json['gptMessages'] is List
-        ? (json['gptMessages'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => GptMessage.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
-        : null,
+      _key = json['key'],
+      _val = json['val'],
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'subject': _subject, 'original': _original, 'modified': _modified, 'gptMessages': _gptMessages?.map((GptMessage? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'key': _key, 'val': _val, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
-    'subject': _subject,
-    'original': _original,
-    'modified': _modified,
-    'gptMessages': _gptMessages,
+    'key': _key,
+    'val': _val,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
-  static final amplify_core.QueryModelIdentifier<GptSessionModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GptSessionModelIdentifier>();
+  static final amplify_core.QueryModelIdentifier<CustomAttributeModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<CustomAttributeModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
-  static final SUBJECT = amplify_core.QueryField(fieldName: "subject");
-  static final ORIGINAL = amplify_core.QueryField(fieldName: "original");
-  static final MODIFIED = amplify_core.QueryField(fieldName: "modified");
-  static final GPTMESSAGES = amplify_core.QueryField(
-    fieldName: "gptMessages",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'GptMessage'));
+  static final KEY = amplify_core.QueryField(fieldName: "key");
+  static final VAL = amplify_core.QueryField(fieldName: "val");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "GptSession";
-    modelSchemaDefinition.pluralName = "GptSessions";
+    modelSchemaDefinition.name = "CustomAttribute";
+    modelSchemaDefinition.pluralName = "CustomAttributes";
     
     modelSchemaDefinition.authRules = [
       amplify_core.AuthRule(
@@ -198,28 +181,15 @@ class GptSession extends amplify_core.Model {
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptSession.SUBJECT,
-      isRequired: false,
+      key: CustomAttribute.KEY,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptSession.ORIGINAL,
-      isRequired: false,
+      key: CustomAttribute.VAL,
+      isRequired: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptSession.MODIFIED,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
-    ));
-    
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.hasMany(
-      key: GptSession.GPTMESSAGES,
-      isRequired: false,
-      ofModelName: 'GptMessage',
-      associatedKey: GptMessage.GPTSESSION
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
@@ -238,29 +208,29 @@ class GptSession extends amplify_core.Model {
   });
 }
 
-class _GptSessionModelType extends amplify_core.ModelType<GptSession> {
-  const _GptSessionModelType();
+class _CustomAttributeModelType extends amplify_core.ModelType<CustomAttribute> {
+  const _CustomAttributeModelType();
   
   @override
-  GptSession fromJson(Map<String, dynamic> jsonData) {
-    return GptSession.fromJson(jsonData);
+  CustomAttribute fromJson(Map<String, dynamic> jsonData) {
+    return CustomAttribute.fromJson(jsonData);
   }
   
   @override
   String modelName() {
-    return 'GptSession';
+    return 'CustomAttribute';
   }
 }
 
 /**
  * This is an auto generated class representing the model identifier
- * of [GptSession] in your schema.
+ * of [CustomAttribute] in your schema.
  */
-class GptSessionModelIdentifier implements amplify_core.ModelIdentifier<GptSession> {
+class CustomAttributeModelIdentifier implements amplify_core.ModelIdentifier<CustomAttribute> {
   final String id;
 
-  /** Create an instance of GptSessionModelIdentifier using [id] the primary key. */
-  const GptSessionModelIdentifier({
+  /** Create an instance of CustomAttributeModelIdentifier using [id] the primary key. */
+  const CustomAttributeModelIdentifier({
     required this.id});
   
   @override
@@ -278,7 +248,7 @@ class GptSessionModelIdentifier implements amplify_core.ModelIdentifier<GptSessi
   String serializeAsString() => serializeAsMap().values.join('#');
   
   @override
-  String toString() => 'GptSessionModelIdentifier(id: $id)';
+  String toString() => 'CustomAttributeModelIdentifier(id: $id)';
   
   @override
   bool operator ==(Object other) {
@@ -286,7 +256,7 @@ class GptSessionModelIdentifier implements amplify_core.ModelIdentifier<GptSessi
       return true;
     }
     
-    return other is GptSessionModelIdentifier &&
+    return other is CustomAttributeModelIdentifier &&
       id == other.id;
   }
   

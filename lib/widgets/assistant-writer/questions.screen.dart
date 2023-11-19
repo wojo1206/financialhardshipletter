@@ -202,7 +202,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 AppLocalizations.of(context)!.pleaseSignIn,
               );
             }
-            if (blocAuth.state.user.tokens <= 0) {
+            if (blocAuth.state.tokens <= 0) {
               throw Exception(AppLocalizations.of(context)!.pleasePurchaseMore);
             }
             Navigator.of(context).push(

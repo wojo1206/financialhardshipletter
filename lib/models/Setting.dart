@@ -27,8 +27,8 @@ import 'package:amplify_core/amplify_core.dart' as amplify_core;
 class Setting extends amplify_core.Model {
   static const classType = const _SettingModelType();
   final String id;
+  final String? _email;
   final int? _tokens;
-  final User? _user;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
 
@@ -45,12 +45,30 @@ class Setting extends amplify_core.Model {
       );
   }
   
-  int? get tokens {
-    return _tokens;
+  String get email {
+    try {
+      return _email!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
-  User? get user {
-    return _user;
+  int get tokens {
+    try {
+      return _tokens!;
+    } catch(e) {
+      throw amplify_core.AmplifyCodeGenModelException(
+          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   amplify_core.TemporalDateTime? get createdAt {
@@ -61,13 +79,13 @@ class Setting extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const Setting._internal({required this.id, tokens, user, createdAt, updatedAt}): _tokens = tokens, _user = user, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Setting._internal({required this.id, required email, required tokens, createdAt, updatedAt}): _email = email, _tokens = tokens, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Setting({String? id, int? tokens, User? user}) {
+  factory Setting({String? id, required String email, required int tokens}) {
     return Setting._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
-      tokens: tokens,
-      user: user);
+      email: email,
+      tokens: tokens);
   }
   
   bool equals(Object other) {
@@ -79,8 +97,8 @@ class Setting extends amplify_core.Model {
     if (identical(other, this)) return true;
     return other is Setting &&
       id == other.id &&
-      _tokens == other._tokens &&
-      _user == other._user;
+      _email == other._email &&
+      _tokens == other._tokens;
   }
   
   @override
@@ -92,8 +110,8 @@ class Setting extends amplify_core.Model {
     
     buffer.write("Setting {");
     buffer.write("id=" + "$id" + ", ");
+    buffer.write("email=" + "$_email" + ", ");
     buffer.write("tokens=" + (_tokens != null ? _tokens!.toString() : "null") + ", ");
-    buffer.write("user=" + (_user != null ? _user!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -101,68 +119,81 @@ class Setting extends amplify_core.Model {
     return buffer.toString();
   }
   
-  Setting copyWith({int? tokens, User? user}) {
+  Setting copyWith({String? email, int? tokens}) {
     return Setting._internal(
       id: id,
-      tokens: tokens ?? this.tokens,
-      user: user ?? this.user);
+      email: email ?? this.email,
+      tokens: tokens ?? this.tokens);
   }
   
   Setting copyWithModelFieldValues({
-    ModelFieldValue<int?>? tokens,
-    ModelFieldValue<User?>? user
+    ModelFieldValue<String>? email,
+    ModelFieldValue<int>? tokens
   }) {
     return Setting._internal(
       id: id,
-      tokens: tokens == null ? this.tokens : tokens.value,
-      user: user == null ? this.user : user.value
+      email: email == null ? this.email : email.value,
+      tokens: tokens == null ? this.tokens : tokens.value
     );
   }
   
   Setting.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _email = json['email'],
       _tokens = (json['tokens'] as num?)?.toInt(),
-      _user = json['user']?['serializedData'] != null
-        ? User.fromJson(new Map<String, dynamic>.from(json['user']['serializedData']))
-        : null,
       _createdAt = json['createdAt'] != null ? amplify_core.TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'tokens': _tokens, 'user': _user?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'email': _email, 'tokens': _tokens, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
+    'email': _email,
     'tokens': _tokens,
-    'user': _user,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
   };
 
   static final amplify_core.QueryModelIdentifier<SettingModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<SettingModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
+  static final EMAIL = amplify_core.QueryField(fieldName: "email");
   static final TOKENS = amplify_core.QueryField(fieldName: "tokens");
-  static final USER = amplify_core.QueryField(
-    fieldName: "user",
-    fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'User'));
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Setting";
     modelSchemaDefinition.pluralName = "Settings";
     
+    modelSchemaDefinition.authRules = [
+      amplify_core.AuthRule(
+        authStrategy: amplify_core.AuthStrategy.OWNER,
+        ownerField: "owner",
+        identityClaim: "cognito:username",
+        provider: amplify_core.AuthRuleProvider.USERPOOLS,
+        operations: const [
+          amplify_core.ModelOperation.CREATE,
+          amplify_core.ModelOperation.UPDATE,
+          amplify_core.ModelOperation.DELETE,
+          amplify_core.ModelOperation.READ
+        ])
+    ];
+    
+    modelSchemaDefinition.indexes = [
+      amplify_core.ModelIndex(fields: const ["email"], name: "settingsByEmail")
+    ];
+    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: Setting.TOKENS,
-      isRequired: false,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
+      key: Setting.EMAIL,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
-      key: Setting.USER,
-      isRequired: false,
-      targetNames: ['settingUserId'],
-      ofModelName: 'User'
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: Setting.TOKENS,
+      isRequired: true,
+      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
     ));
     
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(

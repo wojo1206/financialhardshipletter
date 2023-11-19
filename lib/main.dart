@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_datastore/amplify_datastore.dart';
@@ -44,7 +46,7 @@ void main() async {
   }
 
   runApp(App(
-    apiRepository: AmplifyAppRepository(api: api, auth: auth),
+    apiRepository: AmplifyAppRepository(api: api),
     authRepository: AmplifyAuthRepository(auth: auth),
     dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
     inAppPurchaseRepository: InAppPurchaseRepository(
@@ -90,7 +92,7 @@ class App extends StatelessWidget {
           ),
           BlocProvider<AuthBloc>(
             create: (BuildContext context) => AuthBloc(
-                apiRep: _appRepository, dataStoreRep: _dataStoreRepository),
+                authRep: _authRepository, dataStoreRep: _dataStoreRepository),
           ),
           BlocProvider<PurchaseBloc>(
             create: (BuildContext context) => PurchaseBloc(
@@ -128,6 +130,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late StreamSubscription<AuthHubEvent> sub1;
+  late StreamSubscription<DataStoreHubEvent> sub2;
+
   @override
   void initState() {
     super.initState();
@@ -141,11 +146,61 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ));
 
+    sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) {
+      switch (event.type) {
+        case AuthHubEventType.signedIn:
+          safePrint('User is signed in.');
+          break;
+        case AuthHubEventType.signedOut:
+          safePrint('User is signed out.');
+          break;
+        case AuthHubEventType.sessionExpired:
+          safePrint('The session has expired.');
+          break;
+        case AuthHubEventType.userDeleted:
+          safePrint('The user has been deleted.');
+          break;
+      }
+    });
+
+    sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
+      switch (event.type) {
+        case DataStoreHubEventType.networkStatus:
+          safePrint('Network status has change to .' + event.toString());
+          break;
+        case DataStoreHubEventType.ready:
+          safePrint('DataStore is ready.');
+          break;
+        case DataStoreHubEventType.subscriptionsEstablished:
+          safePrint('Subscription estabilished.');
+          break;
+        case DataStoreHubEventType.syncQueriesStarted:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.modelSynced:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.syncQueriesReady:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.outboxMutationEnqueued:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.outboxMutationProcessed:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.outboxMutationFailed:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.outboxStatus:
+        // TODO: Handle this case.
+        case DataStoreHubEventType.subscriptionDataProcessed:
+        // TODO: Handle this case.
+      }
+    });
+
     _initPackageInfo();
   }
 
   @override
   void dispose() {
+    sub1.cancel();
+    sub2.cancel();
+
     super.dispose();
   }
 

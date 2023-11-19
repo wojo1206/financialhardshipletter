@@ -4,7 +4,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 abstract class AuthRepository {
   Future<bool> isUserSignedIn();
 
-  Future<List<AuthUserAttribute>?> fetchCurrentUserAttributes();
+  Future<List<AuthUserAttribute>> userAttributesFetchCurrent();
 
   Future<AuthUser> getCurrentUser();
 
@@ -22,7 +22,7 @@ class AmplifyAuthRepository implements AuthRepository {
   final AmplifyAuthCognito auth;
 
   @override
-  Future<List<AuthUserAttribute>?> fetchCurrentUserAttributes() async {
+  Future<List<AuthUserAttribute>> userAttributesFetchCurrent() async {
     final result = await auth.fetchUserAttributes();
     for (final element in result) {
       safePrint('key: ${element.userAttributeKey}; value: ${element.value}');
@@ -59,18 +59,6 @@ class AmplifyAuthRepository implements AuthRepository {
     return result;
   }
 
-  /// Returns
-  ///
-  /// ```
-  /// {
-  ///   "isSignedIn": true,
-  ///   "nextStep": {
-  ///     "additionalInfo": {},
-  ///     "signInStep": "done",
-  ///     "missingAttributes": []
-  ///   }
-  /// }
-  /// ```
   @override
   Future<CognitoSignInResult?> signIn(
       {required String username, required String password}) async {

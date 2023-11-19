@@ -37,8 +37,8 @@ class _AccountScreenState extends State<AccountScreen> {
               child:
                   BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
                 List<KeyVal> items = [
-                  KeyVal("Email", state.user.email),
-                  KeyVal("Tokens", state.user.tokens.toString())
+                  KeyVal("Email", state.email),
+                  KeyVal("Tokens", state.tokens.toString())
                 ];
                 return ListView.builder(
                   // Let the ListView know how many items it needs to build.

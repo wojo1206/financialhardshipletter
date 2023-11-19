@@ -56,5 +56,37 @@
         "hardshiplettere564321c": {}
       }
     }
+  },
+  "stage": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hardshipletter-stage-163807-authRole",
+      "UnauthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-stage-163807-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::331975689111:role/amplify-hardshipletter-stage-163807-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-hardshipletter-stage-163807-deployment",
+      "UnauthRoleName": "amplify-hardshipletter-stage-163807-unauthRole",
+      "StackName": "amplify-hardshipletter-stage-163807",
+      "StackId": "arn:aws:cloudformation:us-east-2:331975689111:stack/amplify-hardshipletter-stage-163807/257d0a60-8663-11ee-baab-06f5930683ab",
+      "AmplifyAppId": "d35nmn688a6cyy"
+    },
+    "categories": {
+      "auth": {
+        "hardshiplettere564321c": {}
+      },
+      "function": {
+        "hardshipletter3653312c": {
+          "deploymentBucketName": "amplify-hardshipletter-stage-163807-deployment",
+          "s3Key": "amplify-builds/hardshipletter3653312c-52452b36422b364f347a-build.zip"
+        },
+        "writerchatgpt": {
+          "secretsPathAmplifyAppId": "d35nmn688a6cyy",
+          "deploymentBucketName": "amplify-hardshipletter-stage-163807-deployment",
+          "s3Key": "amplify-builds/writerchatgpt-654d355135724f35512f-build.zip"
+        }
+      },
+      "api": {
+        "hardshipletter": {}
+      }
+    }
   }
 }
