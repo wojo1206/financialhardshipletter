@@ -15,10 +15,9 @@ import 'package:simpleiawriter/helpers/form.helper.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/models/chatgtp.types.dart';
-import 'package:simpleiawriter/repos/auth.repository.dart';
-import 'package:simpleiawriter/repos/datastore.repository.dart';
+import 'package:simpleiawriter/widgets/edit.screen.dart';
 
-import '../form/textarea.form.dart';
+import 'form/textarea.form.dart';
 
 class WritingScreen extends StatefulWidget {
   const WritingScreen({super.key});
@@ -106,12 +105,16 @@ class _WritingScreenState extends State<WritingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  TextButton.icon(
+                    icon: const Icon(Icons.redo),
+                    label: Text(AppLocalizations.of(context)!.redo),
+                    onPressed: _redo,
+                  ),
                   Container(),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.chevron_right),
                     label: Text(AppLocalizations.of(context)!.next),
-                    onPressed: () =>
-                        {if (isGenerating == false) _fillTheBlanks(context)},
+                    onPressed: _next,
                   ),
                 ],
               )
@@ -120,6 +123,41 @@ class _WritingScreenState extends State<WritingScreen> {
         ),
       );
     });
+  }
+
+  _next() {
+    if (isGenerating == true) {
+      return;
+    }
+    final blocWriter = BlocProvider.of<WritingBloc>(context);
+
+    GptSession updated =
+        blocWriter.state.gptSession.copyWith(original: aiTextController.text);
+
+    blocWriter.add(SessionUpdate(updated));
+
+    Navigator.of(context).push(
+      ViewHelper.routeSlide(
+        EditScreen(
+          session: updated,
+        ),
+      ),
+    );
+  }
+
+  _redo() {
+    if (isGenerating == true) {
+      return;
+    }
+
+    stopwatch.reset();
+    setState(() {
+      cntToken = 0;
+      gptMessages = [];
+      aiTextController.text = "";
+    });
+
+    _startWriting();
   }
 
   Future<void> _startWriting() async {
@@ -165,11 +203,6 @@ class _WritingScreenState extends State<WritingScreen> {
 
             if (choice?.finishReason == 'stop') {
               _stop(context);
-
-              GptSession updated = blocWriter.state.gptSession
-                  .copyWith(original: aiTextController.text);
-
-              blocWriter.add(SessionUpdate(updated));
             }
 
             _sortText();

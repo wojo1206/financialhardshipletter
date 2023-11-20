@@ -7,7 +7,7 @@ import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/version.widget.dart';
+import 'package:simpleiawriter/widgets/shared/version.widget.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
 import 'package:simpleiawriter/widgets/history.screen.dart';
 

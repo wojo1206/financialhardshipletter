@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/auth/social.login.widget.dart';
-import 'package:simpleiawriter/widgets/purchase.widget.dart';
+import 'package:simpleiawriter/widgets/shared/purchase.widget.dart';
 
 class TokensInfo extends StatefulWidget {
   const TokensInfo({super.key});

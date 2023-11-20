@@ -10,9 +10,9 @@ import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
 
 import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/writing.screen.dart';
+import 'package:simpleiawriter/widgets/writing.screen.dart';
 
-import '../form/textarea.form.dart';
+import 'form/textarea.form.dart';
 
 class QuestionsScreen extends StatefulWidget {
   const QuestionsScreen({super.key});

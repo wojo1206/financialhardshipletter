@@ -37,7 +37,7 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
 
   @override
   Future<GptSession> gptSessionCreate() async {
-    final session = GptSession(original: "TEST");
+    final session = GptSession();
     await dataStore.save(session);
     return session;
   }

@@ -28,7 +28,7 @@ export async function handler(event) {
     apiKey: await getSecret(process.env.OPENAI_API_KEY),
   });
 
-  const MODEL = "gpt-4";
+  const MODEL = "gpt-4-1106-preview";
 
   const email = event["arguments"]["email"];
   const gptSessionId = event["arguments"]["gptSessionId"];

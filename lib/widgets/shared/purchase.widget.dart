@@ -32,7 +32,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
               height: 50.0,
               child: Center(
                 child: CircularProgressIndicator(
-                  semanticsLabel: 'Loading ...',
+                  semanticsLabel: 'Loading',
                 ),
               ),
             )

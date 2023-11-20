@@ -24,7 +24,7 @@ import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/repos/datastore.repository.dart';
 import 'package:simpleiawriter/repos/purchase.repository.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/questions.screen.dart';
+import 'package:simpleiawriter/widgets/questions.screen.dart';
 import 'package:simpleiawriter/widgets/layout/drawer.widget.dart';
 
 import 'amplifyconfiguration.dart';
@@ -154,9 +154,6 @@ class _HomeScreenState extends State<HomeScreen> {
     sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) {
       switch (event.type) {
         case AuthHubEventType.signedIn:
-          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
-              const Text('User is signed in.'));
-
           safePrint('User is signed in.');
           break;
         case AuthHubEventType.signedOut:

@@ -48,8 +48,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         maxLines: 1,
                         softWrap: false,
                       ),
-                      subtitle:
-                          Text(session.createdAt.toString().substring(0, 10)),
+                      subtitle: Text(session.createdAt.toString().length > 9
+                          ? session.createdAt.toString().substring(0, 10)
+                          : ''),
                     );
                   },
                 ),

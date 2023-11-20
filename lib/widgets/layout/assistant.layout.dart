@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 
 import 'package:simpleiawriter/helpers/view.helper.dart';
-import 'package:simpleiawriter/widgets/assistant-writer/tokens.widget.dart';
+import 'package:simpleiawriter/widgets/shared/tokens.widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AssistantLayout extends StatelessWidget {
