@@ -29,7 +29,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   final StreamController<double> ctrlSlider = StreamController<double>();
 
   List<Widget> hardshipReasons = [];
-  List<Widget> questionsAndSuggestions = [];
+  List<Widget> questions = [];
 
   @override
   void initState() {
@@ -57,99 +57,103 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    questionsAndSuggestions = [];
+    questions = [];
 
-    Assistant.getQuestions(context).forEach((e) {
-      List<Widget> suggestions = [];
+    Assistant.getQuestionGroups(context).forEach((questionGroup) {
+      for (var question in questionGroup.questions) {
+        List<Widget> suggestions = [];
 
-      for (var f in e.suggestions) {
-        suggestions.add(switch (e.enumInput) {
-          INPUT.checkbox => CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(f.suggestion),
-              subtitle: f.explain.isEmpty ? null : Text(f.explain),
-              value: e.values.contains(f.suggestion),
-              onChanged: (bool? value) {
-                setState(() {
-                  if (value == null) {
-                    // Intentionally empty
-                  } else if (value == true) {
-                    e.values.add(f.suggestion);
-                  } else if (value == false) {
-                    e.values.removeWhere((i) => i == f.suggestion);
-                  }
-                });
-              },
+        for (var suggestion in question.suggestions) {
+          suggestions.add(
+            switch (question.enumInput) {
+              INPUT.checkbox => CheckboxListTile(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(suggestion.text),
+                  subtitle: suggestion.explain.isEmpty
+                      ? null
+                      : Text(suggestion.explain),
+                  value: question.values.contains(suggestion.text),
+                  onChanged: (bool? value) {
+                    setState(
+                      () {
+                        if (value == null) {
+                          // Intentionally empty
+                        } else if (value == true) {
+                          question.values.add(suggestion.text);
+                        } else if (value == false) {
+                          question.values
+                              .removeWhere((i) => i == suggestion.text);
+                        }
+                      },
+                    );
+                  },
+                ),
+              INPUT.radio => RadioListTile<String>(
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(suggestion.text),
+                  subtitle: suggestion.explain.isEmpty
+                      ? null
+                      : Text(suggestion.explain),
+                  value: suggestion.text,
+                  groupValue: question.getSingleValue(),
+                  onChanged: (String? value) {
+                    setState(
+                      () {
+                        if (value != null) {
+                          question.values.clear();
+                          question.values.add(suggestion.text);
+                        }
+                      },
+                    );
+                  },
+                ),
+              INPUT.text => ListTile(
+                  title: Text(suggestion.text),
+                ),
+            },
+          );
+        }
+
+        if (question.hasOther) {
+          suggestions.add(
+            TextareaForm(
+              hintText: AppLocalizations.of(context)!.other,
+              expands: false,
+              focusNode: question.focusNode,
+              controller: question.otherController,
             ),
-          INPUT.radio => RadioListTile<String>(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(f.suggestion),
-              subtitle: f.explain.isEmpty ? null : Text(f.explain),
-              value: f.suggestion,
-              groupValue: e.getSingleValue(),
-              onChanged: (String? value) {
-                setState(() {
-                  if (value != null) {
-                    e.values.clear();
-                    e.values.add(f.suggestion);
-                  }
-                });
-              },
-            ),
-          INPUT.text => CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              title: Text(f.suggestion),
-              value: false,
-              onChanged: (bool? value) {},
-            ),
-        });
-      }
+          );
+        }
 
-      if (e.hasOther) {
-        suggestions.add(
-          TextareaForm(
-            hintText: AppLocalizations.of(context)!.other,
-            expands: false,
-            focusNode: e.focusNode,
-            controller: e.otherController,
-          ),
-        );
-      }
-
-      questionsAndSuggestions.add(
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: Text(
-                e.question,
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
+        questions.add(
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  question.text,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-            // Expanded(
-            //   child: TextareaForm(
-            //     expands: true,
-            //     focusNode: e.focusNode,
-            //   ),
-            // ),
-            Expanded(
-              child: Scrollbar(
-                controller: e.scrollController,
-                child: SingleChildScrollView(
-                  controller: e.scrollController,
-                  child: Wrap(
-                    // spacing: 8.0,
-                    children: suggestions,
+              Expanded(
+                child: Scrollbar(
+                  controller: questionGroup.scrollController,
+                  child: SingleChildScrollView(
+                    controller: questionGroup.scrollController,
+                    child: Wrap(
+                      // spacing: 8.0,
+                      children: suggestions,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      }
     });
 
     return AssistantLayout(
@@ -162,7 +166,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             controller: ctrlPage,
             clipBehavior: Clip.antiAlias,
             physics: const NeverScrollableScrollPhysics(),
-            children: questionsAndSuggestions,
+            children: questions,
           ),
         ),
         Row(
@@ -172,8 +176,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               child: Slider(
                 value: sliderVal,
                 min: 0,
-                max: (questionsAndSuggestions.length - 1).toDouble(),
-                divisions: questionsAndSuggestions.length - 1,
+                max: (questions.length - 1).toDouble(),
+                divisions: questions.length - 1,
                 onChanged: (double value) {
                   setState(() {
                     sliderVal = value;
@@ -187,7 +191,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       ],
       onNext: () {
         try {
-          if ((sliderVal.toInt() + 1) < questionsAndSuggestions.length) {
+          if ((sliderVal.toInt() + 1) < questions.length) {
             setState(() {
               sliderVal += 1.0;
             });

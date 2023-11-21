@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+
 import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 
@@ -36,7 +37,7 @@ class _SocialLoginState extends State<SocialLogin> {
                     Buttons.FacebookNew,
                     onPressed: () async {
                       await _socialSignIn(AuthProvider.facebook)
-                          .then((value) => _processResult(value));
+                          .then(_processResult);
                     },
                   ),
                 ),
@@ -46,7 +47,7 @@ class _SocialLoginState extends State<SocialLogin> {
                     Buttons.Google,
                     onPressed: () async {
                       await _socialSignIn(AuthProvider.google)
-                          .then((value) => _processResult(value));
+                          .then(_processResult);
                     },
                   ),
                 ),
@@ -56,7 +57,7 @@ class _SocialLoginState extends State<SocialLogin> {
                     Buttons.Apple,
                     onPressed: () async {
                       await _socialSignIn(AuthProvider.apple)
-                          .then((value) => _processResult(value));
+                          .then(_processResult);
                     },
                   ),
                 ),

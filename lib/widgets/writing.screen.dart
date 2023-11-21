@@ -46,8 +46,10 @@ class _WritingScreenState extends State<WritingScreen> {
   void initState() {
     super.initState();
 
-    Assistant.getQuestions(context).forEach((element) {
-      safePrint('${element.enumQuestion} -> ${element.getAllValues()}');
+    Assistant.getQuestionGroups(context).forEach((questionGroup) {
+      questionGroup.questions.forEach((question) {
+        safePrint('${question.enumQuestion} -> ${question.getAllValues()}');
+      });
     });
 
     _startWriting();
@@ -139,7 +141,7 @@ class _WritingScreenState extends State<WritingScreen> {
     Navigator.of(context).push(
       ViewHelper.routeSlide(
         EditScreen(
-          session: updated,
+          gptSessionId: updated.id,
         ),
       ),
     );

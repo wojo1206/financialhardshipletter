@@ -2,16 +2,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/edit.bloc.dart';
 
-import 'package:simpleiawriter/blocs/history.bloc.dart';
 import 'package:simpleiawriter/helpers/form.helper.dart';
-import 'package:simpleiawriter/models/GptSession.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
+
 import 'package:simpleiawriter/widgets/form/textarea.form.dart';
 
 class EditScreen extends StatefulWidget {
-  const EditScreen({super.key, required this.session});
+  const EditScreen({super.key, required this.gptSessionId});
 
-  final GptSession session;
+  final String gptSessionId;
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -31,7 +32,7 @@ class _EditScreenState extends State<EditScreen> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HistoryBloc, HistoryState>(builder: (context, state) {
+    return BlocBuilder<EditBloc, EditState>(builder: (context, state) {
       return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.titleEdit,
@@ -54,10 +55,9 @@ class _EditScreenState extends State<EditScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(),
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.close),
-                    label: Text(AppLocalizations.of(context)!.finish),
-                    onPressed: _finish,
+                  ElevatedButton(
+                    onPressed: () => ViewHelper.goHome(context),
+                    child: Text(AppLocalizations.of(context)!.done),
                   ),
                 ],
               )
@@ -66,10 +66,6 @@ class _EditScreenState extends State<EditScreen> {
         ),
       );
     });
-  }
-
-  _finish() {
-    aiTextController.text = "TEST";
   }
 
   _edit() {
