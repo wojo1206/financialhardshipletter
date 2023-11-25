@@ -28,6 +28,10 @@ final class AuthChanged extends AuthEvent {
   AuthChanged(this.status);
 }
 
+final class AuthDataReady extends AuthEvent {
+  AuthDataReady();
+}
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRep;
   final DataStoreRepository _dataStoreRep;
@@ -41,6 +45,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           const AuthState(status: AuthenticationState.unknown),
         ) {
     on<AuthChanged>(_onAuthenticationStatusChanged);
+    on<AuthDataReady>(_onDataStoreReady);
   }
 
   Future<void> _onAuthenticationStatusChanged(
@@ -49,28 +54,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     switch (event.status) {
       case AuthenticationState.unauthenticated:
+        await _dataStoreRep.stop();
         return emit(
             const AuthState(status: AuthenticationState.unauthenticated));
       case AuthenticationState.authenticated:
-        var attr = await _authRep.userAttributesFetchCurrent();
-        var email = attr
-            .firstWhere((element) => element.userAttributeKey.key == 'email')
-            .value;
-
-        Setting? setting = await _dataStoreRep.settingFetch(email);
-        safePrint(setting);
-
-        setting ??= await _dataStoreRep.settingCreate(email, 1000);
-        safePrint(setting);
-
-        return emit(AuthState(
-          status: AuthenticationState.authenticated,
-          email: email,
-          tokens: setting.tokens,
-        ));
-
+        await _dataStoreRep.start();
+        return emit(const AuthState(status: AuthenticationState.authenticated));
       case AuthenticationState.unknown:
         return emit(const AuthState(status: AuthenticationState.unknown));
     }
+  }
+
+  Future<void> _onDataStoreReady(
+    AuthDataReady event,
+    Emitter<AuthState> emit,
+  ) async {
+    var attr = await _authRep.userAttributeFetchCurrent();
+    var email = attr
+        .firstWhere((element) => element.userAttributeKey.key == 'email')
+        .value;
+
+    Setting? setting = await _dataStoreRep.settingFetch(email);
+    setting ??= await _dataStoreRep.settingCreate(email, 1000);
+
+    return emit(AuthState(
+      status: state.status,
+      email: email,
+      tokens: setting.tokens,
+    ));
   }
 }

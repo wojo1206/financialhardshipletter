@@ -36,9 +36,10 @@ export async function handler(event) {
 
   // 1. Query user info.
 
-  const q1 = `query Query1 {
+  const q1 = `query MyQuery1 {
         settingsByEmail(email: "${email}") {
           items {
+            id
             tokens
           }
         }
@@ -48,16 +49,17 @@ export async function handler(event) {
     event,
     JSON.stringify({
       query: q1,
-      operationName: "Query1",
+      operationName: "MyQuery1",
     })
   );
   const json1 = await res1.json();
 
-  const tokens = parseInt(
+  const setId = json1["data"]["settingsByEmail"]["items"][0]["id"];
+  const setTokens = parseInt(
     json1["data"]["settingsByEmail"]["items"][0]["tokens"]
   );
 
-  if (tokens <= 0) {
+  if (setTokens <= 0) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "No tokens." }),
@@ -106,6 +108,25 @@ export async function handler(event) {
 
     cost++;
   }
+
+  // 3. Query user info.
+  const mut2 = `mutation MyMut2 {
+      updateSetting(input: {id: "${setId}", tokens: 900}) {
+        id
+        createdAt
+        updatedAt
+      }
+    }`;
+
+  const res2 = await myFetch(
+    event,
+    JSON.stringify({
+      query: mut2,
+      operationName: "MyMut2",
+    })
+  );
+  const json2 = await res2.json();
+  console.log(json2);
 }
 
 async function myFetch(event, body) {

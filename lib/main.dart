@@ -34,16 +34,18 @@ void main() async {
   // Avoid errors caused by flutter upgrade.
   WidgetsFlutterBinding.ensureInitialized();
 
-  final api = AmplifyAPI(modelProvider: ModelProvider.instance);
   final auth = AmplifyAuthCognito();
+
+  final api = AmplifyAPI(modelProvider: ModelProvider.instance);
   final dataStore = AmplifyDataStore(modelProvider: ModelProvider.instance);
 
-  await Amplify.addPlugins([auth, dataStore, api]);
+  await Amplify.addPlugins([dataStore, api, auth]);
 
   try {
     await Amplify.configure(amplifyconfig);
-  } on Exception catch (e) {
-    safePrint('An error occurred configuring Amplify: $e');
+  } on AmplifyAlreadyConfiguredException {
+    safePrint(
+        'Tried to reconfigure Amplify; this can occur when your app restarts on Android.');
   }
 
   runApp(App(
@@ -151,13 +153,15 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ));
 
-    sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) {
+    sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) async {
       switch (event.type) {
         case AuthHubEventType.signedIn:
           safePrint('User is signed in.');
+          await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.signedOut:
           safePrint('User is signed out.');
+          await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.sessionExpired:
           safePrint('The session has expired.');
@@ -169,17 +173,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
+      safePrint(event);
       switch (event.type) {
         case DataStoreHubEventType.networkStatus:
-          safePrint(
-              'Network status has change to .' + event.payload.toString());
           break;
         case DataStoreHubEventType.ready:
-          safePrint('DataStore is ready.');
+          BlocProvider.of<AuthBloc>(context).add(AuthDataReady());
           break;
         case DataStoreHubEventType.subscriptionsEstablished:
-          safePrint('Subscription estabilished.');
-          break;
+        // TODO: Handle this case.
         case DataStoreHubEventType.syncQueriesStarted:
         // TODO: Handle this case.
         case DataStoreHubEventType.modelSynced:
@@ -213,79 +215,103 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.appName,
-              style: Theme.of(context).textTheme.bodyMedium),
-        ),
-        drawer: const MyDrawer(),
-        body: Column(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(color: MAIN_THEME.primaryColor),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          AppLocalizations.of(context)!
-                              .appName
-                              .replaceAll(" ", "\n"),
-                          style: const TextStyle(
-                              fontSize: 100,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              height: 1),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.appName,
+            style: Theme.of(context).textTheme.bodyMedium),
+      ),
+      drawer: const MyDrawer(),
+      body: Stack(
+        children: [
+          const AlertManager(),
+          Column(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(color: MAIN_THEME.primaryColor),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .appName
+                                .replaceAll(" ", "\n"),
+                            style: const TextStyle(
+                                fontSize: 100,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                height: 1),
+                          ),
                         ),
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.appCatchyPhrase,
-                        style: const TextStyle(color: Colors.white),
-                      )
-                    ],
+                        Text(
+                          AppLocalizations.of(context)!.appCatchyPhrase,
+                          style: const TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(context).push(
-                        ViewHelper.routeSlide(
-                          const QuestionsScreen(),
+              Expanded(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => Navigator.of(context).push(
+                          ViewHelper.routeSlide(
+                            const QuestionsScreen(),
+                          ),
+                        ),
+                        child: Text(AppLocalizations.of(context)!.appStart),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.appStartExplain,
+                          textAlign: TextAlign.center,
                         ),
                       ),
-                      child: Text(AppLocalizations.of(context)!.appStart),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        AppLocalizations.of(context)!.appStartExplain,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
-        ));
+              )
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _initPackageInfo() async {
     PackageInfo info = await PackageInfo.fromPlatform();
     BlocProvider.of<AppBloc>(context).add(SetPackageInfo(info));
+  }
+}
+
+/// This is basically an empty UI widget that only manages the alert.
+class AlertManager extends StatelessWidget {
+  const AlertManager({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AppBloc, AppState>(
+      listener: (context, state) {
+        if (state.error!.isNotEmpty) {
+          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
+              Text(state.error.toString()));
+        }
+      },
+      child: Container(),
+    );
   }
 }
 

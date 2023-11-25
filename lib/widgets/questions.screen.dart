@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/assistant/assistant.dart';
@@ -125,19 +126,20 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           );
         }
 
+        suggestions.insert(
+          0,
+          Text(
+            question.text,
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+        );
+
         questions.add(
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: Text(
-                  question.text,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-              ),
               Expanded(
                 child: Scrollbar(
                   controller: questionGroup.scrollController,
@@ -216,8 +218,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             );
           }
         } on Exception catch (e) {
-          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
-              Text(e.toString()));
+          BlocProvider.of<AppBloc>(context).add(SetError(e.toString()));
         }
       },
     );

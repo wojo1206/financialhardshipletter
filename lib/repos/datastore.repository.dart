@@ -10,6 +10,8 @@ abstract class DataStoreRepository {
   Stream<SubscriptionEvent<GptMessage>> gptMessageSubscribe(
       {required GptSession session});
 
+  Future<void> clear();
+
   Future<GptSession> gptSessionCreate();
 
   Future<GptSession> gptSessionUpdate(GptSession session);
@@ -19,12 +21,21 @@ abstract class DataStoreRepository {
   Future<Setting> settingCreate(String email, int tokens);
 
   Future<Setting?> settingFetch(String email);
+
+  Future<void> start();
+
+  Future<void> stop();
 }
 
 class AmplifyDataStoreRepository implements DataStoreRepository {
   AmplifyDataStoreRepository({required this.dataStore});
 
   final AmplifyDataStore dataStore;
+
+  @override
+  Future<void> clear() {
+    return dataStore.clear();
+  }
 
   @override
   Stream<SubscriptionEvent<GptMessage>> gptMessageSubscribe(
@@ -70,5 +81,15 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
       where: Setting.EMAIL.eq(email),
     );
     return list.isEmpty ? null : list.first;
+  }
+
+  @override
+  Future<void> start() {
+    return dataStore.start();
+  }
+
+  @override
+  Future<void> stop() {
+    return dataStore.stop();
   }
 }
