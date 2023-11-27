@@ -52,12 +52,9 @@ class MyDrawer extends StatelessWidget {
               // ),
               ListTile(
                 title: Text(AppLocalizations.of(context)!.logOut),
-                onTap: () async {
-                  await authRep
-                      .signOut()
-                      .then((value) => BlocProvider.of<AuthBloc>(context).add(
-                          AuthChanged(AuthenticationState.unauthenticated)))
-                      .then((value) => Navigator.pop(context));
+                onTap: () {
+                  BlocProvider.of<AuthBloc>(context).add(LogOut());
+                  Navigator.pop(context);
                 },
               ),
             ]);

@@ -41,6 +41,7 @@ export async function handler(event) {
           items {
             id
             tokens
+            _version
           }
         }
       }`;
@@ -57,6 +58,9 @@ export async function handler(event) {
   const setId = json1["data"]["settingsByEmail"]["items"][0]["id"];
   const setTokens = parseInt(
     json1["data"]["settingsByEmail"]["items"][0]["tokens"]
+  );
+  const setVersion = parseInt(
+    json1["data"]["settingsByEmail"]["items"][0]["_version"]
   );
 
   if (setTokens <= 0) {
@@ -110,11 +114,12 @@ export async function handler(event) {
   }
 
   // 3. Query user info.
+  var newTokens = setTokens - cost;
+  if (newTokens < 0) newTokens = 0;
+
   const mut2 = `mutation MyMut2 {
-      updateSetting(input: {id: "${setId}", tokens: 900}) {
+      updateSetting(input: {id: "${setId}", tokens:  ${newTokens}, _version: ${setVersion}}) {
         id
-        createdAt
-        updatedAt
       }
     }`;
 

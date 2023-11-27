@@ -15,11 +15,14 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   void initState() {
     super.initState();
 
+    BlocProvider.of<PurchaseBloc>(context).add(Start());
     BlocProvider.of<PurchaseBloc>(context).add(Load());
   }
 
   @override
   void dispose() {
+    BlocProvider.of<PurchaseBloc>(context).add(Stop());
+
     super.dispose();
   }
 

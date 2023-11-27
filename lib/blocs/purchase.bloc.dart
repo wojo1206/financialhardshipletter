@@ -42,8 +42,12 @@ final class Load extends PurchaseEvent {
   Load();
 }
 
-final class Confirm extends PurchaseEvent {
-  Confirm();
+final class Start extends PurchaseEvent {
+  Start();
+}
+
+final class Stop extends PurchaseEvent {
+  Stop();
 }
 
 class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
@@ -60,13 +64,6 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         _purchaseRepository.getPurchaseStream();
 
-    _appSub =
-        purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
-      BuyUpdate(purchaseDetailsList);
-    }, onDone: () {
-      _appSub.cancel();
-    }, onError: (Object error) {});
-
     on<Buy>((event, emit) async {
       emit(PurchaseState(
           products: state.products, statePurchase: StatePurchase.loading));
@@ -80,8 +77,6 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     on<BuyUpdate>((event, emit) async {
       event.purchaseDetailsList
           .forEach((PurchaseDetails purchaseDetails) async {
-        safePrint(purchaseDetails.status.toString());
-
         if (purchaseDetails.status == PurchaseStatus.pending) {
           emit(PurchaseState(
             products: state.products,
@@ -92,7 +87,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
           } else if (purchaseDetails.status == PurchaseStatus.purchased ||
               purchaseDetails.status == PurchaseStatus.restored) {
             bool valid = true;
-            // await _verifyPurchase(purchaseDetails);
+            await _verifyPurchase(purchaseDetails);
             if (valid) {
               // _deliverProduct(purchaseDetails);
             } else {
@@ -109,8 +104,6 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         }
       });
     });
-
-    on<Confirm>((event, emit) async {});
 
     on<Load>((event, emit) async {
       emit(PurchaseState(
@@ -135,6 +128,20 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
       emit(PurchaseState(
           products: products, stateLoading: StateLoading.notLoading));
+    });
+
+    on<Start>((event, emit) async {
+      _appSub =
+          purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
+        BuyUpdate(purchaseDetailsList);
+        safePrint('purchaseUpdated');
+      }, onDone: () {
+        safePrint('onDone');
+      }, onError: (Object error) {});
+    });
+
+    on<Stop>((event, emit) async {
+      _appSub.cancel();
     });
   }
 

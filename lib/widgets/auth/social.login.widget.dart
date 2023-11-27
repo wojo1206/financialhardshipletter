@@ -7,9 +7,8 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 
 import 'package:flutter/material.dart';
+import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
-
-import 'package:simpleiawriter/repos/auth.repository.dart';
 
 class SocialLogin extends StatefulWidget {
   const SocialLogin({super.key});
@@ -35,9 +34,9 @@ class _SocialLoginState extends State<SocialLogin> {
                   width: double.infinity,
                   child: SignInButton(
                     Buttons.FacebookNew,
-                    onPressed: () async {
-                      await _socialSignIn(AuthProvider.facebook)
-                          .then(_processResult);
+                    onPressed: () {
+                      BlocProvider.of<AuthBloc>(context)
+                          .add(LogIn(AuthProvider.facebook));
                     },
                   ),
                 ),
@@ -45,9 +44,9 @@ class _SocialLoginState extends State<SocialLogin> {
                   width: double.infinity,
                   child: SignInButton(
                     Buttons.Google,
-                    onPressed: () async {
-                      await _socialSignIn(AuthProvider.google)
-                          .then(_processResult);
+                    onPressed: () {
+                      BlocProvider.of<AuthBloc>(context)
+                          .add(LogIn(AuthProvider.google));
                     },
                   ),
                 ),
@@ -55,9 +54,9 @@ class _SocialLoginState extends State<SocialLogin> {
                   width: double.infinity,
                   child: SignInButton(
                     Buttons.Apple,
-                    onPressed: () async {
-                      await _socialSignIn(AuthProvider.apple)
-                          .then(_processResult);
+                    onPressed: () {
+                      BlocProvider.of<AuthBloc>(context)
+                          .add(LogIn(AuthProvider.apple));
                     },
                   ),
                 ),
@@ -69,22 +68,11 @@ class _SocialLoginState extends State<SocialLogin> {
   }
 
   void _processResult(bool value) {
-    BlocProvider.of<AuthBloc>(context).add(AuthChanged(value
-        ? AuthenticationState.authenticated
-        : AuthenticationState.unauthenticated));
-
     if (value) {
       Navigator.pop(context, true);
     } else {
-      // @TODO Show error.
+      BlocProvider.of<AppBloc>(context).add(SetError('Login Error'));
     }
-  }
-
-  Future<bool> _socialSignIn(AuthProvider provider) async {
-    final authRep = RepositoryProvider.of<AuthRepository>(context);
-
-    final res1 = await authRep.signInWithWebUI(provider: provider);
-    return res1.isSignedIn;
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {

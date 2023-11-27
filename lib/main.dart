@@ -173,7 +173,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
-      safePrint(event);
       switch (event.type) {
         case DataStoreHubEventType.networkStatus:
           break;

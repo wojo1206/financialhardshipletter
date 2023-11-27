@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
-import 'package:simpleiawriter/helpers/view.helper.dart';
 
-class SignupScreen extends StatelessWidget {
-  const SignupScreen({super.key});
+class SignUpScreen extends StatelessWidget {
+  const SignUpScreen({super.key});
 
   // This widget is the root of your application.
   @override
@@ -15,12 +14,13 @@ class SignupScreen extends StatelessWidget {
             Text('Auth Sign Up', style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: FormHelper.wrapperBody(
-          context,
-          const Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[],
-          )),
+        context,
+        const Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[],
+        ),
+      ),
     );
   }
 }

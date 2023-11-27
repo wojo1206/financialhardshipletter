@@ -1,3 +1,4 @@
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,7 @@ enum AuthenticationState { unknown, authenticated, unauthenticated }
 
 class AuthState {
   const AuthState({
-    this.status = AuthenticationState.unauthenticated,
+    this.status = AuthenticationState.unknown,
     this.email = '',
     this.tokens = 0,
   });
@@ -22,14 +23,18 @@ class AuthState {
 
 sealed class AuthEvent {}
 
-final class AuthChanged extends AuthEvent {
-  final AuthenticationState status;
-
-  AuthChanged(this.status);
-}
-
 final class AuthDataReady extends AuthEvent {
   AuthDataReady();
+}
+
+final class LogIn extends AuthEvent {
+  final AuthProvider provider;
+
+  LogIn(this.provider);
+}
+
+final class LogOut extends AuthEvent {
+  LogOut();
 }
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -44,25 +49,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(
           const AuthState(status: AuthenticationState.unknown),
         ) {
-    on<AuthChanged>(_onAuthenticationStatusChanged);
     on<AuthDataReady>(_onDataStoreReady);
-  }
-
-  Future<void> _onAuthenticationStatusChanged(
-    AuthChanged event,
-    Emitter<AuthState> emit,
-  ) async {
-    switch (event.status) {
-      case AuthenticationState.unauthenticated:
-        await _dataStoreRep.stop();
-        return emit(
-            const AuthState(status: AuthenticationState.unauthenticated));
-      case AuthenticationState.authenticated:
-        await _dataStoreRep.start();
-        return emit(const AuthState(status: AuthenticationState.authenticated));
-      case AuthenticationState.unknown:
-        return emit(const AuthState(status: AuthenticationState.unknown));
-    }
+    on<LogOut>(_onLogOut);
+    on<LogIn>(_onLogIn);
   }
 
   Future<void> _onDataStoreReady(
@@ -82,5 +71,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: email,
       tokens: setting.tokens,
     ));
+  }
+
+  Future<void> _onLogOut(
+    LogOut event,
+    Emitter<AuthState> emit,
+  ) async {
+    await _authRep.signOut();
+    await _dataStoreRep.stop();
+    return emit(const AuthState(
+        status: AuthenticationState.unauthenticated, tokens: 0, email: ''));
+  }
+
+  Future<void> _onLogIn(
+    LogIn event,
+    Emitter<AuthState> emit,
+  ) async {
+    final res1 = await _authRep.signInWithWebUI(provider: event.provider);
+    if (res1.isSignedIn) {
+      return emit(const AuthState(
+          status: AuthenticationState.authenticated, tokens: 0, email: ''));
+    } else {
+      return emit(const AuthState(
+          status: AuthenticationState.unauthenticated, tokens: 0, email: ''));
+    }
   }
 }

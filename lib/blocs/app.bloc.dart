@@ -27,11 +27,11 @@ final class UserLogOut extends AppEvent {}
 class AppBloc extends Bloc<AppEvent, AppState> {
   AppBloc() : super(const AppState()) {
     on<SetError>((event, emit) {
-      emit(AppState(error: event.error));
+      emit(AppState(error: event.error, packageInfo: state.packageInfo));
     });
 
     on<SetPackageInfo>((event, emit) {
-      emit(AppState(packageInfo: event.packageInfo));
+      emit(AppState(error: state.error, packageInfo: event.packageInfo));
     });
   }
 }
