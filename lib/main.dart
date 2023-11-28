@@ -16,6 +16,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
+import 'package:simpleiawriter/blocs/edit.bloc.dart';
 import 'package:simpleiawriter/blocs/history.bloc.dart';
 import 'package:simpleiawriter/blocs/purchase.bloc.dart';
 import 'package:simpleiawriter/blocs/writing.bloc.dart';
@@ -97,6 +98,10 @@ class App extends StatelessWidget {
             create: (BuildContext context) => AuthBloc(
                 authRep: _authRepository, dataStoreRep: _dataStoreRepository),
           ),
+          BlocProvider<EditBloc>(
+            create: (BuildContext context) =>
+                EditBloc(dataStoreRep: _dataStoreRepository),
+          ),
           BlocProvider<HistoryBloc>(
             create: (BuildContext context) =>
                 HistoryBloc(dataStoreRep: _dataStoreRepository),
@@ -146,28 +151,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
       resumeCallBack: () async {
-        safePrint("resumeCallBack");
+        safePrint('$LifecycleEventHandler: resumeCallBack');
       },
       suspendingCallBack: () async {
-        safePrint("suspendingCallBack");
+        safePrint('$LifecycleEventHandler: suspendingCallBack');
       },
     ));
 
     sub1 = Amplify.Hub.listen(HubChannel.Auth, (AuthHubEvent event) async {
       switch (event.type) {
         case AuthHubEventType.signedIn:
-          safePrint('User is signed in.');
+          safePrint('$AuthHubEventType ${AuthHubEventType.signedIn}');
           await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.signedOut:
-          safePrint('User is signed out.');
+          safePrint('$AuthHubEventType ${AuthHubEventType.signedOut}');
           await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.sessionExpired:
-          safePrint('The session has expired.');
+          safePrint('$AuthHubEventType ${AuthHubEventType.sessionExpired}');
           break;
         case AuthHubEventType.userDeleted:
-          safePrint('The user has been deleted.');
+          safePrint('$AuthHubEventType ${AuthHubEventType.userDeleted}');
           break;
       }
     });
@@ -304,7 +309,7 @@ class AlertManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AppBloc, AppState>(
       listener: (context, state) {
-        if (state.error!.isNotEmpty) {
+        if (state.error != null) {
           ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
               Text(state.error.toString()));
         }

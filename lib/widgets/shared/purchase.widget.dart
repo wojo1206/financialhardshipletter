@@ -16,14 +16,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     super.initState();
 
     BlocProvider.of<PurchaseBloc>(context).add(Start());
-    BlocProvider.of<PurchaseBloc>(context).add(Load());
-  }
-
-  @override
-  void dispose() {
-    BlocProvider.of<PurchaseBloc>(context).add(Stop());
-
-    super.dispose();
   }
 
   @override
@@ -51,10 +43,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     contentPadding: EdgeInsets.zero,
                     title: Text(item.title),
                     trailing: ElevatedButton(
-                      onPressed: () {
-                        BlocProvider.of<PurchaseBloc>(context)
-                            .add(Buy(PurchaseParam(productDetails: item)));
-                      },
+                      onPressed: state.statePurchase == StatePurchase.loading
+                          ? null
+                          : () {
+                              BlocProvider.of<PurchaseBloc>(context).add(
+                                  Buy(PurchaseParam(productDetails: item)));
+                            },
                       child: Text(item.price),
                     ),
                     subtitle: Text(item.description),

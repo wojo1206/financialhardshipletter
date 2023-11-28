@@ -7,7 +7,6 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 
 import 'package:flutter/material.dart';
-import 'package:simpleiawriter/blocs/app.bloc.dart';
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
 
 class SocialLogin extends StatefulWidget {
@@ -21,58 +20,57 @@ class _SocialLoginState extends State<SocialLogin> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      width: 300,
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state.status == AuthenticationState.authenticated) {
+        Navigator.pop(context, true);
+        return const SizedBox.shrink();
+      } else {
+        return SizedBox(
+          height: 300,
+          width: 300,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: SignInButton(
-                    Buttons.FacebookNew,
-                    onPressed: () {
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(LogIn(AuthProvider.facebook));
-                    },
-                  ),
+                Column(
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: SignInButton(
+                        Buttons.FacebookNew,
+                        onPressed: () {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(LogIn(AuthProvider.facebook));
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SignInButton(
+                        Buttons.Google,
+                        onPressed: () {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(LogIn(AuthProvider.google));
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SignInButton(
+                        Buttons.Apple,
+                        onPressed: () {
+                          BlocProvider.of<AuthBloc>(context)
+                              .add(LogIn(AuthProvider.apple));
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: SignInButton(
-                    Buttons.Google,
-                    onPressed: () {
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(LogIn(AuthProvider.google));
-                    },
-                  ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: SignInButton(
-                    Buttons.Apple,
-                    onPressed: () {
-                      BlocProvider.of<AuthBloc>(context)
-                          .add(LogIn(AuthProvider.apple));
-                    },
-                  ),
-                ),
-              ],
-            ),
-            Text(AppLocalizations.of(context)!.signInExplain)
-          ]),
-    );
-  }
-
-  void _processResult(bool value) {
-    if (value) {
-      Navigator.pop(context, true);
-    } else {
-      BlocProvider.of<AppBloc>(context).add(SetError('Login Error'));
-    }
+                Text(AppLocalizations.of(context)!.signInExplain)
+              ]),
+        );
+      }
+    });
   }
 
   Future<void> _handleSignInResult(SignInResult result) async {

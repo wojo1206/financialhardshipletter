@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:amplify_datastore/amplify_datastore.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
 
 import 'package:simpleiawriter/models/ModelProvider.dart';
-import 'package:simpleiawriter/models/Setting.dart';
 
 abstract class DataStoreRepository {
   Stream<SubscriptionEvent<GptMessage>> gptMessageSubscribe(
@@ -20,7 +18,9 @@ abstract class DataStoreRepository {
 
   Future<Setting> settingCreate(String email, int tokens);
 
-  Future<Setting?> settingFetch(String email);
+  Future<Setting?> settingFetch();
+
+  Future<Setting> settingUpdate(Setting setting);
 
   Future<void> start();
 
@@ -75,12 +75,18 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
   }
 
   @override
-  Future<Setting?> settingFetch(String email) async {
+  Future<Setting?> settingFetch() async {
     List<Setting?> list = await dataStore.query(
       Setting.classType,
-      where: Setting.EMAIL.eq(email),
     );
     return list.isEmpty ? null : list.first;
+  }
+
+  @override
+  Future<Setting> settingUpdate(Setting setting) async {
+    final newSetting = setting.copyWith(tokens: 1000);
+    await dataStore.save(newSetting);
+    return newSetting;
   }
 
   @override

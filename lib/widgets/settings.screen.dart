@@ -15,12 +15,13 @@ class SettingsScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyMedium),
       ),
       body: FormHelper.wrapperBody(
-          context,
-          const Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[],
-          )),
+        context,
+        const Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[],
+        ),
+      ),
     );
   }
 }

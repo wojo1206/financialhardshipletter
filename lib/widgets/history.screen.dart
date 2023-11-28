@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/blocs/history.bloc.dart';
 
 import 'package:simpleiawriter/helpers/form.helper.dart';
+import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/GptSession.dart';
+import 'package:simpleiawriter/widgets/edit.screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -48,9 +50,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         maxLines: 1,
                         softWrap: false,
                       ),
-                      subtitle: Text(session.createdAt.toString().length > 9
-                          ? session.createdAt.toString().substring(0, 10)
-                          : ''),
+                      subtitle: Text(
+                        session.createdAt.toString().length > 9
+                            ? session.createdAt.toString().substring(0, 10)
+                            : '',
+                      ),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          ViewHelper.routeSlide(
+                            EditScreen(
+                              gptSession: session,
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

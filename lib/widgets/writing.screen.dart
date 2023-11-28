@@ -141,7 +141,7 @@ class _WritingScreenState extends State<WritingScreen> {
     Navigator.of(context).push(
       ViewHelper.routeSlide(
         EditScreen(
-          gptSessionId: updated.id,
+          gptSession: updated,
         ),
       ),
     );

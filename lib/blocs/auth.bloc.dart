@@ -63,8 +63,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         .firstWhere((element) => element.userAttributeKey.key == 'email')
         .value;
 
-    Setting? setting = await _dataStoreRep.settingFetch(email);
+    Setting? setting = await _dataStoreRep.settingFetch();
     setting ??= await _dataStoreRep.settingCreate(email, 1000);
+
+    safePrint(setting);
 
     return emit(AuthState(
       status: state.status,
