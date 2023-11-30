@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_datastore/amplify_datastore.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,6 +43,7 @@ final class LogOut extends AuthEvent {
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRep;
   final DataStoreRepository _dataStoreRep;
+  late StreamSubscription<SubscriptionEvent<Setting>> _settingsUpdated;
 
   AuthBloc({
     required AuthRepository authRep,
@@ -80,6 +84,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     await _authRep.signOut();
+    await _dataStoreRep.clear();
     await _dataStoreRep.stop();
     return emit(const AuthState(
         status: AuthenticationState.unauthenticated, tokens: 0, email: ''));
@@ -91,6 +96,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final res1 = await _authRep.signInWithWebUI(provider: event.provider);
     if (res1.isSignedIn) {
+      await _dataStoreRep.clear();
+      await _dataStoreRep.start();
       return emit(const AuthState(
           status: AuthenticationState.authenticated, tokens: 0, email: ''));
     } else {

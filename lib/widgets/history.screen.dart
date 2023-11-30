@@ -44,26 +44,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   itemCount: state.gptSessions.length,
                   itemBuilder: (context, index) {
                     GptSession session = state.gptSessions[index];
-                    return ListTile(
-                      title: Text(
-                        session.original ?? '',
-                        maxLines: 1,
-                        softWrap: false,
-                      ),
-                      subtitle: Text(
-                        session.createdAt.toString().length > 9
-                            ? session.createdAt.toString().substring(0, 10)
-                            : '',
-                      ),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          ViewHelper.routeSlide(
-                            EditScreen(
-                              gptSession: session,
-                            ),
-                          ),
-                        );
+                    return Dismissible(
+                      onDismissed: (DismissDirection direction) {
+                        BlocProvider.of<HistoryBloc>(context)
+                            .add(SessionDelete(session));
                       },
+                      key: Key(session.id),
+                      background: Container(
+                        color: Colors.red,
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          session.original ?? '',
+                          maxLines: 1,
+                          softWrap: false,
+                        ),
+                        subtitle: Text(
+                          session.createdAt.toString().length > 9
+                              ? session.createdAt.toString().substring(0, 10)
+                              : '',
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            ViewHelper.routeSlide(
+                              EditScreen(
+                                gptSession: session,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   },
                 ),

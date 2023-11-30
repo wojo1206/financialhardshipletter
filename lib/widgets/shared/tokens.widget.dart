@@ -18,9 +18,20 @@ class TokensInfo extends StatefulWidget {
 
 class _TokensInfoState extends State<TokensInfo> {
   @override
+  void initState() {
+    BlocProvider.of<AuthBloc>(context).add(AuthDataReady());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-      safePrint("TokensInfoState");
+      safePrint('$TokensInfo: bloc update');
 
       Widget button = TextButton(
         onPressed: () {

@@ -162,11 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
       switch (event.type) {
         case AuthHubEventType.signedIn:
           safePrint('$AuthHubEventType ${AuthHubEventType.signedIn}');
-          await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.signedOut:
           safePrint('$AuthHubEventType ${AuthHubEventType.signedOut}');
-          await Amplify.DataStore.clear();
           break;
         case AuthHubEventType.sessionExpired:
           safePrint('$AuthHubEventType ${AuthHubEventType.sessionExpired}');
@@ -178,8 +176,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
+      safePrint('$DataStoreHubEventType $event');
       switch (event.type) {
         case DataStoreHubEventType.networkStatus:
+          safePrint(
+              '$DataStoreHubEventType ${(event.payload as NetworkStatusEvent).active}');
           break;
         case DataStoreHubEventType.ready:
           BlocProvider.of<AuthBloc>(context).add(AuthDataReady());

@@ -9,7 +9,6 @@ import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 
 import 'package:simpleiawriter/widgets/form/textarea.form.dart';
-import 'package:simpleiawriter/widgets/layout/assistant.layout.dart';
 
 class EditScreen extends StatefulWidget {
   const EditScreen({super.key, required this.gptSession});
@@ -23,6 +22,8 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   final aiTextController = TextEditingController();
   final aiTextFocusNode = FocusNode();
+
+  get onPressed => null;
 
   @override
   void initState() {
@@ -38,6 +39,12 @@ class _EditScreenState extends State<EditScreen> {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () =>
+                    {Share.shareWithResult(widget.gptSession.original ?? '')},
+                icon: const Icon(Icons.ios_share_sharp))
+          ],
           title: Text(AppLocalizations.of(context)!.titleEdit,
               style: Theme.of(context).textTheme.bodyMedium),
         ),
@@ -57,12 +64,6 @@ class _EditScreenState extends State<EditScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      onPressed: () => {
-                        Share.shareWithResult(widget.gptSession.original ?? '')
-                      },
-                      child: Text(AppLocalizations.of(context)!.share),
-                    ),
                     Container(),
                     ElevatedButton(
                       onPressed: () => ViewHelper.goHome(context),

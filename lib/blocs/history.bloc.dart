@@ -3,16 +3,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/repos/datastore.repository.dart';
 
+sealed class HistoryEvent {}
+
 class HistoryState {
   const HistoryState({required this.gptSessions});
 
   final List<GptSession> gptSessions;
 }
 
-sealed class HistoryEvent {}
-
 final class Fetch extends HistoryEvent {
   Fetch();
+}
+
+final class SessionDelete extends HistoryEvent {
+  SessionDelete(this.gptSession);
+
+  final GptSession gptSession;
 }
 
 final class SessionUpdate extends HistoryEvent {
@@ -31,6 +37,11 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     on<Fetch>((event, emit) async {
       final sessions = await _dataStoreRep.gptSessionFetch();
       return emit(HistoryState(gptSessions: sessions));
+    });
+    on<SessionDelete>((event, emit) async {
+      await _dataStoreRep.gptSessionDelete(event.gptSession);
+      state.gptSessions.removeWhere((item) => item.id == event.gptSession.id);
+      return emit(HistoryState(gptSessions: state.gptSessions));
     });
   }
 }

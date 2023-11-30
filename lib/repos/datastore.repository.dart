@@ -10,7 +10,13 @@ abstract class DataStoreRepository {
 
   Future<void> clear();
 
+  Future<void> start();
+
+  Future<void> stop();
+
   Future<GptSession> gptSessionCreate();
+
+  Future<void> gptSessionDelete(GptSession session);
 
   Future<GptSession> gptSessionUpdate(GptSession session);
 
@@ -18,13 +24,11 @@ abstract class DataStoreRepository {
 
   Future<Setting> settingCreate(String email, int tokens);
 
+  Stream<QuerySnapshot<Setting>> settingListen();
+
   Future<Setting?> settingFetch();
 
   Future<Setting> settingUpdate(Setting setting);
-
-  Future<void> start();
-
-  Future<void> stop();
 }
 
 class AmplifyDataStoreRepository implements DataStoreRepository {
@@ -35,6 +39,16 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
   @override
   Future<void> clear() {
     return dataStore.clear();
+  }
+
+  @override
+  Future<void> start() {
+    return dataStore.start();
+  }
+
+  @override
+  Future<void> stop() {
+    return dataStore.stop();
   }
 
   @override
@@ -51,6 +65,11 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
     final session = GptSession();
     await dataStore.save(session);
     return session;
+  }
+
+  @override
+  Future<void> gptSessionDelete(GptSession session) async {
+    await dataStore.delete(session);
   }
 
   @override
@@ -75,6 +94,11 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
   }
 
   @override
+  Stream<QuerySnapshot<Setting>> settingListen() {
+    return dataStore.observeQuery(Setting.classType);
+  }
+
+  @override
   Future<Setting?> settingFetch() async {
     List<Setting?> list = await dataStore.query(
       Setting.classType,
@@ -87,15 +111,5 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
     final newSetting = setting.copyWith(tokens: 1000);
     await dataStore.save(newSetting);
     return newSetting;
-  }
-
-  @override
-  Future<void> start() {
-    return dataStore.start();
-  }
-
-  @override
-  Future<void> stop() {
-    return dataStore.stop();
   }
 }
