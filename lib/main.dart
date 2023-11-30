@@ -176,33 +176,40 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
-      safePrint('$DataStoreHubEventType $event');
       switch (event.type) {
         case DataStoreHubEventType.networkStatus:
-          safePrint(
-              '$DataStoreHubEventType ${(event.payload as NetworkStatusEvent).active}');
+          safePrint('${DataStoreHubEventType.networkStatus}');
           break;
         case DataStoreHubEventType.ready:
-          BlocProvider.of<AuthBloc>(context).add(AuthDataReady());
+          safePrint('${DataStoreHubEventType.ready}');
           break;
         case DataStoreHubEventType.subscriptionsEstablished:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.subscriptionsEstablished}');
+          break;
         case DataStoreHubEventType.syncQueriesStarted:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.syncQueriesStarted}');
+          break;
         case DataStoreHubEventType.modelSynced:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.modelSynced}');
+          break;
         case DataStoreHubEventType.syncQueriesReady:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.syncQueriesReady}');
+          break;
         case DataStoreHubEventType.outboxMutationEnqueued:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.outboxMutationEnqueued}');
+          break;
         case DataStoreHubEventType.outboxMutationProcessed:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.outboxMutationProcessed}');
+          break;
         case DataStoreHubEventType.outboxMutationFailed:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.outboxMutationFailed}');
+          break;
         case DataStoreHubEventType.outboxStatus:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.outboxStatus}');
+          break;
         case DataStoreHubEventType.subscriptionDataProcessed:
-        // TODO: Handle this case.
+          safePrint('${DataStoreHubEventType.subscriptionDataProcessed}');
+          break;
       }
     });
 

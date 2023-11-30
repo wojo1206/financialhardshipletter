@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:simpleiawriter/blocs/auth.bloc.dart';
-import 'package:simpleiawriter/repos/auth.repository.dart';
 import 'package:simpleiawriter/helpers/view.helper.dart';
 import 'package:simpleiawriter/widgets/account.screen.dart';
 import 'package:simpleiawriter/widgets/shared/version.widget.dart';
@@ -19,8 +18,6 @@ class MyDrawer extends StatelessWidget {
     return Drawer(
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          final authRep = RepositoryProvider.of<AuthRepository>(context);
-
           List<Widget> children = [
             DrawerHeader(
               child: Image.asset(

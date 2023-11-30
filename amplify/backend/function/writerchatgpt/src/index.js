@@ -22,7 +22,7 @@ import OpenAI from "openai";
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export async function handler(event) {
-  console.log(event);
+  // console.log(event);
 
   const openai = new OpenAI({
     apiKey: await getSecret(process.env.OPENAI_API_KEY),
@@ -35,7 +35,6 @@ export async function handler(event) {
   const messages = [event["arguments"]["message"]];
 
   // 1. Query user info.
-
   const q1 = `query MyQuery1 {
         settingsByEmail(email: "${email}") {
           items {
@@ -56,14 +55,14 @@ export async function handler(event) {
   const json1 = await res1.json();
 
   const setId = json1["data"]["settingsByEmail"]["items"][0]["id"];
-  const setTokens = parseInt(
+  const tokens = parseInt(
     json1["data"]["settingsByEmail"]["items"][0]["tokens"]
   );
-  const setVersion = parseInt(
+  const _version = parseInt(
     json1["data"]["settingsByEmail"]["items"][0]["_version"]
   );
 
-  if (setTokens <= 0) {
+  if (tokens <= 0) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "No tokens." }),
@@ -89,13 +88,12 @@ export async function handler(event) {
       .replace(/[\n]/g, "\\n")
       .replace(/[\r]/g, "\\r")
       .replace(/[\t]/g, "\\t");
-    const createdAtTimestamp = Math.floor(Date.now() / 1000);
+    const _ttl = Math.floor(Date.now() / 1000) + 60;
 
-    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", createdAtTimestamp: ${createdAtTimestamp}, gptSessionGptMessagesId: "${gptSessionId}"}) { 
+    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", _ttl: ${_ttl}, gptSessionGptMessagesId: "${gptSessionId}"}) { 
           id
           owner
           chunk
-          createdAtTimestamp
           gptSessionGptMessagesId
           createdAt
           updatedAt
@@ -114,11 +112,11 @@ export async function handler(event) {
   }
 
   // 3. Query user info.
-  var newTokens = setTokens - cost;
+  var newTokens = tokens - cost;
   if (newTokens < 0) newTokens = 0;
 
   const mut2 = `mutation MyMut2 {
-      updateSetting(input: {id: "${setId}", tokens:  ${newTokens}, _version: ${setVersion}}) {
+      updateSetting(input: {id: "${setId}", tokens:  ${newTokens}, _version: ${_version} }) {
         id
       }
     }`;
@@ -130,8 +128,8 @@ export async function handler(event) {
       operationName: "MyMut2",
     })
   );
-  const json2 = await res2.json();
-  console.log(json2);
+  const resp2 = await res2.json();
+  console.log(resp2);
 }
 
 async function myFetch(event, body) {

@@ -68,9 +68,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         .value;
 
     Setting? setting = await _dataStoreRep.settingFetch();
-    setting ??= await _dataStoreRep.settingCreate(email, 1000);
-
-    safePrint(setting);
+    if (setting == null) {
+      safePrint('Setting is empty!');
+      setting = await _dataStoreRep.settingCreate(email, 1000);
+    }
 
     return emit(AuthState(
       status: state.status,

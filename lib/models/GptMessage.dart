@@ -28,7 +28,6 @@ class GptMessage extends amplify_core.Model {
   static const classType = const _GptMessageModelType();
   final String id;
   final String? _chunk;
-  final int? _createdAtTimestamp;
   final GptSession? _gptSession;
   final amplify_core.TemporalDateTime? _createdAt;
   final amplify_core.TemporalDateTime? _updatedAt;
@@ -59,19 +58,6 @@ class GptMessage extends amplify_core.Model {
     }
   }
   
-  int get createdAtTimestamp {
-    try {
-      return _createdAtTimestamp!;
-    } catch(e) {
-      throw amplify_core.AmplifyCodeGenModelException(
-          amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
-          recoverySuggestion:
-            amplify_core.AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
-          underlyingException: e.toString()
-          );
-    }
-  }
-  
   GptSession? get gptSession {
     return _gptSession;
   }
@@ -84,14 +70,15 @@ class GptMessage extends amplify_core.Model {
     return _updatedAt;
   }
   
-  const GptMessage._internal({required this.id, required chunk, required createdAtTimestamp, gptSession, createdAt, updatedAt}): _chunk = chunk, _createdAtTimestamp = createdAtTimestamp, _gptSession = gptSession, _createdAt = createdAt, _updatedAt = updatedAt;
+  const GptMessage._internal({required this.id, required chunk, gptSession, createdAt, updatedAt}): _chunk = chunk, _gptSession = gptSession, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory GptMessage({String? id, required String chunk, required int createdAtTimestamp, GptSession? gptSession}) {
+  factory GptMessage({String? id, required String chunk, GptSession? gptSession, amplify_core.TemporalDateTime? createdAt, amplify_core.TemporalDateTime? updatedAt}) {
     return GptMessage._internal(
       id: id == null ? amplify_core.UUID.getUUID() : id,
       chunk: chunk,
-      createdAtTimestamp: createdAtTimestamp,
-      gptSession: gptSession);
+      gptSession: gptSession,
+      createdAt: createdAt,
+      updatedAt: updatedAt);
   }
   
   bool equals(Object other) {
@@ -104,8 +91,9 @@ class GptMessage extends amplify_core.Model {
     return other is GptMessage &&
       id == other.id &&
       _chunk == other._chunk &&
-      _createdAtTimestamp == other._createdAtTimestamp &&
-      _gptSession == other._gptSession;
+      _gptSession == other._gptSession &&
+      _createdAt == other._createdAt &&
+      _updatedAt == other._updatedAt;
   }
   
   @override
@@ -118,7 +106,6 @@ class GptMessage extends amplify_core.Model {
     buffer.write("GptMessage {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("chunk=" + "$_chunk" + ", ");
-    buffer.write("createdAtTimestamp=" + (_createdAtTimestamp != null ? _createdAtTimestamp!.toString() : "null") + ", ");
     buffer.write("gptSession=" + (_gptSession != null ? _gptSession!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
@@ -127,31 +114,33 @@ class GptMessage extends amplify_core.Model {
     return buffer.toString();
   }
   
-  GptMessage copyWith({String? chunk, int? createdAtTimestamp, GptSession? gptSession}) {
+  GptMessage copyWith({String? chunk, GptSession? gptSession, amplify_core.TemporalDateTime? createdAt, amplify_core.TemporalDateTime? updatedAt}) {
     return GptMessage._internal(
       id: id,
       chunk: chunk ?? this.chunk,
-      createdAtTimestamp: createdAtTimestamp ?? this.createdAtTimestamp,
-      gptSession: gptSession ?? this.gptSession);
+      gptSession: gptSession ?? this.gptSession,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt);
   }
   
   GptMessage copyWithModelFieldValues({
     ModelFieldValue<String>? chunk,
-    ModelFieldValue<int>? createdAtTimestamp,
-    ModelFieldValue<GptSession?>? gptSession
+    ModelFieldValue<GptSession?>? gptSession,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? createdAt,
+    ModelFieldValue<amplify_core.TemporalDateTime?>? updatedAt
   }) {
     return GptMessage._internal(
       id: id,
       chunk: chunk == null ? this.chunk : chunk.value,
-      createdAtTimestamp: createdAtTimestamp == null ? this.createdAtTimestamp : createdAtTimestamp.value,
-      gptSession: gptSession == null ? this.gptSession : gptSession.value
+      gptSession: gptSession == null ? this.gptSession : gptSession.value,
+      createdAt: createdAt == null ? this.createdAt : createdAt.value,
+      updatedAt: updatedAt == null ? this.updatedAt : updatedAt.value
     );
   }
   
   GptMessage.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _chunk = json['chunk'],
-      _createdAtTimestamp = (json['createdAtTimestamp'] as num?)?.toInt(),
       _gptSession = json['gptSession']?['serializedData'] != null
         ? GptSession.fromJson(new Map<String, dynamic>.from(json['gptSession']['serializedData']))
         : null,
@@ -159,13 +148,12 @@ class GptMessage extends amplify_core.Model {
       _updatedAt = json['updatedAt'] != null ? amplify_core.TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'chunk': _chunk, 'createdAtTimestamp': _createdAtTimestamp, 'gptSession': _gptSession?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'chunk': _chunk, 'gptSession': _gptSession?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
   
   Map<String, Object?> toMap() => {
     'id': id,
     'chunk': _chunk,
-    'createdAtTimestamp': _createdAtTimestamp,
     'gptSession': _gptSession,
     'createdAt': _createdAt,
     'updatedAt': _updatedAt
@@ -174,10 +162,11 @@ class GptMessage extends amplify_core.Model {
   static final amplify_core.QueryModelIdentifier<GptMessageModelIdentifier> MODEL_IDENTIFIER = amplify_core.QueryModelIdentifier<GptMessageModelIdentifier>();
   static final ID = amplify_core.QueryField(fieldName: "id");
   static final CHUNK = amplify_core.QueryField(fieldName: "chunk");
-  static final CREATEDATTIMESTAMP = amplify_core.QueryField(fieldName: "createdAtTimestamp");
   static final GPTSESSION = amplify_core.QueryField(
     fieldName: "gptSession",
     fieldType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.model, ofModelName: 'GptSession'));
+  static final CREATEDAT = amplify_core.QueryField(fieldName: "createdAt");
+  static final UPDATEDAT = amplify_core.QueryField(fieldName: "updatedAt");
   static var schema = amplify_core.Model.defineSchema(define: (amplify_core.ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "GptMessage";
     modelSchemaDefinition.pluralName = "GptMessages";
@@ -204,12 +193,6 @@ class GptMessage extends amplify_core.Model {
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
-      key: GptMessage.CREATEDATTIMESTAMP,
-      isRequired: true,
-      ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.int)
-    ));
-    
     modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.belongsTo(
       key: GptMessage.GPTSESSION,
       isRequired: false,
@@ -217,17 +200,15 @@ class GptMessage extends amplify_core.Model {
       ofModelName: 'GptSession'
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'createdAt',
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: GptMessage.CREATEDAT,
       isRequired: false,
-      isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
     
-    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.nonQueryField(
-      fieldName: 'updatedAt',
+    modelSchemaDefinition.addField(amplify_core.ModelFieldDefinition.field(
+      key: GptMessage.UPDATEDAT,
       isRequired: false,
-      isReadOnly: true,
       ofType: amplify_core.ModelFieldType(amplify_core.ModelFieldTypeEnum.dateTime)
     ));
   });

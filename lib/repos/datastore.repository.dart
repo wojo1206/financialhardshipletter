@@ -24,7 +24,7 @@ abstract class DataStoreRepository {
 
   Future<Setting> settingCreate(String email, int tokens);
 
-  Stream<QuerySnapshot<Setting>> settingListen();
+  Stream<QuerySnapshot<Setting>> settingListen(String sessionId);
 
   Future<Setting?> settingFetch();
 
@@ -94,8 +94,9 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
   }
 
   @override
-  Stream<QuerySnapshot<Setting>> settingListen() {
-    return dataStore.observeQuery(Setting.classType);
+  Stream<QuerySnapshot<Setting>> settingListen(String sessionId) {
+    return dataStore.observeQuery(Setting.classType,
+        where: Setting.ID.eq(sessionId));
   }
 
   @override

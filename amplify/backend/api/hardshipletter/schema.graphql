@@ -5,11 +5,13 @@
 # } # FOR TESTING ONLY!
 
 type GptMessage @model @auth(rules: [{ allow: owner }]) {
+  _ttl: Int!
   id: ID!
   chunk: AWSJSON!
-  createdAtTimestamp: Int!
   gptSession: GptSession @belongsTo
   gptSessionGptMessagesId: ID!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type GptSession @model @auth(rules: [{ allow: owner }]) {
@@ -18,8 +20,6 @@ type GptSession @model @auth(rules: [{ allow: owner }]) {
   original: String
   modified: String
   gptMessages: [GptMessage] @hasMany
-  createdAt: AWSDateTime
-  updatedAt: AWSDateTime
 }
 
 type Setting @model @auth(rules: [{ allow: owner }]) {
