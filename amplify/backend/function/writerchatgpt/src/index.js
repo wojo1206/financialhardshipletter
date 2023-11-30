@@ -90,7 +90,7 @@ export async function handler(event) {
       .replace(/[\t]/g, "\\t");
     const _ttl = Math.floor(Date.now() / 1000) + 60;
 
-    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", _ttl: ${_ttl}, gptSessionGptMessagesId: "${gptSessionId}"}) { 
+    const mut1 = `mutation MyMut1 { createGptMessage(input: { id: "${uuid}", chunk: "${chunk}", gptSessionGptMessagesId: "${gptSessionId}"}) { 
           id
           owner
           chunk

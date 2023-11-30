@@ -38,7 +38,12 @@ void main() async {
   final auth = AmplifyAuthCognito();
 
   final api = AmplifyAPI(modelProvider: ModelProvider.instance);
-  final dataStore = AmplifyDataStore(modelProvider: ModelProvider.instance);
+  final dataStore = AmplifyDataStore(
+    modelProvider: ModelProvider.instance,
+    syncExpressions: [
+      DataStoreSyncExpression(Setting.classType, () => Setting.ID.eq("DUMMY"))
+    ],
+  );
 
   await Amplify.addPlugins([dataStore, api, auth]);
 
