@@ -13,7 +13,7 @@ class _VersionInfoState extends State<VersionInfo> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(builder: (context, state) {
-      return Text('v${state.packageInfo?.version}');
+      return Text('v${state.appVersion}');
     });
   }
 }

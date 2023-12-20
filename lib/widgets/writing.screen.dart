@@ -255,21 +255,4 @@ class _WritingScreenState extends State<WritingScreen> {
     timer.cancel();
     stopwatch.stop();
   }
-
-  _fillTheBlanks(BuildContext context) {
-    _stop(context);
-
-    ViewHelper.promptDialog(context, "TODO");
-
-    RegExp exp = RegExp(r'\[(.*?)\]');
-    String str = aiTextController.text;
-
-    Iterable<RegExpMatch> matches = exp.allMatches(str);
-    for (final m in matches) {
-      safePrint(m[0]);
-      str = str.replaceAll(m[0]!, "[TODO]");
-    }
-
-    aiTextController.text = str;
-  }
 }

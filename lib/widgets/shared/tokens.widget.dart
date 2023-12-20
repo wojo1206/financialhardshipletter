@@ -19,7 +19,6 @@ class TokensInfo extends StatefulWidget {
 class _TokensInfoState extends State<TokensInfo> {
   @override
   void initState() {
-    BlocProvider.of<AuthBloc>(context).add(AuthDataReady());
     super.initState();
   }
 

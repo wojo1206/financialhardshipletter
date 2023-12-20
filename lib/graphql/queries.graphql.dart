@@ -1,6 +1,6 @@
-String USERS_BY_EMAIL() {
-  return '''query UsersByEmail(\$email: AWSEmail!) {
-      usersByEmail(email: \$email) {
+String SETTINGS_BY_EMAIL() {
+  return '''query SettingsByEmail(\$email: AWSEmail!) {
+      settingsByEmail(email: \$email) {
         items {
           id
           email

@@ -140,7 +140,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         }
 
         List<ProductDetails> products = response.productDetails;
-        products.sort(((a, b) => a.rawPrice < b.rawPrice ? -1 : 1));
+        products.sort(((a, b) => a.rawPrice < b.rawPrice ? 1 : -1));
 
         emit(PurchaseState(
             products: products, stateLoading: StateLoading.notLoading));

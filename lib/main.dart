@@ -41,7 +41,10 @@ void main() async {
   final dataStore = AmplifyDataStore(
     modelProvider: ModelProvider.instance,
     syncExpressions: [
-      DataStoreSyncExpression(Setting.classType, () => Setting.ID.eq("DUMMY"))
+      DataStoreSyncExpression(
+        GptMessage.classType,
+        () => Setting.ID.eq("DUMMY"),
+      ),
     ],
   );
 
@@ -70,13 +73,13 @@ class App extends StatelessWidget {
       required AmplifyAuthRepository authRepository,
       required AmplifyDataStoreRepository dataStoreRepository,
       required InAppPurchaseRepository inAppPurchaseRepository})
-      : _appRepository = apiRepository,
+      : _apiRepository = apiRepository,
         _authRepository = authRepository,
         _dataStoreRepository = dataStoreRepository,
         _inAppPurchaseRepository = inAppPurchaseRepository,
         super(key: key);
 
-  final ApiRepository _appRepository;
+  final ApiRepository _apiRepository;
   final AuthRepository _authRepository;
   final DataStoreRepository _dataStoreRepository;
   final InAppPurchaseRepository _inAppPurchaseRepository;
@@ -86,7 +89,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<ApiRepository>(create: (context) => _appRepository),
+        RepositoryProvider<ApiRepository>(create: (context) => _apiRepository),
         RepositoryProvider<AuthRepository>(
             create: (context) => _authRepository),
         RepositoryProvider<DataStoreRepository>(
@@ -97,11 +100,14 @@ class App extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AppBloc>(
-            create: (BuildContext context) => AppBloc(),
+            create: (BuildContext context) =>
+                AppBloc(dataStoreRep: _dataStoreRepository),
           ),
           BlocProvider<AuthBloc>(
             create: (BuildContext context) => AuthBloc(
-                authRep: _authRepository, dataStoreRep: _dataStoreRepository),
+                authRep: _authRepository,
+                dataStoreRep: _dataStoreRepository,
+                apiRep: _apiRepository),
           ),
           BlocProvider<EditBloc>(
             create: (BuildContext context) =>
@@ -181,40 +187,57 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     sub2 = Amplify.Hub.listen(HubChannel.DataStore, (DataStoreHubEvent event) {
+      String msg = "";
       switch (event.type) {
         case DataStoreHubEventType.networkStatus:
-          safePrint('${DataStoreHubEventType.networkStatus}');
+          msg = '${DataStoreHubEventType.networkStatus}';
+          BlocProvider.of<AppBloc>(context)
+              .add(SetIsOnline((event.payload as NetworkStatusEvent).active));
           break;
         case DataStoreHubEventType.ready:
-          safePrint('${DataStoreHubEventType.ready}');
+          msg = '${DataStoreHubEventType.ready}';
+          BlocProvider.of<AppBloc>(context).add(SyncChange(SyncState.synced));
           break;
         case DataStoreHubEventType.subscriptionsEstablished:
-          safePrint('${DataStoreHubEventType.subscriptionsEstablished}');
+          msg = '${DataStoreHubEventType.subscriptionsEstablished}';
           break;
         case DataStoreHubEventType.syncQueriesStarted:
-          safePrint('${DataStoreHubEventType.syncQueriesStarted}');
+          msg = '${DataStoreHubEventType.syncQueriesStarted}';
+          BlocProvider.of<AppBloc>(context)
+              .add(SyncChange(SyncState.inProgress));
           break;
         case DataStoreHubEventType.modelSynced:
-          safePrint('${DataStoreHubEventType.modelSynced}');
+          msg = '${DataStoreHubEventType.modelSynced}';
           break;
         case DataStoreHubEventType.syncQueriesReady:
-          safePrint('${DataStoreHubEventType.syncQueriesReady}');
+          msg = '${DataStoreHubEventType.syncQueriesReady}';
           break;
         case DataStoreHubEventType.outboxMutationEnqueued:
-          safePrint('${DataStoreHubEventType.outboxMutationEnqueued}');
+          msg = '${DataStoreHubEventType.outboxMutationEnqueued}';
           break;
         case DataStoreHubEventType.outboxMutationProcessed:
-          safePrint('${DataStoreHubEventType.outboxMutationProcessed}');
+          msg = '${DataStoreHubEventType.outboxMutationProcessed}';
           break;
         case DataStoreHubEventType.outboxMutationFailed:
-          safePrint('${DataStoreHubEventType.outboxMutationFailed}');
+          msg = '${DataStoreHubEventType.outboxMutationFailed}';
           break;
         case DataStoreHubEventType.outboxStatus:
-          safePrint('${DataStoreHubEventType.outboxStatus}');
+          msg = '${DataStoreHubEventType.outboxStatus}';
           break;
         case DataStoreHubEventType.subscriptionDataProcessed:
-          safePrint('${DataStoreHubEventType.subscriptionDataProcessed}');
+          msg = '${DataStoreHubEventType.subscriptionDataProcessed}';
           break;
+      }
+
+      if (msg.isNotEmpty) {
+        safePrint(msg);
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        //   content: Text(msg),
+        //   padding: const EdgeInsets.all(
+        //     8.0,
+        //   ),
+        //   behavior: SnackBarBehavior.floating,
+        // ));
       }
     });
 
@@ -310,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _initPackageInfo() async {
     PackageInfo info = await PackageInfo.fromPlatform();
-    BlocProvider.of<AppBloc>(context).add(SetPackageInfo(info));
+    BlocProvider.of<AppBloc>(context).add(SetPackageInfo(info.version));
   }
 }
 
@@ -322,9 +345,9 @@ class AlertManager extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AppBloc, AppState>(
       listener: (context, state) {
-        if (state.error != null) {
+        if (state.error.isNotEmpty) {
           ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
-              Text(state.error.toString()));
+              Text(state.error));
         }
       },
       child: Container(),

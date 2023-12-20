@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:simpleiawriter/constants.dart';
 
 import 'package:simpleiawriter/helpers/view.helper.dart';
+import 'package:simpleiawriter/widgets/shared/isOnline.widget.dart';
 import 'package:simpleiawriter/widgets/shared/tokens.widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -41,6 +42,7 @@ class AssistantLayout extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(title, style: Theme.of(context).textTheme.bodyMedium),
+        actions: const [IsOnline()],
       ),
       body: SafeArea(
         child: Padding(

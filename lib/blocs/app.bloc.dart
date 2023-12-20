@@ -1,11 +1,29 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:simpleiawriter/repos/datastore.repository.dart';
+
+enum SyncState { notSynced, inProgress, synced }
 
 class AppState {
-  const AppState({this.error, this.packageInfo});
+  const AppState(
+      {this.sync = SyncState.notSynced,
+      this.error = "",
+      this.appVersion = "",
+      this.isOnline = false});
 
-  final String? error;
-  final PackageInfo? packageInfo;
+  final bool isOnline;
+  final SyncState sync;
+  final String error;
+  final String appVersion;
+
+  AppState copyWith(
+          {SyncState? syncState = SyncState.notSynced,
+          bool? isOnline = false,
+          String? error,
+          String? appVersion}) =>
+      AppState(
+          isOnline: isOnline ?? this.isOnline,
+          error: error ?? this.error,
+          appVersion: appVersion ?? this.appVersion);
 }
 
 sealed class AppEvent {}
@@ -17,21 +35,56 @@ final class SetError extends AppEvent {
 }
 
 final class SetPackageInfo extends AppEvent {
-  final PackageInfo packageInfo;
+  final String appVersion;
 
-  SetPackageInfo(this.packageInfo);
+  SetPackageInfo(this.appVersion);
+}
+
+final class SetIsOnline extends AppEvent {
+  final bool isOnline;
+
+  SetIsOnline(this.isOnline);
+}
+
+final class SyncChange extends AppEvent {
+  final SyncState state;
+
+  SyncChange(this.state);
+}
+
+final class SyncRefresh extends AppEvent {
+  SyncRefresh();
 }
 
 final class UserLogOut extends AppEvent {}
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  AppBloc() : super(const AppState()) {
+  final DataStoreRepository _dataStoreRep;
+
+  AppBloc({
+    required DataStoreRepository dataStoreRep,
+  })  : _dataStoreRep = dataStoreRep,
+        super(const AppState()) {
+    on<SyncChange>((event, emit) {
+      emit(state.copyWith(syncState: event.state));
+    });
+
+    on<SyncRefresh>((event, emit) {
+      _dataStoreRep.stop();
+      _dataStoreRep.start();
+      emit(state);
+    });
+
     on<SetError>((event, emit) {
-      emit(AppState(error: event.error, packageInfo: state.packageInfo));
+      emit(state.copyWith(error: event.error));
+    });
+
+    on<SetIsOnline>((event, emit) {
+      emit(state.copyWith(isOnline: event.isOnline));
     });
 
     on<SetPackageInfo>((event, emit) {
-      emit(AppState(error: state.error, packageInfo: event.packageInfo));
+      emit(state.copyWith(appVersion: event.appVersion));
     });
   }
 }

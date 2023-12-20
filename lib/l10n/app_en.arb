@@ -33,6 +33,7 @@
   "problem": "Problem",
   "progress": "Progress",
   "redo": "Redo",
+  "save": "Save",
   "share": "Share",
   "signIn": "Sign In",
   "signInExplain": "By signing in, you'll not only gain access to all the app's features but also receive a bonus of 1000 free tokens to get you started on your journey to crafting compelling hardship letters.",
@@ -65,6 +66,14 @@
     }
   },
   "username": "Username",
+  "warningCount": "Detected placeholders: {counter}",
+  "@warningCount": {
+    "placeholders": {
+      "counter": {
+        "type": "int"
+      }
+    }
+  },
   "writer": "Writer",
   "writerBase": "What causes your hardship?",
   "writerHint": "Include some relevant details."
