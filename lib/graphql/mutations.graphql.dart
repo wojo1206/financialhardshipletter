@@ -23,7 +23,7 @@ String CREATE_SETTING() {
 }
 
 String INIT_GPT_QUERY() {
-  return '''mutation InitGptQuery(\$message: AWSJSON!, \$email: AWSEmail!, \$gptSessionId: ID!) {
-      initGptQuery(message: \$message, email: \$email, gptSessionId: \$gptSessionId)
+  return '''mutation InitGptQuery(\$message: AWSJSON!, \$settingId: ID!, \$gptSessionId: ID!) {
+      initGptQuery(message: \$message, settingId: \$settingId, gptSessionId: \$gptSessionId)
     }''';
 }

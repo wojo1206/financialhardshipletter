@@ -27,9 +27,9 @@ class WritingScreen extends StatefulWidget {
 }
 
 class _WritingScreenState extends State<WritingScreen> {
-  final aiTextFocusNode = FocusNode();
-  final aiTextController = TextEditingController();
   final aiScrollController = ScrollController();
+  final aiTextController = TextEditingController();
+  final aiTextFocusNode = FocusNode();
 
   late Timer timer;
   late int elapsed = 0;
@@ -47,9 +47,9 @@ class _WritingScreenState extends State<WritingScreen> {
     super.initState();
 
     Assistant.getQuestionGroups(context).forEach((questionGroup) {
-      questionGroup.questions.forEach((question) {
+      for (var question in questionGroup.questions) {
         safePrint('${question.enumQuestion} -> ${question.getAllValues()}');
-      });
+      }
     });
 
     _startWriting();
@@ -133,8 +133,8 @@ class _WritingScreenState extends State<WritingScreen> {
     }
     final blocWriter = BlocProvider.of<WritingBloc>(context);
 
-    GptSession updated =
-        blocWriter.state.gptSession.copyWith(original: aiTextController.text);
+    GptSession updated = blocWriter.state.gptSession.copyWith(
+        original: aiTextController.text, modified: aiTextController.text);
 
     blocWriter.add(SessionUpdate(updated));
 
@@ -148,9 +148,7 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   _redo() {
-    if (isGenerating == true) {
-      return;
-    }
+    if (isGenerating == true) return;
 
     stopwatch.reset();
     setState(() {
@@ -217,7 +215,7 @@ class _WritingScreenState extends State<WritingScreen> {
 
       apiRep.initGptQuery(
         message: const JsonEncoder().convert(Assistant.getPrompt(context)),
-        email: blocAuth.state.email,
+        settingId: blocAuth.state.settingId,
         gptSessionId: blocWriter.state.gptSession.id,
       );
     } catch (e) {

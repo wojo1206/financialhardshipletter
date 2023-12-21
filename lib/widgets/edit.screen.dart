@@ -22,16 +22,28 @@ class EditScreen extends StatefulWidget {
 class _EditScreenState extends State<EditScreen> {
   RegExp kPlaceholder = RegExp(r'\[(.*?)\]');
 
+  final aiScrollController = ScrollController();
   final aiTextController = TextEditingController();
   final aiTextFocusNode = FocusNode();
 
-  get onPressed => null;
+  var currentPlaceholder = 0;
+  var countedPlaceholder = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _edit();
+    aiTextController.text = widget.gptSession.modified ?? '';
+    countedPlaceholder = _countTheBlanks(context);
+  }
+
+  @override
+  void dispose() {
+    aiTextController.dispose();
+    aiScrollController.dispose();
+    aiTextFocusNode.dispose();
+
+    super.dispose();
   }
 
   // This widget is the root of your application.
@@ -43,8 +55,7 @@ class _EditScreenState extends State<EditScreen> {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () =>
-                    {Share.shareWithResult(widget.gptSession.original ?? '')},
+                onPressed: () => {Share.shareWithResult(aiTextController.text)},
                 icon: const Icon(Icons.ios_share_sharp))
           ],
           title: Text(AppLocalizations.of(context)!.titleEdit,
@@ -57,23 +68,31 @@ class _EditScreenState extends State<EditScreen> {
               children: [
                 Container(padding: const EdgeInsets.only(top: 24.0)),
                 Expanded(
-                  child: TextareaForm(
-                    controller: aiTextController,
-                    focusNode: aiTextFocusNode,
+                  child: Scrollbar(
+                    controller: aiScrollController,
+                    child: TextareaForm(
+                      controller: aiTextController,
+                      focusNode: aiTextFocusNode,
+                      scrollController: aiScrollController,
+                      onChanged: _onTextChanged,
+                    ),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _fillNext(context);
-                      },
-                      child: Text(AppLocalizations.of(context)!
-                          .warningCount(_countTheBlanks(context))),
-                    ),
-                  ],
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  color: Colors.yellow.shade400,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(AppLocalizations.of(context)!
+                          .warningCount(countedPlaceholder)),
+                      ElevatedButton(
+                        onPressed: () => _fillNext(context),
+                        child: Text(AppLocalizations.of(context)!.next),
+                      ),
+                    ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,11 +100,11 @@ class _EditScreenState extends State<EditScreen> {
                   children: [
                     TextButton.icon(
                       icon: const Icon(Icons.close),
-                      onPressed: () => ViewHelper.goHome(context),
+                      onPressed: () => _close(context),
                       label: Text(AppLocalizations.of(context)!.close),
                     ),
                     ElevatedButton(
-                      onPressed: () => ViewHelper.goHome(context),
+                      onPressed: () => _save(context),
                       child: Text(AppLocalizations.of(context)!.save),
                     ),
                   ],
@@ -98,8 +117,16 @@ class _EditScreenState extends State<EditScreen> {
     });
   }
 
-  _edit() {
-    aiTextController.text = widget.gptSession.original ?? '';
+  _close(BuildContext context) {
+    ViewHelper.goHome(context);
+  }
+
+  _save(BuildContext context) {
+    final newSession =
+        widget.gptSession.copyWith(modified: aiTextController.text);
+    BlocProvider.of<EditBloc>(context).add(SessionUpdate(newSession));
+
+    _close(context);
   }
 
   int _countTheBlanks(BuildContext context) {
@@ -111,10 +138,26 @@ class _EditScreenState extends State<EditScreen> {
     String str = aiTextController.text;
 
     Iterable<RegExpMatch> matches = kPlaceholder.allMatches(str);
+    if (currentPlaceholder >= matches.length) currentPlaceholder = 0;
+
     if (matches.isNotEmpty) {
       aiTextFocusNode.requestFocus();
       aiTextController.selection = TextSelection(
-          baseOffset: matches.first.start, extentOffset: matches.first.end);
+          baseOffset: matches.elementAt(currentPlaceholder).start,
+          extentOffset: matches.elementAt(currentPlaceholder).end);
+
+      aiScrollController.animateTo(
+          matches.elementAt(currentPlaceholder).start.toDouble(),
+          duration: const Duration(microseconds: 100),
+          curve: Curves.linear);
     }
+
+    currentPlaceholder++;
+  }
+
+  _onTextChanged(String str) {
+    setState(() {
+      countedPlaceholder = kPlaceholder.allMatches(str).length;
+    });
   }
 }

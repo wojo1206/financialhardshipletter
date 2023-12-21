@@ -88,7 +88,7 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
 
   @override
   Future<Setting> settingCreate(String email, int tokens) async {
-    final setting = Setting(email: email, tokens: tokens);
+    final setting = Setting(tokens: tokens);
     await dataStore.save(setting);
     return setting;
   }

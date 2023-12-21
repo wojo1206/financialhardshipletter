@@ -22,7 +22,7 @@ import OpenAI from "openai";
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export async function handler(event) {
-  // console.log(event);
+  console.log(event);
 
   const openai = new OpenAI({
     apiKey: await getSecret(process.env.OPENAI_API_KEY),
@@ -30,20 +30,17 @@ export async function handler(event) {
 
   const MODEL = "gpt-4-1106-preview";
 
-  const email = event["arguments"]["email"];
+  const settingId = event["arguments"]["settingId"];
   const gptSessionId = event["arguments"]["gptSessionId"];
   const messages = [event["arguments"]["message"]];
 
   // 1. Query user info.
   const q1 = `query MyQuery1 {
-        settingsByEmail(email: "${email}") {
-          items {
-            id
-            tokens
-            _version
-          }
-        }
-      }`;
+    getSetting(id: "${settingId}") {
+        tokens
+        _version
+      }
+    }`;
 
   const res1 = await myFetch(
     event,
@@ -53,14 +50,10 @@ export async function handler(event) {
     })
   );
   const json1 = await res1.json();
+  console.log(json1);
 
-  const setId = json1["data"]["settingsByEmail"]["items"][0]["id"];
-  const tokens = parseInt(
-    json1["data"]["settingsByEmail"]["items"][0]["tokens"]
-  );
-  const _version = parseInt(
-    json1["data"]["settingsByEmail"]["items"][0]["_version"]
-  );
+  const tokens = parseInt(json1["data"]["getSetting"]["tokens"]);
+  const _version = parseInt(json1["data"]["getSetting"]["_version"]);
 
   if (tokens <= 0) {
     return {
@@ -116,7 +109,7 @@ export async function handler(event) {
   if (newTokens < 0) newTokens = 0;
 
   const mut2 = `mutation MyMut2 {
-      updateSetting(input: {id: "${setId}", tokens:  ${newTokens}, _version: ${_version} }) {
+      updateSetting(input: {id: "${settingId}", tokens:  ${newTokens}, _version: ${_version} }) {
         id
       }
     }`;

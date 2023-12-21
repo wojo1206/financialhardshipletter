@@ -14,23 +14,23 @@ enum AuthenticationState { unknown, authenticated, unauthenticated }
 class AuthState {
   const AuthState({
     this.status = AuthenticationState.unknown,
-    this.email = '',
     this.tokens = 0,
+    this.settingId = '',
   });
 
   final AuthenticationState status;
   final int tokens;
-  final String email;
+  final String settingId;
 
   AuthState copyWith(
-          {AuthenticationState? status, String? email, int? tokens}) =>
+          {AuthenticationState? status, int? tokens, String? settingId}) =>
       AuthState(
           status: status ?? this.status,
-          email: email ?? this.email,
-          tokens: tokens ?? this.tokens);
+          tokens: tokens ?? this.tokens,
+          settingId: settingId ?? this.settingId);
 
   static AuthState empty() => const AuthState(
-      status: AuthenticationState.unauthenticated, tokens: 0, email: '');
+      status: AuthenticationState.unauthenticated, tokens: 0, settingId: '');
 }
 
 sealed class AuthEvent {}
@@ -84,24 +84,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _dataStoreRep.start();
 
       /**
-       * Get email
-       */
-      var attr = await _authRep.userAttributeFetchCurrent();
-      var email = attr
-          .firstWhere((element) => element.userAttributeKey.key == 'email')
-          .value;
-
-      /**
        * Crucial. Read or create setting object.
        */
-      var resp = await _apiRep.settingByEmail(email: email);
+      final resp = await _apiRep.settingList();
       int tokens = 0;
+      String sessionId = '';
       if (resp.data!.items.isEmpty) {
         safePrint('Setting is empty!');
-        var resp = await _apiRep.settingCreate(email: email);
+        var resp = await _apiRep.settingCreate();
         tokens = resp.data!.tokens;
+        sessionId = resp.data!.id;
       } else if (resp.data!.items.length == 1) {
         tokens = resp.data!.items.first!.tokens;
+        sessionId = resp.data!.items.first!.id;
       } else {
         safePrint('More than one Settings objects!');
       }
@@ -110,7 +105,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AuthState(
           status: AuthenticationState.authenticated,
           tokens: tokens,
-          email: email,
+          settingId: sessionId,
         ),
       );
     } else {

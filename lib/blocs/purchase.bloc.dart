@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
-import 'package:simpleiawriter/repos/datastore.repository.dart';
+import 'package:simpleiawriter/repos/api.repository.dart';
+import 'package:simpleiawriter/repos/auth.repository.dart';
 
 import 'package:simpleiawriter/repos/purchase.repository.dart';
 
@@ -44,14 +45,17 @@ final class Start extends PurchaseEvent {
 }
 
 class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
+  final AuthRepository _authRep;
   final PurchaseRepository _purchaseRepository;
-  final DataStoreRepository _dataStoreRepository;
+  final ApiRepository _apiRep;
 
   PurchaseBloc(
-      {required PurchaseRepository purchaseRepository,
-      required DataStoreRepository dataStoreRepository})
-      : _purchaseRepository = purchaseRepository,
-        _dataStoreRepository = dataStoreRepository,
+      {required AuthRepository authRepository,
+      required PurchaseRepository purchaseRepository,
+      required ApiRepository apiRepository})
+      : _authRep = authRepository,
+        _purchaseRepository = purchaseRepository,
+        _apiRep = apiRepository,
         super(const PurchaseState(products: [])) {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         _purchaseRepository.getPurchaseStream();
@@ -79,24 +83,22 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         for (var purchaseDetails in event.purchaseDetailsList) {
           safePrint('$PurchaseBloc: ${purchaseDetails.status.toString()}');
 
+          bool valid = true;
           switch (purchaseDetails.status) {
             case PurchaseStatus.pending:
               emit(PurchaseState(
                 products: state.products,
                 statePurchase: StatePurchase.loading,
               ));
-
-              await _verifyPurchase(purchaseDetails);
+              valid = await _verifyPurchase(purchaseDetails);
               break;
             case PurchaseStatus.restored:
             case PurchaseStatus.purchased:
-              bool valid = true;
-              await _verifyPurchase(purchaseDetails);
-
               emit(PurchaseState(
                 products: state.products,
                 statePurchase: StatePurchase.notLoading,
               ));
+              valid = await _verifyPurchase(purchaseDetails);
               break;
             case PurchaseStatus.error:
             case PurchaseStatus.canceled:
@@ -106,9 +108,11 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
               ));
           }
 
-          if (purchaseDetails.pendingCompletePurchase) {
+          if (valid && purchaseDetails.pendingCompletePurchase) {
             safePrint('$PurchaseBloc: completePurchase');
             await _purchaseRepository.completePurchase(purchaseDetails);
+          } else if (!valid) {
+            throw Exception("Can't purchase.");
           }
         }
       } catch (ex) {
@@ -150,16 +154,40 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     });
   }
 
-  Future<bool> _verifyPurchase(purchaseDetails) async {
+  Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) async {
     try {
-      Setting? setting = await _dataStoreRepository.settingFetch();
-      if (setting == null) {
+      /**
+       * Crucial. Read or create setting object.
+       */
+      final resp = await _apiRep.settingList();
+      final settings = resp.data?.items;
+
+      if (settings == null) {
         throw Exception('No settings.');
       }
 
-      final newSetting = await _dataStoreRepository.settingUpdate(setting);
-      safePrint(newSetting);
-    } catch (ex) {}
+      if (settings.length != 1) {
+        throw Exception('Not exactly one setting.');
+      }
+
+      Setting? setting = settings.first;
+
+      if (setting == null) {
+        throw Exception('No first settings.');
+      }
+
+      final moreTokens = consumables[purchaseDetails.productID] ?? 0;
+      safePrint("More tokens: $moreTokens");
+
+      final newSetting = setting.copyWith(tokens: setting.tokens + moreTokens);
+      safePrint("New settings tokens: ${newSetting.tokens}");
+
+      await _apiRep.settingUpdate(setting: newSetting);
+
+      return true;
+    } catch (ex) {
+      addError(ex, StackTrace.current);
+    }
     return false;
   }
 }

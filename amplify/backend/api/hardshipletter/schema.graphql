@@ -25,12 +25,13 @@ type GptSession @model @auth(rules: [{ allow: owner }]) {
 
 type Setting @model @auth(rules: [{ allow: owner }]) {
   id: ID!
-  email: AWSEmail! @index
   tokens: Int!
+  createdAt: AWSDateTime
+  updatedAt: AWSDateTime
 }
 
 type Mutation {
-  initGptQuery(message: AWSJSON!, email: AWSEmail!, gptSessionId: ID!): String!
+  initGptQuery(message: AWSJSON!, settingId: ID!, gptSessionId: ID!): String!
     @function(name: "hardshipletter3653312c-${env}")
 }
 

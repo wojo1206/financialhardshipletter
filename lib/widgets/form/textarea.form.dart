@@ -12,6 +12,8 @@ class TextareaForm extends StatelessWidget {
   final String? hintText;
   final TextEditingController? controller;
 
+  final Function(String)? onChanged;
+
   const TextareaForm(
       {super.key,
       this.controller,
@@ -23,7 +25,8 @@ class TextareaForm extends StatelessWidget {
       this.minLines,
       this.readonly = false,
       this.scrollController,
-      this.showCursor = true});
+      this.showCursor = true,
+      this.onChanged});
 
   // This widget is the root of your application.
   @override
@@ -42,6 +45,7 @@ class TextareaForm extends StatelessWidget {
       keyboardType: TextInputType.multiline,
       maxLines: maxLines,
       minLines: minLines,
+      onChanged: onChanged,
       readOnly: readonly,
       scrollController: scrollController,
       showCursor: showCursor,

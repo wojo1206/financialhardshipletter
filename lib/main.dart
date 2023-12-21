@@ -119,8 +119,9 @@ class App extends StatelessWidget {
           ),
           BlocProvider<PurchaseBloc>(
             create: (BuildContext context) => PurchaseBloc(
+                authRepository: _authRepository,
                 purchaseRepository: _inAppPurchaseRepository,
-                dataStoreRepository: _dataStoreRepository),
+                apiRepository: _apiRepository),
           ),
           BlocProvider<WritingBloc>(
             create: (BuildContext context) =>
@@ -225,7 +226,9 @@ class _HomeScreenState extends State<HomeScreen> {
           msg = '${DataStoreHubEventType.outboxStatus}';
           break;
         case DataStoreHubEventType.subscriptionDataProcessed:
-          msg = '${DataStoreHubEventType.subscriptionDataProcessed}';
+          msg =
+              '${DataStoreHubEventType.subscriptionDataProcessed} ${(event.type as SubscriptionEvent).modelType}';
+
           break;
       }
 
