@@ -36,12 +36,12 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
         super(const HistoryState(gptSessions: [])) {
     on<Fetch>((event, emit) async {
       final sessions = await _dataStoreRep.gptSessionFetch();
-      return emit(HistoryState(gptSessions: sessions));
+      emit(HistoryState(gptSessions: sessions));
     });
     on<SessionDelete>((event, emit) async {
       await _dataStoreRep.gptSessionDelete(event.gptSession);
       state.gptSessions.removeWhere((item) => item.id == event.gptSession.id);
-      return emit(HistoryState(gptSessions: state.gptSessions));
+      emit(HistoryState(gptSessions: state.gptSessions));
     });
   }
 }

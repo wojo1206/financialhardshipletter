@@ -109,8 +109,7 @@ class AmplifyDataStoreRepository implements DataStoreRepository {
 
   @override
   Future<Setting> settingUpdate(Setting setting) async {
-    final newSetting = setting.copyWith(tokens: 1000);
-    await dataStore.save(newSetting);
-    return newSetting;
+    await dataStore.save(setting);
+    return setting;
   }
 }

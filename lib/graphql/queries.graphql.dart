@@ -9,3 +9,15 @@ String SETTINGS_BY_EMAIL() {
       }
     }''';
 }
+
+String SETTING_GET() {
+  return '''query SettingsByEmail(\$email: AWSEmail!) {
+      settingsByEmail(email: \$email) {
+        items {
+          id
+          email
+          tokens
+        }
+      }
+    }''';
+}

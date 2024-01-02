@@ -128,9 +128,8 @@ class _WritingScreenState extends State<WritingScreen> {
   }
 
   _next() {
-    if (isGenerating == true) {
-      return;
-    }
+    if (isGenerating == true) return;
+
     final blocWriter = BlocProvider.of<WritingBloc>(context);
 
     GptSession updated = blocWriter.state.gptSession.copyWith(

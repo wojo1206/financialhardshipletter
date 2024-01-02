@@ -8,6 +8,7 @@ import 'package:simpleiawriter/constants.dart';
 import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 import 'package:simpleiawriter/repos/auth.repository.dart';
+import 'package:simpleiawriter/repos/datastore.repository.dart';
 
 import 'package:simpleiawriter/repos/purchase.repository.dart';
 
@@ -45,20 +46,20 @@ final class Start extends PurchaseEvent {
 }
 
 class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
-  final AuthRepository _authRep;
-  final PurchaseRepository _purchaseRepository;
+  final DataStoreRepository _dataStoreRep;
+  final PurchaseRepository _purchaseRep;
   final ApiRepository _apiRep;
 
   PurchaseBloc(
-      {required AuthRepository authRepository,
+      {required DataStoreRepository dataStoreRepository,
       required PurchaseRepository purchaseRepository,
       required ApiRepository apiRepository})
-      : _authRep = authRepository,
-        _purchaseRepository = purchaseRepository,
+      : _dataStoreRep = dataStoreRepository,
+        _purchaseRep = purchaseRepository,
         _apiRep = apiRepository,
         super(const PurchaseState(products: [])) {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
-        _purchaseRepository.getPurchaseStream();
+        _purchaseRep.getPurchaseStream();
     final StreamSubscription<List<PurchaseDetails>> _appSub =
         purchaseUpdated.listen((List<PurchaseDetails> purchaseDetailsList) {
       add(Update(purchaseDetailsList));
@@ -69,7 +70,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         emit(PurchaseState(
             products: state.products, statePurchase: StatePurchase.loading));
 
-        await _purchaseRepository.buyConsumable(event.purchaseParam);
+        await _purchaseRep.buyConsumable(event.purchaseParam);
 
         emit(PurchaseState(
             products: state.products, statePurchase: StatePurchase.notLoading));
@@ -110,7 +111,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
           if (valid && purchaseDetails.pendingCompletePurchase) {
             safePrint('$PurchaseBloc: completePurchase');
-            await _purchaseRepository.completePurchase(purchaseDetails);
+            await _purchaseRep.completePurchase(purchaseDetails);
           } else if (!valid) {
             throw Exception("Can't purchase.");
           }
@@ -129,7 +130,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
         emit(PurchaseState(
             products: state.products, stateLoading: StateLoading.loading));
 
-        bool available = await _purchaseRepository.isAvailable();
+        bool available = await _purchaseRep.isAvailable();
 
         if (!available) {
           // The store cannot be reached or accessed. Update the UI accordingly.
@@ -177,12 +178,12 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       }
 
       final moreTokens = consumables[purchaseDetails.productID] ?? 0;
-      safePrint("More tokens: $moreTokens");
+      if (moreTokens == 0) {
+        throw Exception('Invalid product.');
+      }
 
       final newSetting = setting.copyWith(tokens: setting.tokens + moreTokens);
-      safePrint("New settings tokens: ${newSetting.tokens}");
-
-      await _apiRep.settingUpdate(setting: newSetting);
+      await _dataStoreRep.settingUpdate(newSetting);
 
       return true;
     } catch (ex) {

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:simpleiawriter/blocs/purchase.bloc.dart';
 
@@ -47,7 +48,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                           ? null
                           : () {
                               BlocProvider.of<PurchaseBloc>(context).add(
-                                  Buy(PurchaseParam(productDetails: item)));
+                                Buy(
+                                  PurchaseParam(productDetails: item),
+                                ),
+                              );
                             },
                       child: Text(item.price),
                     ),

@@ -57,13 +57,15 @@ void main() async {
         'Tried to reconfigure Amplify; this can occur when your app restarts on Android.');
   }
 
-  runApp(App(
-    apiRepository: AmplifyAppRepository(api: api),
-    authRepository: AmplifyAuthRepository(auth: auth),
-    dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
-    inAppPurchaseRepository: InAppPurchaseRepository(
-        instance: InAppPurchase.instance, dataStore: dataStore),
-  ));
+  runApp(
+    App(
+      apiRepository: AmplifyAppRepository(api: api),
+      authRepository: AmplifyAuthRepository(auth: auth),
+      dataStoreRepository: AmplifyDataStoreRepository(dataStore: dataStore),
+      inAppPurchaseRepository: InAppPurchaseRepository(
+          instance: InAppPurchase.instance, dataStore: dataStore),
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -119,13 +121,13 @@ class App extends StatelessWidget {
           ),
           BlocProvider<PurchaseBloc>(
             create: (BuildContext context) => PurchaseBloc(
-                authRepository: _authRepository,
+                dataStoreRepository: _dataStoreRepository,
                 purchaseRepository: _inAppPurchaseRepository,
                 apiRepository: _apiRepository),
           ),
           BlocProvider<WritingBloc>(
-            create: (BuildContext context) =>
-                WritingBloc(dataStoreRep: _dataStoreRepository),
+            create: (BuildContext context) => WritingBloc(
+                apiRep: _apiRepository, dataStoreRep: _dataStoreRepository),
           ),
         ],
         child: MaterialApp(
@@ -226,8 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
           msg = '${DataStoreHubEventType.outboxStatus}';
           break;
         case DataStoreHubEventType.subscriptionDataProcessed:
-          msg =
-              '${DataStoreHubEventType.subscriptionDataProcessed} ${(event.type as SubscriptionEvent).modelType}';
+          msg = '${DataStoreHubEventType.subscriptionDataProcessed}';
 
           break;
       }
@@ -266,6 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           const AlertManager(),
+          const SubscriptionManager(),
           Column(
             children: [
               Expanded(
@@ -344,6 +346,28 @@ class _HomeScreenState extends State<HomeScreen> {
 class AlertManager extends StatelessWidget {
   const AlertManager({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AppBloc, AppState>(
+      listener: (context, state) {
+        if (state.error.isNotEmpty) {
+          ViewHelper.myError(context, AppLocalizations.of(context)!.problem,
+              Text(state.error));
+        }
+      },
+      child: Container(),
+    );
+  }
+}
+
+class SubscriptionManager extends StatefulWidget {
+  const SubscriptionManager({super.key});
+
+  @override
+  State<SubscriptionManager> createState() => _SubscriptionManagerState();
+}
+
+class _SubscriptionManagerState extends State<SubscriptionManager> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AppBloc, AppState>(

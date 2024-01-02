@@ -55,7 +55,9 @@ class _EditScreenState extends State<EditScreen> {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () => {Share.shareWithResult(aiTextController.text)},
+                onPressed: () {
+                  _onShare(context);
+                },
                 icon: const Icon(Icons.ios_share_sharp))
           ],
           title: Text(AppLocalizations.of(context)!.titleEdit,
@@ -78,22 +80,24 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  color: Colors.yellow.shade400,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(AppLocalizations.of(context)!
-                          .warningCount(countedPlaceholder)),
-                      ElevatedButton(
-                        onPressed: () => _fillNext(context),
-                        child: Text(AppLocalizations.of(context)!.next),
-                      ),
-                    ],
-                  ),
-                ),
+                countedPlaceholder > 0
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        color: Colors.yellow.shade400,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(AppLocalizations.of(context)!
+                                .warningCount(countedPlaceholder)),
+                            ElevatedButton(
+                              onPressed: () => _fillNext(context),
+                              child: Text(AppLocalizations.of(context)!.next),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Container(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -153,6 +157,11 @@ class _EditScreenState extends State<EditScreen> {
     }
 
     currentPlaceholder++;
+  }
+
+  _onShare(BuildContext context) {
+    if (_countTheBlanks(context) > 0) {}
+    Share.shareWithResult(aiTextController.text);
   }
 
   _onTextChanged(String str) {

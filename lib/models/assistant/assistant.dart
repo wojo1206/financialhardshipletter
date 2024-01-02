@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 enum PERSON { first, third }
 
@@ -7,6 +8,7 @@ enum QUESTION {
   highlightDetails,
   lasting,
   name,
+  institutionName,
   none,
   outcome,
   perspective,
@@ -120,6 +122,13 @@ class Assistant {
           QUESTION.name,
           INPUT.text,
           'What is your name:',
+          [],
+          hasOther: true,
+        ),
+        Question(
+          QUESTION.institutionName,
+          INPUT.text,
+          'What is the institution name:',
           [],
           hasOther: true,
         ),
@@ -264,17 +273,25 @@ class Assistant {
     String q7 = Assistant.prepareQuestion(Assistant.getQuestionByName(
         context, Assistant.getQuestionGroups(context), QUESTION.outcome));
 
-    String details = [q1, q2, q3, q4, q5, q6, q7]
+    String q8 = Assistant.prepareQuestion(Assistant.getQuestionByName(
+        context, Assistant.getQuestionGroups(context), QUESTION.name));
+
+    String q9 = Assistant.prepareQuestion(Assistant.getQuestionByName(context,
+        Assistant.getQuestionGroups(context), QUESTION.institutionName));
+
+    String date =
+        "Today's date is: ${DateFormat('yMd').format(DateTime.now())}";
+    ;
+
+    String details = [q1, q2, q3, q4, q5, q6, q7, q8, q9, date]
         .where((element) => element.isNotEmpty)
         .join('. ');
 
     return MyMessage(
-        role: 'system',
-        content:
-            """You are a letter writer, your task to write a ${type} hardship letter to ${type} institution explaining my financial hardship. 
-          The main objective is to explain my situation clearly, and write the letter with a "Subject:" statement at the very top 
-          with the body of the letter following the subject. Please keep any placeholder information between brackets characters. My name is 
-          Joe Doe and my contact info is joe.doe@gmail.com. ${details} Keep the letter short.""");
+      role: 'system',
+      content:
+          "You are a letter writer, your task to write a $type hardship letter to $type institution explaining my financial hardship. The main objective is to explain my situation clearly, and write the letter with a \"Subject:\" statement at the very top with the body of the letter following the subject. Please keep any placeholder information between brackets characters. $details Keep the letter short.",
+    );
   }
 
   static String prepareQuestion(Question question) {

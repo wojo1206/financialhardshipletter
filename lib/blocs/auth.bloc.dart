@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart' show safePrint;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simpleiawriter/models/ModelProvider.dart';
 import 'package:simpleiawriter/repos/api.repository.dart';
 
 import 'package:simpleiawriter/repos/auth.repository.dart';
@@ -50,6 +52,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final DataStoreRepository _dataStoreRep;
   final ApiRepository _apiRep;
 
+  Stream<GraphQLResponse<Setting>>? sub1;
+
   AuthBloc({
     required AuthRepository authRep,
     required DataStoreRepository dataStoreRep,
@@ -78,38 +82,48 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogIn event,
     Emitter<AuthState> emit,
   ) async {
-    final res1 = await _authRep.signInWithWebUI(provider: event.provider);
-    if (res1.isSignedIn) {
+    try {
+      final res1 = await _authRep.signInWithWebUI(provider: event.provider);
+
+      if (res1.isSignedIn == false) {
+        throw Exception("Can't sign in.");
+      }
+
       await _dataStoreRep.clear();
       await _dataStoreRep.start();
 
-      /**
-       * Crucial. Read or create setting object.
-       */
       final resp = await _apiRep.settingList();
-      int tokens = 0;
-      String sessionId = '';
-      if (resp.data!.items.isEmpty) {
-        safePrint('Setting is empty!');
-        var resp = await _apiRep.settingCreate();
-        tokens = resp.data!.tokens;
-        sessionId = resp.data!.id;
-      } else if (resp.data!.items.length == 1) {
-        tokens = resp.data!.items.first!.tokens;
-        sessionId = resp.data!.items.first!.id;
-      } else {
-        safePrint('More than one Settings objects!');
+      final list = resp.data;
+
+      if (list == null) {
+        throw Exception("Can't get settings list.");
       }
 
-      return emit(
+      Setting? setting;
+
+      if (list.items.isEmpty) {
+        var resp = await _apiRep.settingCreate();
+        if (resp.data != null) {
+          setting = resp.data;
+        } else {
+          throw Exception("Can't create setting.");
+        }
+      } else if (list.items.length == 1) {
+        setting = list.items.first;
+      } else {
+        throw Exception("More than one Settings objects.");
+      }
+
+      emit(
         AuthState(
           status: AuthenticationState.authenticated,
-          tokens: tokens,
-          settingId: sessionId,
+          tokens: setting!.tokens,
+          settingId: setting.id,
         ),
       );
-    } else {
-      return emit(
+    } catch (ex) {
+      addError(ex, StackTrace.current);
+      emit(
         AuthState.empty(),
       );
     }

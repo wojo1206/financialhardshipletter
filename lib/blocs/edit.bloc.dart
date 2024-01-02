@@ -31,12 +31,12 @@ class EditBloc extends Bloc<EditEvent, EditState> {
         super(EditState(gptSession: GptSession())) {
     on<Fetch>((event, emit) async {
       final session = await _dataStoreRep.gptSessionCreate();
-      return emit(EditState(gptSession: session));
+      emit(EditState(gptSession: session));
     });
 
     on<SessionUpdate>((event, emit) async {
       final session = await _dataStoreRep.gptSessionUpdate(event.gptSession);
-      return emit(EditState(gptSession: session));
+      emit(EditState(gptSession: session));
     });
   }
 }
